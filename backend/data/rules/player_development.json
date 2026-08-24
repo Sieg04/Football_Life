@@ -1,5 +1,5 @@
 {
-  "base_rate": 2.0,
+  "base_rate": 4.0,
   "potential_gap_max": 30.0,
   "profiles": {
     "BALANCED": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0},
@@ -38,8 +38,11 @@
   ],
   "decline": {
     "start_age": 29,
-    "physical_attributes": ["acceleration", "sprint_speed", "agility", "stamina"],
+    "physical_attributes": ["acceleration", "sprint_speed", "agility", "stamina", "jumping", "reactions"],
+    "technical_attributes": ["finishing", "shot_power", "long_shots", "volleys", "penalties", "vision", "short_passing", "long_passing", "crossing", "curve", "balance", "ball_control", "dribbling", "defensive_awareness", "standing_tackle", "interceptions", "heading"],
+    "mental_attributes": ["decision_making", "composure", "creativity", "positioning", "concentration", "work_rate", "leadership"],
     "physical_rate": 0.15,
-    "other_rate": 0.03
+    "technical_rate": 0.015,
+    "mental_rate": 0.0
   }
 }

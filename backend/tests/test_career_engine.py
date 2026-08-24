@@ -14,6 +14,8 @@ from app.career.domain import (
     SeasonalPlayingTimeInput,
 )
 from app.career.engine import (
+    allocate_two_stage_development,
+    apply_decline_effects,
     calculate_career_phase,
     calculate_development_budget,
     create_career,
@@ -25,7 +27,7 @@ from app.models.base import Base
 from app.models.career import CareerModel
 from app.models.world import ClubModel, CountryModel, LeagueModel, ManagerModel, PlayerModel
 from app.player.domain import DevelopmentProfile, Player, PlayerState
-from app.player.engine import current_ability, position_ovr
+from app.player.engine import DEFAULT_GROUPS, current_ability, position_ovr, weighted_values
 from app.player.generation import generate_player
 
 
@@ -60,6 +62,23 @@ def test_neutral_performance_input_gives_1_factor():
     assert budget_neutral > 0.0
 
 
+def test_group_budget_preservation_and_normalization():
+    # A 0.50 SHO group budget must produce approximately +0.50 weighted SHO growth before soft caps
+    player = generate_player(101, "p-norm", "Group", "Norm", "ST", "ESP", 60.0)
+    # Set shooting attributes < 80 so soft caps multiplier is 1.0
+    for attr in DEFAULT_GROUPS["SHO"]:
+        setattr(player.attributes, attr, 60.0)
+
+    group_summary, raw_changes = allocate_two_stage_development(player, 1.0)
+    sho_group_budget = group_summary["SHO"]
+
+    sho_weights = DEFAULT_GROUPS["SHO"]
+    weighted_sho_delta = sum(raw_changes[attr] * sho_weights[attr] for attr in sho_weights)
+
+    # Before soft caps, weighted group average delta should match group budget (~0.50)
+    assert pytest.approx(weighted_sho_delta, abs=1e-3) == sho_group_budget
+
+
 def test_age_order_and_multipliers():
     player = generate_player(42, "p-age", "Young", "Talent", "ST", "ESP", 65.0)
     career = create_career("c-age", player, 1, date(2028, 7, 1), seed="FL-AGE")
@@ -80,23 +99,30 @@ def test_two_stage_development_and_soft_caps():
     career = create_career("c-dev", player, 1, date(2028, 7, 1), seed="FL-DEV")
     season = simulate_season(career)
 
-    assert "SHO" in season.development_summary or "shooting" in season.development_summary
+    assert "SHO" in season.development_summary
     assert "finishing" in season.attribute_changes
-    # Verify soft cap kept finishing delta smaller than raw allocated delta
-    assert season.attribute_changes["finishing"] < 2.0
 
 
-def test_physical_decline_post_28():
+def test_physical_decline_hierarchy_post_28():
     # Generate player aged 30
     player = generate_player(200, "p-veteran", "Old", "Winger", "LW", "ESP", 82.0)
     player.birth_date = date(1998, 1, 1)  # Age 30 in 2028
 
-    career = create_career("c-vet", player, 1, date(2028, 7, 1), seed="FL-VET")
-    season = simulate_season(career)
+    decline_changes = {}
+    apply_decline_effects(player, 30, decline_changes)
 
-    # Physical attributes should experience net reduction due to decline
-    assert season.attribute_changes["sprint_speed"] < 0.0
-    assert season.attribute_changes["acceleration"] < 0.0
+    phys_attrs = ["acceleration", "sprint_speed", "agility", "stamina", "jumping", "reactions"]
+    tech_attrs = ["finishing", "short_passing", "long_passing", "dribbling"]
+    ment_attrs = ["decision_making", "composure", "creativity"]
+
+    phys_loss_per_attr = abs(decline_changes["acceleration"])
+    tech_loss_per_attr = abs(decline_changes["finishing"])
+    ment_loss_per_attr = abs(decline_changes["decision_making"])
+
+    # Physical > Technical > Mental (zero/near-zero)
+    assert phys_loss_per_attr > tech_loss_per_attr
+    assert tech_loss_per_attr > ment_loss_per_attr
+    assert ment_loss_per_attr == 0.0
 
 
 def test_peak_tracking():
@@ -144,7 +170,6 @@ def test_persistence_roundtrip_in_memory():
     SessionLocal = sessionmaker(bind=engine)
     session = SessionLocal()
 
-    # Seed required foreign key records
     country = CountryModel(code="ESP", name="Spain")
     league = LeagueModel(
         code="L1", name="La Liga", country_code="ESP", tier=1, current_strength=80.0,

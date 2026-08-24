@@ -1,0 +1,27 @@
+{
+  "superstar": {
+    "min_peak_ovr": 88.0
+  },
+  "long_prime": {
+    "min_peak_age": 27,
+    "min_seasons_within_98_pct": 19
+  },
+  "late_bloomer": {
+    "min_peak_age": 28,
+    "min_ca_growth_post_24": 1.5
+  },
+  "wonderkid": {
+    "max_starting_age": 17,
+    "min_starting_ca": 78.36,
+    "min_potential": 87.23
+  },
+  "failed_wonderkid": {
+    "max_starting_age": 17,
+    "min_potential": 87.23,
+    "max_potential_realization_pct": 82.0
+  },
+  "early_decliner": {
+    "max_peak_age": 29,
+    "min_ca_decline": 3.0
+  }
+}

@@ -27,7 +27,7 @@ def _load_rules(filename: str) -> dict:
 _development_rules = _load_rules("player_development.json")
 _attribute_rules = _load_rules("player_attributes.json")
 
-BASE_RATE = _development_rules.get("base_rate", 2.0)
+BASE_RATE = _development_rules.get("base_rate", 4.0)
 POTENTIAL_GAP_MAX = _development_rules.get("potential_gap_max", 30.0)
 PROFILES = _development_rules.get("profiles", {})
 AGE_FACTORS = _development_rules.get("age_factors", {})
@@ -155,14 +155,20 @@ def allocate_two_stage_development(
     stage2_attribute_changes: dict[str, float] = {}
     for group, group_budget in stage1_group_budget.items():
         attr_subweights = ATTRIBUTE_GROUPS.get(group, {})
-        group_sub_total = sum(attr_subweights.values()) or 1.0
+        if not attr_subweights:
+            continue
+
+        sum_w = sum(attr_subweights.values()) or 1.0
+        sum_w_sq = sum(w * w for w in attr_subweights.values()) or 1.0
+        normalization = sum_w / sum_w_sq
+
         for attr_name, subweight in attr_subweights.items():
             if not hasattr(player.attributes, attr_name):
                 continue
-            allocated_delta = group_budget * (subweight / group_sub_total)
+            delta_raw = group_budget * subweight * normalization
             current_val = getattr(player.attributes, attr_name)
             soft_cap_mult = get_soft_cap_multiplier(current_val)
-            net_delta = allocated_delta * soft_cap_mult
+            net_delta = delta_raw * soft_cap_mult
             stage2_attribute_changes[attr_name] = stage2_attribute_changes.get(attr_name, 0.0) + net_delta
 
     return stage1_group_budget, stage2_attribute_changes
@@ -174,18 +180,24 @@ def apply_decline_effects(player: Player, age: int, attribute_changes: dict[str,
         return
 
     years_over = age - start_age + 1
-    physical_attrs = set(DECLINE_RULES.get("physical_attributes", ["acceleration", "sprint_speed", "agility", "stamina"]))
+    physical_attrs = set(DECLINE_RULES.get("physical_attributes", ["acceleration", "sprint_speed", "agility", "stamina", "jumping", "reactions"]))
+    technical_attrs = set(DECLINE_RULES.get("technical_attributes", []))
+
     base_phys_rate = DECLINE_RULES.get("physical_rate", 0.15)
-    base_other_rate = DECLINE_RULES.get("other_rate", 0.03)
+    base_tech_rate = DECLINE_RULES.get("technical_rate", 0.015)
+    base_ment_rate = DECLINE_RULES.get("mental_rate", 0.0)
 
     phys_decline = base_phys_rate * (1.0 + 0.1 * years_over)
-    other_decline = base_other_rate * (1.0 + 0.05 * years_over)
+    tech_decline = base_tech_rate * (1.0 + 0.05 * years_over)
+    ment_decline = base_ment_rate
 
     for attr_name in vars(player.attributes):
         if attr_name in physical_attrs:
             loss = phys_decline
+        elif attr_name in technical_attrs:
+            loss = tech_decline
         else:
-            loss = other_decline
+            loss = ment_decline
         attribute_changes[attr_name] = attribute_changes.get(attr_name, 0.0) - loss
 
 
