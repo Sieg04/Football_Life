@@ -1,7 +1,7 @@
 # FOOTBALL LIFE
 ## Complete Project Specification
 
-**Version:** 1.4  
+**Version:** 1.5  
 **Project:** Football Life  
 **Type:** Local football career simulator + narrative/story generator  
 **Primary platform:** Desktop/local web application  
@@ -16,21 +16,21 @@ Football Life is a local football career simulator designed primarily as a **sto
 
 The objective is not to reproduce Football Manager in miniature.
 
-The objective is to generate:
+The objective is to generate believable, unpredictable and emotionally interesting football careers containing:
 
-- believable football careers
-- unpredictable outcomes
-- career variety
-- important turning points
-- emotional moments
+- believable football development
+- career breakthroughs
 - failures
-- successes
-- comebacks
+- stalled careers
+- transfers
+- injuries in future phases
 - rivalries
-- unexpected transfers
+- titles
+- comebacks
+- unexpected outcomes
 - memorable endings
 
-A complete career should eventually be presentable as a single approximately **5–6 minute video**.
+A complete career should eventually be presentable as a single approximately **5–6 minute vertical video**.
 
 The most important output is therefore not:
 
@@ -55,7 +55,7 @@ A career like:
 18 — Professional debut
 20 — Major transfer
 22 — Superstar
-23 — ACL injury
+23 — Major setback
 25 — Career decline
 28 — Comeback
 30 — Champions League
@@ -64,11 +64,7 @@ A career like:
 
 is more valuable than an extremely detailed simulation that produces boring results.
 
----
-
 ## 2.2 Every career should be different
-
-Two players with similar starting conditions should not necessarily experience the same career.
 
 Variation should come from:
 
@@ -80,78 +76,40 @@ Variation should come from:
 - Club context
 - Manager
 - Playing time
+- Match performance
 - Form
-- Injuries
+- Fitness
+- Future injuries
 - Transfers
 - Relationships
 - Randomness
 - World evolution
-- Decisions
-
----
 
 ## 2.3 Failure must be possible
 
 The simulation must allow:
 
-- Poor careers
-- Injuries
-- Failed wonderkids
-- Bad transfers
-- Early decline
-- Long periods on the bench
-- Journeyman careers
-- Players who never reach potential
-- Clubs that decline
-- Clubs that unexpectedly become dominant
-
-The game should not optimize every player toward becoming a superstar.
-
----
+- poor careers
+- failed wonderkids
+- bench careers
+- bad transfers
+- early decline
+- journeyman careers
+- players who never reach potential
+- clubs that decline
+- clubs that unexpectedly become dominant
 
 ## 2.4 Randomness must create uncertainty, not nonsense
 
-Random events should stay within plausible football contexts.
-
-Bad:
-
-```text
-16-year-old player from a tiny amateur club
-↓
-Randomly transferred to Real Madrid
-```
-
-Better:
-
-```text
-Academy player
-↓
-Excellent youth performances
-↓
-Scouting attention
-↓
-Professional debut
-↓
-Breakthrough
-↓
-Major clubs become interested
-↓
-Transfer opportunity
-```
-
----
+Random events should stay inside plausible football contexts.
 
 ## 2.5 Presentation is part of the product
 
 The application must eventually look good enough that its UI can be directly recorded for social media.
 
-The interface should not feel like a generic admin panel.
-
 ---
 
 # 3. MAIN USE CASE
-
-The initial user is the creator of a football/TikTok account.
 
 Typical workflow:
 
@@ -160,17 +118,15 @@ Create player
       ↓
 Start career
       ↓
-Simulate complete career
+Simulate career
       ↓
-Review timeline
-      ↓
-Review statistics
+Review seasons
       ↓
 Review key events
       ↓
 Generate story
       ↓
-Open presentation mode
+Presentation mode
       ↓
 Record video
       ↓
@@ -183,9 +139,9 @@ Publish
 
 # 4. FUTURE COMMUNITY CONCEPT
 
-The first version does NOT include community interaction.
+The first version does **not** include community interaction.
 
-The long-term concept is:
+Long-term concept:
 
 ```text
 Follower
@@ -205,46 +161,43 @@ Next event
 Next video
 ```
 
-Future community features may allow followers to influence:
+Future community features may influence:
 
-- Club selection
-- Transfer decisions
-- Contract decisions
-- Career choices
-- Personal decisions
-- Rivalries
-- Other important events
-
-The architecture must support this later.
+- club selection
+- transfer decisions
+- career choices
+- personal decisions
+- rivalries
+- important events
 
 ---
 
 # 5. MVP GOALS
 
-The MVP must eventually allow the user to:
+The eventual MVP should allow the user to:
 
 1. Create a fictional player.
 2. Select nationality.
 3. Select position.
 4. Select starting club.
-5. Generate player attributes.
+5. Generate attributes.
 6. Generate personality.
 7. Start a career.
 8. Simulate seasons.
 9. Simulate matches.
-10. Track performance.
+10. Track player performance.
 11. Develop attributes.
-12. Experience injuries.
-13. Receive transfers.
-14. Sign contracts.
-15. Play international football.
+12. Experience injuries in later phases.
+13. Receive transfers in later phases.
+14. Sign contracts in later phases.
+15. Play international football in later phases.
 16. Experience important events.
 17. Track relationships.
 18. Win trophies.
 19. Win individual awards.
 20. Retire.
 21. Calculate legacy.
-22. Identify career archetype.
+22. Detect career archetypes.
 23. Generate a complete career timeline.
 24. Generate a 5–6 minute story.
 25. Present the story visually.
@@ -252,30 +205,27 @@ The MVP must eventually allow the user to:
 
 ---
 
-# 6. EXPLICIT NON-GOALS FOR MVP
+# 6. EXPLICIT NON-GOALS FOR INITIAL MVP
 
 Do NOT implement initially:
 
-- User accounts
-- Authentication
-- Cloud deployment
-- Public API
+- user accounts
+- authentication
+- cloud deployment
+- public API
 - TikTok API
 - TikTok comment scraping
-- Community voting
-- Multiplayer
-- Public career pages
-- Mobile application
+- community voting
+- multiplayer
+- public career pages
+- mobile application
 - 3D matches
-- Tactical match simulation
-- Complete real-world player database
-- Full real-world squad database
-- Complex accounting/finances
-- Complex agent negotiations
-- Mandatory LLM integration
-- Automatic video generation
-
-These may be developed later.
+- tactical real-time simulation
+- complete real-world player database
+- complete real-world squad database
+- complex accounting/finances
+- mandatory LLM integration
+- automatic video generation
 
 ---
 
@@ -284,8 +234,6 @@ These may be developed later.
 ## CRITICAL RULE
 
 > **DO NOT BUILD THE ENTIRE SYSTEM IN ONE PASS.**
-
-Football Life must be developed incrementally.
 
 Development process:
 
@@ -315,14 +263,10 @@ Do not automatically continue to future phases.
 
 ## Phase 0 — Planning
 
-- Repository
-- Documentation
-- Architecture review
-- Development rules
-
-No gameplay implementation.
-
----
+- repository
+- documentation
+- architecture
+- development rules
 
 ## Phase 1 — Foundation
 
@@ -333,56 +277,51 @@ Implement:
 - SQLite
 - SQLAlchemy
 - Alembic
-- Configuration
-- Health endpoint
-- Basic API shell
-- Basic Angular shell
+- configuration
+- health endpoint
+- API shell
+- Angular shell
 - Angular → FastAPI communication
-- Basic tests
+- tests
 
 No football simulation.
-
----
 
 ## Phase 2 — Football World
 
 Implement:
 
-- Countries
-- Leagues
-- Clubs
-- Managers
-- Competitions
-- External source metadata
-- Club attributes
-- League attributes
-- Club strength
-- League strength
-- Initial world seed
-- Generic squad generation
-- Shared Player domain refactor
+- countries
+- leagues
+- clubs
+- managers
+- competitions
+- external source metadata
+- club attributes
+- league attributes
+- club strength
+- league strength
+- initial world seed
+- generic squad generation
+- shared Player domain
 - ClubMembership
-- Initial world tests
 
 Do NOT implement:
 
-- Player development
-- Match engine
-- Transfers
-- Injuries
-- Narrative engine
-
----
+- player development
+- Match Engine
+- transfers
+- injuries
+- narrative
 
 ## Phase 3 — Player Engine
 
 Implement:
 
-- Player internal attribute system
+- internal attributes
 - PAC / SHO / PAS / DRI / DEF / PHY
-- MENTAL group
+- MENTAL
 - Current Ability
-- Position-specific OVR
+- position-specific OVR
 - Potential
 - Development Rate
 - Development Profiles
@@ -390,234 +329,177 @@ Implement:
 - Role Attribute Fit
 - Role Effectiveness
 - Traits / PlayStyles
-- Personality data
+- Personality
 - Player State
-- Aging baseline
-- Deterministic player generation
-- Player attribute generation
-- Player validation
-- Player persistence
-
-Do NOT implement yet:
-
-- Full career progression
-- Seasonal development loop
-- Transfers
-- Contracts
-- Injuries
-- Relationships
-- Match engine
-- Narrative
-- Community
-- TikTok presentation
-
----
+- aging baseline
+- deterministic generation
+- player validation
+- persistence
 
 ## Phase 3.1 — Player Generation & Balance Refinement
 
 Implement:
 
-- Position-based archetypes
-- Squad distribution
-- Positional attribute specialization
-- Secondary positions
-- Expanded role coverage
-- Variable trait counts
-- Trait compatibility rules
-- Improved potential distribution
-- Goalkeeper-specific OVR
-- Improved intra-club player variance
-- Statistical seed validation
-
-Phase 3.1 MUST preserve:
-
-- Player Engine formulas
-- Current Ability calculation
-- OVR formulas
-- Role Effectiveness formula
-- Deterministic generation
-
-The main purpose is to improve player generation, not redesign the Player Engine.
-
----
+- position-based archetypes
+- squad distributions
+- positional specialization
+- secondary positions
+- expanded role coverage
+- variable trait counts
+- trait compatibility
+- improved potential distribution
+- goalkeeper-specific OVR
+- intra-club player variance
+- statistical seed validation
 
 ## Phase 4 — Career Engine
 
 Implement:
 
-- Career entity
-- Career initialization
-- Season entity/state
-- Season progression
-- Development budget
-- Seasonal development
-- Attribute changes
+- Career
+- Season
+- SeasonSnapshot
+- season progression
+- development budget
+- seasonal development
+- internal attribute changes
 - Current Ability recalculation
 - OVR recalculation
-- Age progression
-- Career phase
-- Peak ability tracking
-- Seasonal snapshots
-- End-of-season state
-- Deterministic career simulation
+- age progression
+- Career Phase
+- peak tracking
+- seasonal snapshots
+- deterministic career simulation
 
-Do NOT implement yet:
+## Phase 4.1B — Career Archetype Classifier
 
-- Full Match Engine
-- Transfers
-- Contracts
-- Injuries
-- Relationships
-- Narrative
-- Community
-- TikTok presentation
+Implement:
 
----
+- multi-label career trajectory classifier
+- evidence output
+- configurable rules
+- WONDERKID
+- FAILED_WONDERKID
+- SUPERSTAR
+- LONG_PRIME
+- LATE_BLOOMER
+- EARLY_DECLINER
+- SOLID_PRO fallback
 
 ## Phase 5 — Match Engine
 
-Implement:
+Phase 5 is divided into:
 
-- Match results
-- Team strength
-- Playing time
-- Player performance
-- Goals
-- Assists
-- Ratings
-- Competition outcomes
-- Match importance
-- Role impact
-- Traits contextual effects
+```text
+5A — Match Domain
+5B — Lineup + Team Strength
+5C — Match Resolution
+5D — Player Performance
+5E — Season Aggregation
+5F — Career Integration
+```
 
----
+The Match Engine introduces the football-performance loop without implementing future transfer, injury, narrative or community systems.
 
 ## Phase 6 — Career Depth
 
-Implement:
+Implement later:
 
-- Form
-- Fatigue
-- Fitness
-- Confidence
-- Morale
-- Injuries
-- Relationships
-- Manager interaction
-- Dynamic role changes
-- Position conversion
-- Deeper seasonal state
-
----
+- form evolution
+- fatigue
+- fitness evolution
+- confidence
+- morale
+- persistent injuries
+- relationships
+- manager interactions
+- dynamic roles
+- position conversion
 
 ## Phase 7 — Transfer Engine
 
-Implement:
+Implement later:
 
-- Market value
-- Club needs
-- Transfer offers
-- Contracts
-- Transfer windows
-- Club attractiveness
-- Player fit
-- Transfer decisions
-
----
+- market value
+- club needs
+- transfer offers
+- contracts
+- windows
+- club attractiveness
+- player fit
+- transfer decisions
 
 ## Phase 8 — Event Engine
 
-Implement:
+Implement later:
 
-- Data-driven events
-- Conditions
-- Probabilities
-- Effects
-- Decisions
-- Automatic resolution
-
----
+- data-driven events
+- conditions
+- probabilities
+- effects
+- decisions
 
 ## Phase 9 — Narrative Engine
 
-Implement:
+Implement later:
 
-- Timeline
-- Narrative importance
-- Career arcs
-- Legacy score
-- Story beats
-- Story generation
-
----
+- timeline
+- story beats
+- career arcs
+- legacy score
+- narrative generation
 
 ## Phase 10 — Frontend
 
-Implement:
+Implement later:
 
-- Home
-- Player creation
-- Career dashboard
-- Season view
-- Event view
-- Timeline
-- Statistics
-- Transfers
-- Retirement
-- Story screen
-
----
+- player creation
+- career dashboard
+- season view
+- match view
+- timeline
+- statistics
+- transfers
+- retirement
+- story screen
 
 ## Phase 11 — Visual Polish
 
-Implement:
+Implement later:
 
-- Dark theme
-- Typography
-- Animations
-- Player cards
-- Trophy presentation
-- Timeline animations
-- Microinteractions
-- Visual hierarchy
-
----
+- dark theme
+- typography
+- animations
+- player cards
+- trophy presentation
+- timeline animations
+- microinteractions
 
 ## Phase 12 — TikTok Presentation Mode
 
-Implement:
+Implement later:
 
 - 9:16 layout
-- 1080 × 1920 target
-- Scene system
-- Keyboard navigation
-- Recording-friendly presentation
-- Story progression
-
----
+- 1080×1920 target
+- scene system
+- recording-friendly presentation
 
 ## Phase 13 — Simulation Balance
 
-Run hundreds or thousands of careers.
+Run hundreds or thousands of complete careers and tune:
 
-Analyze:
-
-- Career length
-- Peak overall
-- Final overall
-- Transfers
-- Injuries
-- Goals
-- Trophies
-- Retirement age
-- Potential attainment
-- Major titles
-- Narrative-event frequency
-- Late bloomers
-- One-club legends
-- Career failures
-
-Tune the simulation.
+- career length
+- peak overall
+- final overall
+- match performance
+- transfers
+- injuries
+- goals
+- trophies
+- retirement age
+- potential attainment
+- late bloomers
+- failures
 
 ---
 
@@ -646,16 +528,6 @@ Angular Router
 Standalone Components
 ```
 
-## Charts
-
-Preferred:
-
-```text
-ApexCharts
-```
-
-Use another lightweight Angular-compatible chart library only if justified.
-
 ---
 
 # 10. HIGH-LEVEL ARCHITECTURE
@@ -682,23 +554,7 @@ Results           │
                 SQLite
 ```
 
-Preferred dependency direction:
-
-```text
-Frontend
-    ↓
-API
-    ↓
-Application Services
-    ↓
-Simulation Engine
-    ↓
-Simulation Result
-    ↓
-Application Services
-    ↓
-Persistence
-```
+The domain and simulation engine must remain independent of infrastructure.
 
 ---
 
@@ -713,36 +569,16 @@ The Simulation Engine MUST NOT depend on:
 - SQLAlchemy
 - SQLite
 - REST
-- Frontend components
 
-It should eventually be possible to execute the simulation directly from Python.
+Pure business calculations must be testable without infrastructure.
 
-Conceptually:
-
-```python
-result = simulation_engine.simulate(
-    career_state=career_state,
-    world_state=world_state,
-    rules=rules,
-    seed=seed
-)
-```
-
-The engine returns structured domain results.
-
-It does not save directly to the database.
+Persistence adapters may use SQLAlchemy.
 
 ---
 
 # 12. DETERMINISTIC RANDOMNESS
 
-Every career must have a seed.
-
-Example:
-
-```text
-FL-8F92-A21C
-```
+Every major simulation operation must support a seed.
 
 Requirement:
 
@@ -756,25 +592,24 @@ same rules version
 same result
 ```
 
-Use a centralized deterministic RNG abstraction.
+Use stable hashing such as SHA-256.
 
-Avoid uncontrolled calls to global random functions.
+Do NOT use Python's built-in `hash()` to derive simulation seeds.
 
-The seed system must support:
+Preferred pattern:
 
-- Reproducing careers
-- Debugging
-- Snapshot recovery
-- Balance testing
-- Future community branching
+```python
+seed_material = f"{career_seed}:{entity_id}:{step_number}"
+seed_hash = sha256(seed_material.encode("utf-8")).hexdigest()
+seed_int = int(seed_hash[:16], 16)
+rng = random.Random(seed_int)
+```
 
 ---
 
 # 13. DATA-DRIVEN RULES
 
-Game rules should be configurable.
-
-Suggested structure:
+Suggested:
 
 ```text
 backend/data/
@@ -785,44 +620,18 @@ backend/data/
 │   ├── player_roles.json
 │   ├── player_traits.json
 │   ├── player_archetypes.json
-│   ├── career.json
-│   ├── matches.json
-│   ├── transfers.json
-│   ├── injuries.json
+│   ├── career_archetypes.json
+│   ├── match.json
+│   ├── lineup.json
+│   ├── competitions.json
 │   └── narrative.json
-│
-└── events/
-    ├── sport.json
-    ├── transfers.json
-    ├── injuries.json
-    ├── media.json
-    ├── relationships.json
-    ├── personal.json
-    └── chaos.json
 ```
 
-Do not hardcode large collections of:
-
-- Event definitions
-- Attribute weights
-- Position weights
-- Role weights
-- Development coefficients
-- Probabilities
-- Injury probabilities
-- Transfer conditions
-- Trait definitions
-- Career development coefficients
-
-inside Python business logic.
-
-Do not over-engineer configuration systems before they are required.
+Large collections of rules should be configurable rather than hardcoded.
 
 ---
 
 # 14. FOOTBALL WORLD
-
-Football World represents the environment in which careers take place.
 
 Core entities:
 
@@ -836,40 +645,31 @@ Player
 ClubMembership
 ```
 
-The same `Player` domain is used for:
-
-- Generic squad players
-- Future career protagonists
-
-A protagonist should not use a separate football-player model.
+The same Player domain is used for generic players and future protagonists.
 
 ---
 
 # 15. EXTERNAL DATA PHILOSOPHY
 
-External rankings should be used as **initial references**, not immutable truths.
+External rankings are initial references, not immutable truths.
 
-Recommended sources:
+Suggested references:
 
 ```text
-Opta  → current club/league strength
-UEFA  → European club coefficients
-IFFHS → historical league strength
-FIFA  → national team strength
-Manual/generated → prestige, academy, facilities, finances
+Opta  → club/league current strength reference
+UEFA  → European club coefficient reference
+IFFHS → historical league strength reference
+FIFA  → national team strength reference
+Manual/Generated → prestige, academy, facilities, financial inputs
 ```
 
-The external data creates the initial world.
-
-After the simulation begins:
-
-> **Internal simulation rules become the source of truth.**
+After simulation begins, internal simulation rules become the source of truth.
 
 ---
 
 # 16. DATA SOURCE METADATA
 
-Important external values should retain:
+Important external data can retain:
 
 ```text
 data_source
@@ -879,7 +679,7 @@ source_value
 normalized_value
 ```
 
-Potential source identifiers:
+Possible source IDs:
 
 ```text
 OPTA
@@ -894,7 +694,7 @@ GENERATED
 
 # 17. CLUB SYSTEM
 
-Each club should contain:
+Each club contains conceptually:
 
 ```text
 id
@@ -902,7 +702,6 @@ name
 country
 league_id
 manager_id
-
 current_strength
 prestige
 financial_power
@@ -910,71 +709,20 @@ academy_quality
 facilities
 fan_pressure
 squad_depth
-
 uefa_coefficient_raw
 uefa_coefficient_normalized
-
 domestic_reputation
 international_reputation
-
 momentum
 ```
 
-All internal values use 0–100 except:
-
-```text
-momentum: -100 → +100
-```
-
-and raw external coefficients.
+Values are primarily 0–100 except raw coefficients and momentum.
 
 ---
 
-# 18. CLUB RATING PRINCIPLE
+# 18. CLUB CURRENT STRENGTH
 
-Separate:
-
-```text
-Current Strength
-```
-
-from:
-
-```text
-Prestige
-```
-
-A club can have:
-
-```text
-Prestige = 99
-Strength = 84
-```
-
-This is valid.
-
-Historical importance should not automatically imply current sporting superiority.
-
----
-
-# 19. CLUB CURRENT STRENGTH
-
-Current strength represents how strong the first team is now.
-
-Main components:
-
-```text
-Attack
-Midfield
-Defense
-Goalkeeper
-Squad Depth
-Manager Quality
-Facilities
-Momentum
-```
-
-Formula:
+Suggested structure:
 
 ```text
 CURRENT_STRENGTH =
@@ -985,17 +733,13 @@ CURRENT_STRENGTH =
   + MOMENTUM_NORMALIZED  × 0.07
 ```
 
-Clamp to:
+Clamp to 1–100.
 
-```text
-1–100
-```
-
-Prestige does NOT directly enter Current Strength.
+Prestige does not directly enter current sporting strength.
 
 ---
 
-# 20. CLUB SQUAD LINES
+# 19. CLUB SQUAD LINES
 
 ```text
 Attack
@@ -1004,354 +748,47 @@ Defense
 Goalkeeper
 ```
 
-### Attack
-
-```text
-ATTACK =
-weighted_average(
-    forwards,
-    wingers,
-    attacking_midfielders
-)
-```
-
-### Midfield
-
-```text
-MIDFIELD =
-weighted_average(
-    central_midfielders,
-    defensive_midfielders,
-    attacking_midfielders
-)
-```
-
-### Defense
-
-```text
-DEFENSE =
-weighted_average(
-    center_backs,
-    full_backs
-)
-```
-
-### Goalkeeper
-
-Goalkeepers use dedicated goalkeeper attributes.
+These are derived from current Player/ClubMembership data.
 
 ---
 
-# 21. PLAYER ROLE WEIGHTS FOR CLUB SQUADS
-
-Current suggested values:
-
-```text
-STARTER   = 1.00
-ROTATION  = 0.65
-BACKUP    = 0.35
-YOUTH     = 0.15
-```
-
-These values are configurable.
-
-Example:
-
-```text
-ATTACK =
-Σ(player_current_ability × role_weight)
-/
-Σ(role_weight)
-```
-
-The Player model does not own the squad role.
-
-The role belongs to `ClubMembership`.
-
----
-
-# 22. SQUAD BASE
+# 20. CLUB PRESTIGE
 
 Suggested:
-
-```text
-SQUAD_BASE =
-    ATTACK     × 0.30
-  + MIDFIELD  × 0.28
-  + DEFENSE   × 0.27
-  + GK        × 0.15
-```
-
----
-
-# 23. SQUAD DEPTH
-
-Suggested:
-
-```text
-SQUAD_DEPTH =
-    second_unit_strength × 0.60
-  + third_unit_strength  × 0.25
-  + positional_coverage  × 0.15
-```
-
-Normalize:
-
-```text
-0–100
-```
-
----
-
-# 24. GENERIC SQUAD GENERATION
-
-The world initially contains generic players.
-
-They are real `Player` domain objects.
-
-Generation flow:
-
-```text
-Club target strength
-        ↓
-Squad distribution
-        ↓
-Primary position
-        ↓
-Player archetype
-        ↓
-Internal attributes
-        ↓
-Current Ability
-        ↓
-Potential
-        ↓
-Development Profile
-        ↓
-ClubMembership
-```
-
-Generic players may initially have limited identity/narrative information.
-
-They must nevertheless share the same fundamental football-player model as the future protagonist.
-
----
-
-# 25. PLAYER GENERATION AND CLUB DISTRIBUTION
-
-Generic players should NOT simply be generated as:
-
-```text
-club_strength ± small_random_number
-```
-
-Instead, the club strength defines a **distribution target**.
-
-A generated squad should contain:
-
-- elite starters where appropriate
-- strong rotation players
-- competent backups
-- lower-rated youth
-- meaningful player-level variance
-
-Strong clubs should generally have stronger squads.
-
-However:
-
-- weaker clubs may occasionally produce an exceptional player
-- strong clubs may contain weaker squad members
-- one player should not determine the entire club rating
-
----
-
-# 26. POSITIONAL ARCHETYPES
-
-Player generation must use position-specific archetypes.
-
-Examples:
-
-### ST FINISHER
-
-```text
-SHO high
-PAC high
-DRI high
-PHY moderate/high
-PAS moderate
-DEF low
-```
-
-### ST TARGET
-
-```text
-SHO high
-PHY very high
-PAS moderate
-DRI moderate
-PAC lower
-DEF low
-```
-
-### CM PLAYMAKER
-
-```text
-PAS very high
-MENTAL very high
-DRI high
-SHO moderate
-DEF moderate
-PAC moderate
-PHY moderate
-```
-
-### CB BALL PLAYING
-
-```text
-DEF very high
-PHY high
-PAS high
-PAC moderate
-DRI lower
-SHO low
-```
-
-Archetypes must be configurable in:
-
-```text
-player_archetypes.json
-```
-
----
-
-# 27. PLAYER SECONDARY POSITIONS
-
-Target approximate initial distribution:
-
-```text
-0 secondary positions → 45%
-1 secondary position  → 40%
-2 secondary positions → 15%
-```
-
-Secondary positions must respect compatibility rules.
-
-Examples:
-
-```text
-LW ↔ RW
-CM ↔ CAM
-CM ↔ DM
-CB ↔ DM
-LB ↔ LWB
-RB ↔ RWB
-```
-
-Do not generate implausible position conversions during initial world generation.
-
----
-
-# 28. CLUB PRESTIGE
-
-Prestige represents:
-
-> How important and historically significant a club is.
-
-Suggested formula:
 
 ```text
 PRESTIGE =
-    historical_success      × 0.35
-  + european_history        × 0.25
-  + domestic_history        × 0.15
-  + global_reputation       × 0.15
-  + fanbase                 × 0.10
+    historical_success × 0.35
+  + european_history   × 0.25
+  + domestic_history   × 0.15
+  + global_reputation  × 0.15
+  + fanbase            × 0.10
 ```
 
-All values normalized to 0–100.
+Prestige changes slowly over time.
 
 ---
 
-# 29. PRESTIGE EVOLUTION
-
-Prestige changes slowly.
-
-Suggested impacts:
-
-```text
-Champions League title   +2.0
-League title             +0.7
-European final           +1.0
-Major domestic cup       +0.4
-Major relegation         -1.5
-```
-
-Values are configurable starting points.
-
-Then:
-
-```text
-new_prestige =
-old_prestige + seasonal_change
-```
-
-Clamp:
-
-```text
-0–100
-```
-
-Prestige should change over years rather than individual matches.
-
----
-
-# 30. FINANCIAL POWER
-
-Financial power represents a club's ability to spend.
-
-Suggested model:
+# 21. CLUB FINANCIAL POWER
 
 ```text
 FINANCIAL_POWER =
-    revenue              × 0.35
-  + ownership_capacity   × 0.20
-  + league_money         × 0.20
-  + european_income      × 0.15
-  + commercial_power     × 0.10
-```
-
-All values:
-
-```text
-0–100
+    revenue             × 0.35
+  + ownership_capacity  × 0.20
+  + league_money        × 0.20
+  + european_income     × 0.15
+  + commercial_power    × 0.10
 ```
 
 This is not a full accounting simulator.
 
 ---
 
-# 31. FINANCIAL EVOLUTION
+# 22. CLUB ACADEMY
 
-Conceptual seasonal change:
+Academy quality influences youth-player probability distributions, not exact deterministic ratings.
 
-```text
-financial_change =
-    league_income
-  + european_income
-  + player_sales
-  + sponsorship_growth
-  - transfer_spending
-  - wage_burden
-  - poor_results_penalty
-```
-
-This belongs to later world simulation phases.
-
----
-
-# 32. ACADEMY QUALITY
-
-Suggested:
+Conceptual model:
 
 ```text
 ACADEMY_QUALITY =
@@ -1363,19 +800,7 @@ ACADEMY_QUALITY =
 
 ---
 
-# 33. ACADEMY AS TALENT DISTRIBUTION
-
-Academy quality changes the probability distribution of generated youth players.
-
-It does NOT directly determine an exact player rating.
-
-Exceptional RNG outcomes remain possible at smaller clubs.
-
----
-
-# 34. FACILITIES
-
-Suggested:
+# 23. CLUB FACILITIES
 
 ```text
 FACILITIES =
@@ -1384,167 +809,24 @@ FACILITIES =
   + youth_facilities    × 0.20
 ```
 
-Development modifier:
+Development modifier baseline:
 
 ```text
 development_modifier =
 1 + ((facilities - 50) / 500)
 ```
 
-Therefore:
-
-```text
-Facilities 100 → ×1.10
-Facilities 50  → ×1.00
-Facilities 0   → ×0.90
-```
-
 ---
 
-# 35. FAN PRESSURE
+# 24. LEAGUE SYSTEM
 
-Suggested:
-
-```text
-FAN_PRESSURE =
-    club_size       × 0.35
-  + prestige        × 0.25
-  + expectations    × 0.25
-  + media_attention × 0.15
-```
-
----
-
-# 36. DOMESTIC REPUTATION
-
-Suggested:
-
-```text
-DOMESTIC_REPUTATION =
-    domestic_titles  × 0.40
-  + league_success   × 0.30
-  + fanbase          × 0.15
-  + domestic_media  × 0.15
-```
-
----
-
-# 37. INTERNATIONAL REPUTATION
-
-Suggested:
-
-```text
-INTERNATIONAL_REPUTATION =
-    uefa_coefficient_normalized × 0.40
-  + european_titles             × 0.25
-  + european_appearances        × 0.15
-  + global_reputation           × 0.20
-```
-
----
-
-# 38. UEFA COEFFICIENT
-
-Store:
-
-```text
-uefa_coefficient_raw
-uefa_coefficient_normalized
-```
-
-Normalization:
-
-```text
-UEFA_NORMALIZED =
-100 ×
-(
-    club_uefa - dataset_min
-)
-/
-(
-    dataset_max - dataset_min
-)
-```
-
-Clamp:
-
-```text
-0–100
-```
-
----
-
-# 39. CLUB MOMENTUM
-
-Momentum represents current trajectory.
-
-Scale:
-
-```text
--100 → +100
-```
-
-Suggested formula:
-
-```text
-MOMENTUM =
-    previous_momentum  × 0.55
-  + result_momentum    × 0.25
-  + trophy_momentum    × 0.10
-  + transfer_momentum  × 0.05
-  + financial_momentum × 0.05
-```
-
-Full momentum evolution belongs to later phases.
-
----
-
-# 40. MOMENTUM NORMALIZATION
-
-```text
-MOMENTUM_NORMALIZED =
-    (momentum + 100) / 2
-```
-
-Therefore:
-
-```text
--100 → 0
-0    → 50
-+100 → 100
-```
-
----
-
-# 41. CLUB ATTRACTIVENESS
-
-Suggested:
-
-```text
-CLUB_ATTRACTIVENESS =
-    prestige                 × 0.30
-  + current_strength         × 0.25
-  + financial_power          × 0.15
-  + league_strength          × 0.10
-  + international_reputation × 0.10
-  + facilities               × 0.05
-  + momentum_normalized      × 0.05
-```
-
-Used later by the Transfer Engine.
-
----
-
-# 42. LEAGUE SYSTEM
-
-Each league contains:
+Each league contains conceptually:
 
 ```text
 id
 name
 country
 tier
-
 current_strength
 prestige
 financial_strength
@@ -1552,11 +834,7 @@ european_performance
 global_reputation
 ```
 
----
-
-# 43. LEAGUE STRENGTH
-
-Suggested:
+Suggested league strength:
 
 ```text
 LEAGUE_STRENGTH =
@@ -1569,60 +847,9 @@ LEAGUE_STRENGTH =
 
 ---
 
-# 44. LEAGUE EVOLUTION
+# 25. COUNTRY / NATIONAL TEAM
 
-Each season:
-
-```text
-new_league_strength =
-    current_strength × 0.70
-  + newly_calculated_strength × 0.30
-```
-
-This belongs to future world simulation.
-
----
-
-# 45. LEAGUE PRESTIGE
-
-```text
-LEAGUE_PRESTIGE =
-    historical_success        × 0.30
-  + european_success          × 0.25
-  + star_power                × 0.15
-  + domestic_competitiveness  × 0.15
-  + global_attention          × 0.15
-```
-
----
-
-# 46. LEAGUE FINANCIAL STRENGTH
-
-```text
-LEAGUE_FINANCIAL_STRENGTH =
-    broadcast_revenue × 0.35
-  + club_finances     × 0.30
-  + sponsorship       × 0.20
-  + attendance        × 0.15
-```
-
----
-
-# 47. LEAGUE GLOBAL REPUTATION
-
-```text
-GLOBAL_REPUTATION =
-    league_prestige        × 0.35
-  + international_success  × 0.25
-  + star_players           × 0.20
-  + media_attention        × 0.20
-```
-
----
-
-# 48. COUNTRY / NATIONAL TEAM SYSTEM
-
-Each country may contain:
+Countries may contain:
 
 ```text
 id
@@ -1632,67 +859,13 @@ fifa_points
 national_strength
 ```
 
----
-
-# 49. NATIONAL TEAM STRENGTH
-
-FIFA data is the initial reference.
-
-Conceptually:
-
-```text
-normalized_points =
-(
-    points - min_points
-)
-/
-(
-    max_points - min_points
-)
-```
-
-Possible transformed model:
-
-```text
-national_strength =
-100 × sqrt(normalized_points)
-```
-
-Then:
-
-```text
-clamp(0,100)
-```
-
-The exact transformation should remain configurable.
+FIFA data is the initial reference for national strength.
 
 ---
 
-# 50. NATIONAL TEAM EVOLUTION
+# 26. MANAGER SYSTEM
 
-After international matches:
-
-```text
-new_strength =
-old_strength × 0.90
-+
-performance_rating × 0.10
-```
-
-Major competition multipliers:
-
-```text
-World Cup             1.50
-European Championship 1.30
-Continental Cup       1.20
-Friendly              0.30
-```
-
----
-
-# 51. MANAGER SYSTEM
-
-Managers contain:
+Managers contain conceptually:
 
 ```text
 id
@@ -1707,9 +880,7 @@ youth_preference
 discipline
 ```
 
----
-
-# 52. MANAGER QUALITY
+Manager quality:
 
 ```text
 MANAGER_QUALITY =
@@ -1722,73 +893,23 @@ MANAGER_QUALITY =
 
 ---
 
-# 53. COMPETITION SYSTEM
+# 27. PLAYER DOMAIN
 
-Each competition:
-
-```text
-id
-name
-type
-country
-tier
-prestige
-strength
-```
-
-Types:
+There is exactly one fundamental football `Player` entity.
 
 ```text
-LEAGUE
-DOMESTIC_CUP
-EUROPEAN
-INTERNATIONAL
+Generic world player
+└── Player + ClubMembership
+
+Career protagonist
+└── Player + Career
 ```
+
+Do not create separate football models for generic and career players.
 
 ---
 
-# 54. COMPETITION PRESTIGE
-
-Suggested:
-
-```text
-Champions League       100
-Europa League           78
-Conference League       62
-Major domestic cup      75
-League title            80
-```
-
----
-
-# 55. PLAYER DOMAIN — OVERVIEW
-
-Football Life uses a single shared `Player` domain for:
-
-- Generic squad players
-- Career protagonists
-
-A Player is the football identity.
-
-A Career is the professional history.
-
-Preferred:
-
-```text
-Player
-   ↓
-ClubMembership
-   ↓
-Club
-
-Player
-   ↓
-Career
-```
-
----
-
-# 56. PLAYER IDENTITY
+# 28. PLAYER IDENTITY
 
 ```text
 id
@@ -1805,7 +926,7 @@ secondary_positions
 
 ---
 
-# 57. INTERNAL PLAYER ATTRIBUTES
+# 29. INTERNAL PLAYER ATTRIBUTES
 
 ## Pace
 
@@ -1840,7 +961,7 @@ curve
 agility
 balance
 ball_control
-dribbling
+dribblling
 reactions
 ```
 
@@ -1874,17 +995,11 @@ work_rate
 leadership
 ```
 
-All internal attributes:
-
-```text
-1–100
-```
+All internal attributes use 1–100.
 
 ---
 
-# 58. TOP-LEVEL GROUPS
-
-Visible groups:
+# 30. VISIBLE ATTRIBUTE GROUPS
 
 ```text
 PAC
@@ -1895,17 +1010,13 @@ DEF
 PHY
 ```
 
-Internal:
+MENTAL is derived separately.
 
-```text
-MENTAL
-```
-
-The visible groups are derived from internal attributes.
+The visible groups are derived from internal attributes and should not be duplicated as independent stored values when avoidable.
 
 ---
 
-# 59. MENTAL
+# 31. MENTAL
 
 ```text
 MENTAL =
@@ -1920,7 +1031,7 @@ MENTAL =
 
 ---
 
-# 60. CURRENT ABILITY
+# 32. CURRENT ABILITY
 
 ```text
 CURRENT_ABILITY =
@@ -1933,31 +1044,19 @@ CURRENT_ABILITY =
   + MENTAL × 0.10
 ```
 
-Clamp:
-
-```text
-1–100
-```
-
-Do not introduce weakness penalties during Phase 3/3.1 unless explicitly approved.
+Clamp to 1–100.
 
 ---
 
-# 61. POSITION-SPECIFIC OVR
+# 33. POSITION-SPECIFIC OVR
 
-Current Ability and OVR are separate.
+Current Ability is general quality.
 
-Example:
+OVR is position-specific effectiveness.
 
-```text
-Current Ability = 84
+Changing evaluated position must not mutate internal attributes.
 
-ST OVR  = 87
-CAM OVR = 83
-CM OVR  = 76
-```
-
-Starting weights:
+Starting examples:
 
 ### ST
 
@@ -2037,7 +1136,7 @@ MENTAL 10
 
 ---
 
-# 62. GOALKEEPER ATTRIBUTES
+# 34. GOALKEEPER ATTRIBUTES
 
 Goalkeepers:
 
@@ -2050,17 +1149,13 @@ speed
 goalkeeper_positioning
 ```
 
-GK uses a dedicated OVR formula.
-
-At this stage, goalkeeper behavior is not yet part of the Match Engine.
+GK uses a dedicated OVR calculation.
 
 ---
 
-# 63. PLAYER ARCHETYPES
+# 35. PLAYER ARCHETYPES
 
-Archetypes are configurable.
-
-Examples:
+Generation archetypes include:
 
 ```text
 BALANCED
@@ -2074,15 +1169,11 @@ SHOT_STOPPER
 SWEEPER_KEEPER
 ```
 
-Archetype affects initial attribute distributions.
-
-Archetype is descriptive generation metadata.
-
-It is not a career behavior system.
+These describe generation tendencies and are not career archetypes.
 
 ---
 
-# 64. ROLE SYSTEM
+# 36. ROLE SYSTEM
 
 Role definitions contain:
 
@@ -2110,7 +1201,7 @@ INVERTED_FULL_BACK
 
 ---
 
-# 65. ROLE ATTRIBUTE FIT
+# 37. ROLE ATTRIBUTE FIT
 
 ```text
 ATTRIBUTE_FIT =
@@ -2119,7 +1210,7 @@ ATTRIBUTE_FIT =
 
 ---
 
-# 66. ROLE FAMILIARITY
+# 38. ROLE FAMILIARITY
 
 Range:
 
@@ -2127,7 +1218,7 @@ Range:
 0–100
 ```
 
-Initial target:
+Initial targets:
 
 ```text
 Primary role      80–95
@@ -2135,11 +1226,11 @@ Secondary role    55–80
 Unnatural role    20–50
 ```
 
-Role familiarity does not alter base attributes.
+Role familiarity does not directly mutate base attributes.
 
 ---
 
-# 67. ROLE EFFECTIVENESS
+# 39. ROLE EFFECTIVENESS
 
 ```text
 ROLE_EFFECTIVENESS =
@@ -2147,15 +1238,13 @@ ROLE_EFFECTIVENESS =
   + ROLE_FAMILIARITY × 0.30
 ```
 
-Do not multiply OVR directly by familiarity.
+Do not directly multiply OVR by familiarity.
 
 ---
 
-# 68. TRAITS / PLAYSTYLES
+# 40. TRAITS / PLAYSTYLES
 
-Phase 3/3.1 stores traits as configurable IDs.
-
-Examples:
+Configurable IDs include:
 
 ```text
 FINESSE_SHOT
@@ -2183,13 +1272,11 @@ Initial variable distribution:
 3 traits → ~5%
 ```
 
-Traits should be compatible with player attributes where practical.
-
-No match effects yet.
+Traits are contextual behaviors, not universal OVR bonuses.
 
 ---
 
-# 69. PERSONALITY
+# 41. PERSONALITY
 
 ```text
 ambition
@@ -2201,19 +1288,13 @@ leadership
 sociability
 ```
 
-Range:
+Range: 0–100.
 
-```text
-0–100
-```
-
-Phase 3 defines and persists personality data.
-
-Behavioral consequences belong to later phases.
+Personality consequences are implemented only in later phases.
 
 ---
 
-# 70. POTENTIAL
+# 42. POTENTIAL
 
 Rule:
 
@@ -2223,30 +1304,13 @@ potential >= current_ability
 
 Potential is a theoretical ceiling, not a guarantee.
 
-The distribution must contain:
-
-- low-ceiling players
-- normal professionals
-- strong prospects
-- high-potential players
-- rare wonderkids
-- extremely rare generational talents
-
-Potential 95+ must be rare.
-
-Potential 100 must be exceptional.
+Potential 95+ must be rare and 100 exceptional.
 
 ---
 
-# 71. DEVELOPMENT RATE
+# 43. DEVELOPMENT RATE
 
-Range:
-
-```text
-0–100
-```
-
-Interpretation:
+Range: 0–100.
 
 ```text
 0–30    Very slow
@@ -2256,11 +1320,11 @@ Interpretation:
 86–100  Exceptional
 ```
 
-Development Rate is predisposition, not annual growth.
+Development Rate is not annual growth.
 
 ---
 
-# 72. DEVELOPMENT PROFILES
+# 44. DEVELOPMENT PROFILES
 
 Profiles:
 
@@ -2276,67 +1340,11 @@ ATHLETIC
 LATE_BLOOMER
 ```
 
-Profiles modify development distribution.
-
-Example:
-
-### FINISHER
-
-```text
-PAC 1.05
-SHO 1.30
-PAS 1.00
-DRI 1.10
-DEF 0.90
-PHY 1.00
-MENTAL 1.05
-```
-
-### PLAYMAKER
-
-```text
-PAC 0.95
-SHO 0.95
-PAS 1.30
-DRI 1.15
-DEF 0.95
-PHY 0.90
-MENTAL 1.25
-```
-
-### ATHLETIC
-
-```text
-PAC 1.30
-SHO 1.00
-PAS 0.95
-DRI 1.10
-DEF 1.00
-PHY 1.30
-MENTAL 0.95
-```
-
-### DEFENSIVE
-
-```text
-PAC 1.00
-SHO 0.85
-PAS 1.00
-DRI 0.90
-DEF 1.30
-PHY 1.20
-MENTAL 1.10
-```
-
-### LATE_BLOOMER
-
-Primarily modifies the timing/age curve rather than directly adding permanent attribute bonuses.
+They determine development direction rather than fixed yearly bonuses.
 
 ---
 
-# 73. PLAYER STATE
-
-Dynamic state:
+# 45. PLAYER STATE
 
 ```text
 confidence
@@ -2348,19 +1356,13 @@ happiness
 reputation
 ```
 
-Range:
+Range 0–100.
 
-```text
-0–100
-```
-
-Phase 3 initializes and validates it.
-
-Later phases evolve it.
+Phase 3 initializes and validates state. Later systems evolve it.
 
 ---
 
-# 74. CLUB MEMBERSHIP
+# 46. CLUB MEMBERSHIP
 
 ```text
 ClubMembership
@@ -2371,15 +1373,13 @@ ClubMembership
 └── end_date
 ```
 
-Role belongs to membership.
-
-Player identity survives transfers.
+Role belongs to membership, not Player identity.
 
 ---
 
-# 75. CAREER DOMAIN
+# 47. CAREER DOMAIN
 
-A Career contains the professional history of a Player.
+Career contains professional history.
 
 Conceptually:
 
@@ -2401,95 +1401,31 @@ Career
 └── narrative
 ```
 
-Phase 4 implements only the initial Career and Season concepts.
+Only the parts assigned to each phase may be implemented.
 
 ---
 
-# 76. PHASE 4 CAREER OBJECTIVE
+# 48. PHASE 4 CAREER ENGINE
 
-Phase 4 transforms the static Player into a progressing football career.
-
-The central loop is:
+Phase 4 transforms a static Player into a progressing career.
 
 ```text
 Career
-   ↓
+ ↓
 Season Start
-   ↓
-Season State
-   ↓
+ ↓
 Development
-   ↓
+ ↓
 Season End
-   ↓
+ ↓
 Snapshot
-   ↓
+ ↓
 Next Season
 ```
 
-The Match Engine does not yet exist in Phase 4.
-
-Therefore performance must initially be represented by an abstract/configurable seasonal input rather than simulated matches.
-
 ---
 
-# 77. PHASE 4 SEASON FLOW
-
-Each season:
-
-```text
-Season initialization
-        ↓
-Age
-        ↓
-Career phase
-        ↓
-Club context
-        ↓
-Manager context
-        ↓
-Training environment
-        ↓
-Playing-time context
-        ↓
-Performance context
-        ↓
-Development calculation
-        ↓
-Attribute changes
-        ↓
-Current Ability recalculation
-        ↓
-OVR recalculation
-        ↓
-Player state update
-        ↓
-Peak tracking
-        ↓
-Season snapshot
-        ↓
-Next season
-```
-
-Do not implement transfers, injuries or matches yet.
-
----
-
-# 78. DEVELOPMENT BUDGET
-
-The central output of the yearly development system is:
-
-```text
-DEVELOPMENT_BUDGET
-```
-
-It represents:
-
-> How much development opportunity the player receives during that season.
-
-It is NOT directly equal to OVR growth.
-
-Conceptual formula:
+# 49. DEVELOPMENT BUDGET
 
 ```text
 DEVELOPMENT_BUDGET =
@@ -2505,61 +1441,30 @@ DEVELOPMENT_BUDGET =
   × RANDOM_FACTOR
 ```
 
-All major coefficients must be configurable.
+Current calibrated baseline:
+
+```text
+BASE_RATE = 4.0
+```
 
 ---
 
-# 79. BASE DEVELOPMENT RATE
+# 50. POTENTIAL FACTOR
 
-The base development rate is configuration-driven.
-
-A recommended initial abstraction:
+Initial Phase 4 model:
 
 ```text
-BASE_RATE = small seasonal budget
+potential_gap = potential - current_ability
+potential_factor = clamp(potential_gap / 30.0, 0, 1)
 ```
 
-The exact numeric value must be tuned through balance testing.
-
-Do not hardcode arbitrary OVR increases.
+Keep configurable.
 
 ---
 
-# 80. POTENTIAL FACTOR
+# 51. AGE FACTOR
 
-Based on:
-
-```text
-potential_gap =
-potential - current_ability
-```
-
-The potential factor must:
-
-- be high when meaningful room exists
-- decrease as current ability approaches potential
-- reach approximately zero at the potential ceiling
-
-The exact curve should be configurable.
-
-A simple starting model:
-
-```text
-potential_factor =
-clamp(
-    potential_gap / max_gap,
-    0,
-    1
-)
-```
-
-Use a smoothing function if required during balance testing.
-
----
-
-# 81. AGE FACTOR
-
-Starting baseline:
+Baseline:
 
 ```text
 16–18 → 1.40
@@ -2571,202 +1476,124 @@ Starting baseline:
 34+   → 0.10
 ```
 
-These values represent development opportunity.
-
-They are not annual OVR changes.
+The season beginning at age N uses the age-N factor.
 
 ---
 
-# 82. PLAYING TIME FACTOR
+# 52. PLAYING TIME FACTOR
 
-Initial configurable baseline:
+Phase 4 neutral baseline:
 
 ```text
-0–300 minutes       → 0.30
-301–750             → 0.55
-751–1400            → 0.80
-1401–2200           → 1.00
-2201–3000           → 1.05
-3000+               → 1.00
+0–300       → 0.30
+301–750     → 0.55
+751–1400    → 0.80
+1401–2200   → 1.00
+2201–3000   → 1.05
+3000+       → 1.00
 ```
 
-The purpose is to reward meaningful playing time without producing runaway growth from excessive minutes.
-
-The full fatigue system belongs to later phases.
+Phase 5 replaces the neutral minutes input with actual match-derived minutes.
 
 ---
 
-# 83. ENVIRONMENT FACTOR
+# 53. ENVIRONMENT FACTOR
 
-Environment represents:
+Conceptually based on:
 
-- Club facilities
-- Training environment
-- Manager development quality
+- facilities
+- manager.player_development
 
-A future baseline may use:
+Use small contextual modifiers so environment matters without dominating development.
+
+---
+
+# 54. PROFESSIONALISM FACTOR
+
+Baseline:
 
 ```text
-environment_factor =
-normalized combination of:
-facilities
-manager.player_development
+low professionalism     → ~0.92
+average                  → ~1.00
+high                     → ~1.08
 ```
-
-Keep the modifier relatively small.
-
-Environment should matter without determining a player's destiny.
 
 ---
 
-# 84. PROFESSIONALISM FACTOR
+# 55. PERFORMANCE FACTOR
 
-Professionalism comes from Personality.
-
-Use a small modifier rather than a huge multiplier.
-
-Initial conceptual range:
+Phase 4 neutral baseline:
 
 ```text
-Low professionalism     → ~0.92
-Average professionalism → ~1.00
-High professionalism    → ~1.08
+average_rating = 6.8
+performance_factor = 1.0
 ```
 
-Do not let Personality dominate development.
-
----
-
-# 85. PERFORMANCE FACTOR
-
-Phase 4 does not have a Match Engine.
-
-Therefore performance must initially be represented by an abstract seasonal performance input or neutral baseline.
-
-The architecture must allow Phase 5 to replace this with actual match-derived performance.
-
-Possible future input:
+Formula:
 
 ```text
-season_rating
-minutes
-position_context
-team_context
+performance_factor = 1.0 + ((average_rating - 6.8) / 10.0)
 ```
 
-Do NOT implement the Match Engine inside Phase 4.
+Phase 5 provides actual seasonal average rating.
 
 ---
 
-# 86. PLAYER STATE FACTOR
+# 56. PLAYER STATE FACTOR
 
-Player State may later influence development through:
+Use a small aggregate of relevant state values.
 
-- Confidence
-- Morale
-- Fitness
-- Fatigue
-- Happiness
+Phase 4 baseline remains simple.
 
-Phase 4 should use only a simple configurable aggregate.
-
-Do not build complex state evolution before Phase 6.
+Later phases can make state dynamic.
 
 ---
 
-# 87. RANDOM FACTOR
+# 57. RANDOM FACTOR
 
-Use deterministic RNG.
-
-Initial range:
+Initial baseline:
 
 ```text
 0.85–1.15
 ```
 
-The same seed must always produce the same outcome.
-
-Randomness should create variation, not invalidate the broader career logic.
+Must be deterministic through seeded RNG.
 
 ---
 
-# 88. DEVELOPMENT PROFILE DISTRIBUTION
+# 58. TWO-STAGE DEVELOPMENT ALLOCATION
 
-The Development Profile determines how the annual development budget is allocated.
-
-Example:
+Stage 1:
 
 ```text
-development_budget = 1.8
+Development Budget
+        ↓
+PAC / SHO / PAS / DRI / DEF / PHY / MENTAL
 ```
 
-FINISHER might distribute it approximately toward:
+Stage 2:
 
 ```text
-SHO
-DRI
-PAC
-MENTAL
-PHY
-PAS
-DEF
+Group Budget
+        ↓
+Internal attribute multipliers
+        ↓
+Normalized internal deltas
+        ↓
+Soft caps
 ```
 
-according to profile weights.
+Important semantic rule:
 
-The result is a **budget distribution**, not fixed attribute increments.
+> A Group Budget represents intended weighted-average growth of that visible group, not the sum of raw sub-attribute points.
+
+The normalized internal deltas must preserve the calculation-weighted group average.
 
 ---
 
-# 89. ATTRIBUTE DISTRIBUTION
+# 59. INTERNAL ATTRIBUTE SOFT CAPS
 
-A development budget should be distributed across relevant attribute groups.
-
-Example:
-
-```text
-1.8 budget
-↓
-SHO +0.8
-DRI +0.4
-PAC +0.3
-MENTAL +0.2
-PHY +0.1
-```
-
-The exact distribution is profile-driven and deterministic.
-
----
-
-# 90. INTERNAL ATTRIBUTE DEVELOPMENT
-
-Changing a visible group does not automatically add the same number to every internal attribute.
-
-For example:
-
-```text
-SHO +0.8
-```
-
-may produce:
-
-```text
-finishing   +0.5
-shot_power  +0.2
-long_shots  +0.1
-```
-
-This preserves internal player identity.
-
-The internal distribution is configuration-driven and may consider the player's existing strengths/weaknesses.
-
----
-
-# 91. ATTRIBUTE SOFT CAPS
-
-Attribute growth becomes increasingly difficult at very high values.
-
-Initial conceptual multipliers:
+Baseline development resistance:
 
 ```text
 <80     ×1.00
@@ -2776,108 +1603,49 @@ Initial conceptual multipliers:
 98+     ×0.10
 ```
 
-These are development resistance multipliers, not hard caps.
+Soft caps are not hard caps.
 
-The goal is to make:
+---
+
+# 60. DECLINE
+
+Decline operates directly on internal attributes.
+
+Category priority:
 
 ```text
-98 → 99
+Physical > Technical > Mental
 ```
 
-meaningfully harder than:
+Physical attributes decline faster.
+
+Technical attributes decline slowly.
+
+Mental attributes normally remain stable or decline very slowly.
+
+The system should allow a veteran to transform rather than simply collapse.
+
+---
+
+# 61. CAREER PHASE
+
+Age-first phase hierarchy:
 
 ```text
-68 → 69
+YOUTH       <18
+EARLY_PRO   18–20
+DEVELOPMENT 21–23
+PRIME       24–28
+LATE_PRIME  29–31
+DECLINE     32–34
+VETERAN     35+
 ```
 
 ---
 
-# 92. DECLINE
+# 62. PEAK TRACKING
 
-Decline should not simply subtract a fixed number from OVR every year.
-
-As players age, decline should primarily affect vulnerable attributes.
-
-Physical attributes should generally decline earlier:
-
-```text
-Pace
-Acceleration
-Agility
-```
-
-while many technical and mental attributes can remain stable longer:
-
-```text
-Passing
-Vision
-Composure
-Decision Making
-```
-
-This allows natural player transformation.
-
-Example:
-
-```text
-Age 27
-RW
-PAC 94
-DRI 91
-
-Age 34
-CAM
-PAC 76
-DRI 90
-PAS 88
-MENTAL 92
-```
-
-The player has evolved rather than simply becoming worse.
-
----
-
-# 93. DECLINE CURVE
-
-Phase 4 should provide a decline function/configuration separate from the development curve.
-
-A player's decline should generally become more important after their peak.
-
-The exact curve must be configurable and tested statistically.
-
-Do not force identical decline for every player.
-
----
-
-# 94. CAREER PHASE
-
-The player can have a derived career phase:
-
-```text
-YOUTH
-EARLY_PRO
-DEVELOPMENT
-PRIME
-LATE_PRIME
-DECLINE
-VETERAN
-```
-
-Career Phase is derived from:
-
-- Age
-- Current Ability
-- Potential
-- Development
-- Career context
-
-It is not simply an age label.
-
----
-
-# 95. PEAK TRACKING
-
-Career must track:
+Track:
 
 ```text
 peak_current_ability
@@ -2887,21 +1655,13 @@ peak_position
 peak_club
 ```
 
-Whenever the player reaches a new high:
-
-```text
-new_peak
-```
-
-should be stored.
-
-This will later support narrative generation.
+Whenever a new peak is reached, update peak information.
 
 ---
 
-# 96. SEASON SNAPSHOT
+# 63. SEASON SNAPSHOT
 
-Each completed season should produce a structured snapshot.
+A season snapshot preserves enough data for debugging, replay, narrative and analysis.
 
 Example:
 
@@ -2924,338 +1684,1468 @@ Example:
 }
 ```
 
-Snapshot should preserve enough information for:
-
-- Debugging
-- Career replay
-- Narrative
-- Balance analysis
-- Future community branching
-
 ---
 
-# 97. CAREER INITIALIZATION
-
-Starting a career must establish:
-
-```text
-Player
-↓
-Starting Club
-↓
-Starting ClubMembership
-↓
-Starting Age
-↓
-Initial Season
-↓
-Initial Career Phase
-↓
-Initial Snapshot
-```
-
-The career should inherit the player's existing world seed and deterministic state.
-
----
-
-# 98. CAREER SIMULATION DETERMINISM
+# 64. PHASE 4 DETERMINISM
 
 Given:
 
 ```text
 career seed
 +
-player seed
+player seed/state
 +
 world state
 +
 rules version
 ```
 
-the same career simulation must produce:
+the same career must produce the same seasonal state, development and snapshots.
+
+---
+
+# 65. CAREER ARCHETYPE CLASSIFIER
+
+Phase 4.1B uses a pure multi-label classifier.
+
+Supported tags:
 
 ```text
-same seasons
-same development
-same snapshots
-same peak
-same final state
+WONDERKID
+FAILED_WONDERKID
+SUPERSTAR
+LONG_PRIME
+LATE_BLOOMER
+EARLY_DECLINER
+SOLID_PRO
 ```
 
----
+Multiple major tags can coexist.
 
-# 99. PHASE 4 DOES NOT HAVE A MATCH ENGINE
-
-This is a critical boundary.
-
-Phase 4 must NOT calculate:
-
-- Goals
-- Assists
-- Match ratings
-- Opponent results
-- League tables
-- Cup results
-
-Those belong to Phase 5.
-
-Performance in Phase 4 must therefore use an abstract or neutral seasonal input.
+`SOLID_PRO` is a fallback only when no major archetype is detected.
 
 ---
 
-# 100. PHASE 4 CAREER STATE
+# 66. CAREER ARCHETYPE RULES
 
-At the end of each season, preserve:
+Current empirical configuration:
 
 ```text
-age
-club
-position
+WONDERKID:
+    starting_age <= 17
+    AND starting_ca >= P80 threshold
+    AND potential >= P80 threshold
+
+FAILED_WONDERKID:
+    starting_age <= 17
+    AND potential >= P85 threshold
+    AND potential_realization_pct <= 82
+
+SUPERSTAR:
+    peak_ovr >= 88
+
+LONG_PRIME:
+    peak_age >= 27
+    AND seasons_within_98_percent_of_peak >= 19
+
+LATE_BLOOMER:
+    peak_age >= 28
+    AND post_age_24_ca_growth >= 1.5
+
+EARLY_DECLINER:
+    peak_age <= 29
+    AND peak_to_final_ca_decline >= 3.0
+```
+
+Thresholds are configurable.
+
+The classifier must not modify simulation outcomes.
+
+---
+
+# 67. PHASE 5 — MATCH ENGINE OVERVIEW
+
+Phase 5 introduces the match-performance loop.
+
+Core flow:
+
+```text
+Player
++
+Club
++
+Role
++
+State
++
+Opponent
++
+MatchContext
+        ↓
+Match Engine
+        ↓
+Match Result
++
+Minutes
++
+Goals
++
+Assists
++
+Player Ratings
+        ↓
+Season Performance
+        ↓
+Career Engine
+        ↓
+Development
+```
+
+Phase 5 must remain separate from Career Engine.
+
+The Match Engine produces football performance.
+
+The Career Engine interprets that performance for development.
+
+---
+
+# 68. PHASE 5 INTERNAL STAGES
+
+Phase 5 is developed incrementally:
+
+```text
+5A — Match Domain
+5B — Lineup + Team Strength
+5C — Match Resolution
+5D — Player Performance
+5E — Season Aggregation
+5F — Career Integration
+```
+
+Never implement all five subphases in one pass unless explicitly requested.
+
+---
+
+# 69. PHASE 5A — MATCH DOMAIN
+
+Create pure domain objects for:
+
+```text
+MatchContext
+MatchResult
+PlayerMatchPerformance
+MatchEvent
+```
+
+## MatchContext
+
+Minimum conceptual fields:
+
+```text
+competition
+competition_importance
+home_club
+away_club
+home_advantage
+match_importance
+rivalry_factor
+seed
+```
+
+No persistent injuries or future transfer state are required.
+
+## MatchResult
+
+Minimum fields:
+
+```text
+home_score
+away_score
+home_xg
+away_xg
+possession
+shots
+shots_on_target
+player_performances
+events
+```
+
+## PlayerMatchPerformance
+
+Minimum fields:
+
+```text
+player_id
+minutes
+rating
+goals
+assists
+shots
+shots_on_target
+key_passes
+tackles
+interceptions
+clearances
 role
-current_ability
-potential
-development_rate
-development_profile
-attributes
-player_state
-career_phase
-peak_data
-season_snapshot
+position
+match_influence
 ```
 
----
+## MatchEvent
 
-# 101. PHASE 4 ACCEPTANCE TEST
-
-Phase 4 is complete when the system can:
+Possible events:
 
 ```text
-Create Career
-     ↓
-Start at configured age
-     ↓
-Advance one season
-     ↓
-Calculate development budget
-     ↓
-Apply development
-     ↓
-Recalculate attributes
-     ↓
-Recalculate Current Ability
-     ↓
-Recalculate OVR
-     ↓
-Update age
-     ↓
-Update career phase
-     ↓
-Track peak
-     ↓
-Create season snapshot
+goal
+assist
+yellow_card
+red_card
+substitution
+missed_chance
+big_save
+key_pass
+great_defensive_action
 ```
 
-It must support repeated seasons.
-
-It must remain deterministic.
-
-It must not require the Match Engine.
+Persistent injuries remain outside Phase 5.
 
 ---
 
-# 102. PHASE 4 BALANCE TESTING
+# 70. PHASE 5B — LINEUP ENGINE
 
-Before moving to Phase 5, run many isolated careers without matches.
+The Lineup Engine selects the XI using:
+
+```text
+OVR
++
+Role Effectiveness
++
+Form
++
+Fitness
++
+Manager Preference
++
+Rotation
+```
+
+Starting conceptual selection score:
+
+```text
+selection_score =
+    OVR                × 0.50
+  + role_effectiveness × 0.20
+  + form               × 0.10
+  + fitness            × 0.10
+  + manager_preference × 0.10
+```
+
+Values are configurable.
+
+---
+
+# 71. FORMATION PRESETS
+
+Initial formation presets may include:
+
+```text
+4-3-3
+4-2-3-1
+4-4-2
+3-5-2
+3-4-3
+4-1-4-1
+```
+
+Formation is configuration, not a full tactical AI system.
+
+Managers may prefer formations/styles.
+
+---
+
+# 72. TACTICAL STYLES
+
+Initial manager styles may include:
+
+```text
+ATTACKING
+BALANCED
+POSSESSION
+COUNTER
+DEFENSIVE
+YOUTH
+```
+
+Styles modify context modestly.
+
+They must not dominate player quality.
+
+---
+
+# 73. TACTICAL FIT
+
+Tactical Fit is influenced by:
+
+- correct position
+- Role Familiarity
+- manager style
+- formation suitability
+
+Scale:
+
+```text
+0–100
+```
+
+High tactical fit should provide a moderate advantage.
+
+---
+
+# 74. XI QUALITY
+
+Conceptual baseline:
+
+```text
+XI Quality = weighted average of starting XI effectiveness
+```
+
+Suggested line weights:
+
+```text
+GK      10%
+DEF     30%
+MID     30%
+ATT     30%
+```
+
+Configuration may later refine these.
+
+---
+
+# 75. EFFECTIVE TEAM STRENGTH
+
+Initial model:
+
+```text
+effective_team_strength =
+    XI_quality          × 0.65
+  + club_strength       × 0.15
+  + manager_quality     × 0.05
+  + tactical_fit        × 0.05
+  + form_factor         × 0.05
+  + fitness_factor      × 0.05
+```
+
+The weights are initial calibration values and must remain configurable.
+
+---
+
+# 76. HOME ADVANTAGE
+
+Initial baseline:
+
+```text
+home_advantage = +3 strength points
+```
+
+Home advantage modifies probability rather than guaranteeing victory.
+
+---
+
+# 77. MATCH WIN PROBABILITY
+
+A continuous probability function should be used.
+
+Conceptual:
+
+```text
+strength_difference =
+    home_effective_strength
+  - away_effective_strength
+  + home_advantage
+```
+
+Then:
+
+```text
+win_bias =
+    1 / (1 + exp(-strength_difference / scale))
+```
+
+The scale parameter is configurable.
+
+Strong teams should be favored, not guaranteed to win.
+
+---
+
+# 78. EXPECTED GOALS
+
+The engine uses expected goals as an intermediate abstraction.
+
+Conceptual:
+
+```text
+home_xG =
+    base_home_xG
+  × home_attack_factor
+  × away_defensive_factor
+
+away_xG =
+    base_away_xG
+  × away_attack_factor
+  × home_defensive_factor
+```
+
+The exact formulas and baselines are configurable and must be calibrated statistically.
+
+---
+
+# 79. GOAL GENERATION
+
+Final goals may be sampled from a suitable discrete distribution, initially Poisson or another transparent alternative.
+
+Requirements:
+
+- low-score outcomes should be common
+- high-score outliers should be possible
+- strong teams should generally generate higher xG
+- upsets must remain possible
+
+The same match seed must reproduce the same result.
+
+---
+
+# 80. ATTACK FACTOR
+
+Attack factor should be influenced by:
+
+```text
+attack quality
+midfield quality
+role effectiveness
+form
+fitness
+```
+
+Do not base attacking output on OVR alone.
+
+---
+
+# 81. DEFENSIVE FACTOR
+
+Defensive factor should be influenced by:
+
+```text
+defense quality
+goalkeeper quality
+midfield protection
+tactical fit
+form
+fitness
+```
+
+Goalkeepers use their dedicated attributes and GK OVR.
+
+---
+
+# 82. MATCH VARIANCE
+
+The engine must include deterministic controlled variance.
+
+Variance may influence:
+
+- chance creation
+- finishing
+- goalkeeper saves
+- player performance
+- match outcome
+
+Variance must not erase team quality completely.
+
+---
+
+# 83. POSSESSION
+
+Possession may be derived from:
+
+```text
+midfield quality
++
+tactical style
++
+tactical fit
++
+match variance
+```
+
+Do not simulate every possession event.
+
+---
+
+# 84. CHANCE GENERATION
+
+The engine should derive:
+
+```text
+shots
+shots_on_target
+big_chances
+```
+
+from xG and configured chance-distribution rules.
+
+---
+
+# 85. PLAYER CHANCE DISTRIBUTION
+
+Offensive chances are distributed based on:
+
+```text
+position
+OVR
+Role Effectiveness
+SHO
+PAC
+DRI
+PAS
+MENTAL
+Form
+Fitness
+```
+
+A player with strong attacking characteristics should generally receive more relevant opportunities.
+
+---
+
+# 86. PLAYER CHANCE SHARE
+
+Conceptually:
+
+```text
+chance_share_i =
+    attacking_contribution_i
+    /
+    Σ attacking_contribution
+```
+
+Then:
+
+```text
+Σ chance_share = 1
+```
+
+Example distribution:
+
+```text
+ST   32%
+LW   22%
+RW   18%
+CAM  15%
+CM    8%
+Other 5%
+```
+
+Actual values must emerge from lineups and player profiles.
+
+---
+
+# 87. GOAL CONVERSION
+
+Goal conversion for an individual chance may depend on:
+
+```text
+finishing
+shot_power
+composure
+positioning
+role
+chance_quality
+goalkeeper
+```
+
+Do not add universal OVR bonuses.
+
+---
+
+# 88. ASSISTS
+
+Assist generation should use:
+
+```text
+vision
+short_passing
+long_passing
+crossing
+creativity
+role
+chance creation
+```
+
+Playmakers should generally generate more assists than defensive players with similar overall quality.
+
+---
+
+# 89. DEFENSIVE CONTRIBUTIONS
+
+Structured defensive statistics may include:
+
+```text
+tackles
+interceptions
+clearances
+recoveries
+blocks
+```
+
+These do not require per-action simulation.
+
+They can be generated statistically from the player context.
+
+---
+
+# 90. PLAYER MATCH INFLUENCE
+
+Conceptual inputs:
+
+```text
+OVR
+Role Effectiveness
+Form
+Fitness
+Attributes
+Traits
+Player State
+Match variance
+```
+
+Match influence should be a latent value used to derive performance statistics and rating.
+
+---
+
+# 91. TRAITS IN MATCH ENGINE
+
+Traits gain contextual effects in Phase 5.
+
+Examples:
+
+```text
+FINESSE_SHOT
+→ improved finesse-shot conversion in applicable chances
+
+RAPID
+→ improved transition/space situations
+
+AERIAL
+→ improved aerial duel/chance performance
+
+CREATIVE
+→ improved chance creation
+
+BIG_GAME_PLAYER
+→ small bonus in high-importance matches
+
+COMPOSED
+→ improved performance under pressure
+
+LEADER
+→ small contextual team effect
+```
+
+Traits must never provide flat universal OVR increases.
+
+---
+
+# 92. PLAYER STATE IN MATCH ENGINE
+
+State can modestly affect match effectiveness:
+
+```text
+confidence
+morale
+form
+fitness
+fatigue
+happiness
+reputation
+```
+
+Do not allow state factors to overpower actual football ability.
+
+---
+
+# 93. MATCH RATING
+
+Base rating:
+
+```text
+6.0
+```
+
+Possible modifiers include:
+
+```text
+goal
+assist
+key_pass
+big_chance_created
+defensive_actions
+major_mistake
+team_result
+minutes
+```
+
+Illustrative starting values:
+
+```text
+Goal               +0.90
+Assist             +0.60
+Key pass           +0.08
+Big chance created +0.12
+Tackle             +0.03
+Interception       +0.03
+Major mistake      -0.40
+```
+
+All values must be configurable and statistically calibrated.
+
+---
+
+# 94. ROLE-CONTEXTUAL RATING
+
+The importance of statistics depends on role/position.
+
+Examples:
+
+- goals matter heavily for forwards
+- chance creation matters heavily for playmakers
+- tackles/interceptions matter more for defenders
+- saves matter heavily for goalkeepers
+
+A single universal rating formula is not required if role-specific contribution weights are configured cleanly.
+
+---
+
+# 95. MINUTES
+
+Match Engine produces actual minutes:
+
+```text
+0
+1–15
+16–30
+31–60
+61–75
+76–89
+90
+```
+
+Minutes depend on:
+
+```text
+starter status
+fitness
+form
+manager rotation
+match importance
+substitution logic
+```
+
+---
+
+# 96. SUBSTITUTIONS
+
+Initial simplified substitution logic may use:
+
+```text
+low stamina
+poor performance
+match state
+manager style
+match importance
+```
+
+Examples:
+
+```text
+Poor performance late
+→ higher substitution probability
+
+Winning late
+→ increased defensive substitution probability
+
+Losing late
+→ increased attacking substitution probability
+```
+
+Do not build advanced tactical AI.
+
+---
+
+# 97. MATCH IMPORTANCE
+
+Scale:
+
+```text
+0–100
+```
+
+Suggested references:
+
+```text
+League normal            40
+League rivalry           60
+Domestic cup             55
+European group           65
+European knockout        80
+Semi-final               90
+Final                   100
+```
+
+Values are configurable.
+
+---
+
+# 98. COMPETITION CONTEXT
+
+Phase 5 may use a minimal competition context:
+
+```text
+league
+ domestic cup
+european
+international
+```
+
+Each match should know:
+
+```text
+competition type
+importance
+home/away
+```
+
+Full realistic scheduling remains outside early Phase 5 if not required.
+
+---
+
+# 99. SEASON SCHEDULING BASELINE
+
+Initial approximate match counts:
+
+```text
+League          ~34–38
+Domestic Cup     0–8
+European         0–15
+International    0–12
+```
+
+These are configurable ranges, not hardcoded real-world schedules.
+
+---
+
+# 100. SEASON PERFORMANCE AGGREGATION
+
+Aggregate individual match results into:
+
+```text
+SeasonPerformance
+```
+
+Suggested fields:
+
+```text
+appearances
+starts
+substitute_appearances
+minutes
+goals
+assists
+average_rating
+shots
+shots_on_target
+key_passes
+defensive_actions
+clean_sheets
+```
+
+The aggregation layer remains pure domain logic.
+
+---
+
+# 101. PERFORMANCE FACTOR INTEGRATION
+
+Convert season average rating into the Career Engine's Performance Factor.
+
+Initial formula:
+
+```text
+performance_factor =
+    clamp(
+        1.0 + ((average_rating - 6.8) / 10.0),
+        0.80,
+        1.20
+    )
+```
+
+Examples:
+
+```text
+6.0 → 0.92
+6.8 → 1.00
+7.5 → 1.07
+8.2 → 1.14
+```
+
+The Match Engine produces the rating; Career Engine consumes the aggregated factor.
+
+---
+
+# 102. PLAYING TIME INTEGRATION
+
+The Match Engine's season minutes replace the Phase 4 neutral value.
+
+Career Engine then evaluates:
+
+```text
+0–300       → 0.30
+301–750     → 0.55
+751–1400    → 0.80
+1401–2200   → 1.00
+2201–3000   → 1.05
+3000+       → 1.00
+```
+
+---
+
+# 103. CAREER FEEDBACK LOOP
+
+The complete feedback loop becomes:
+
+```text
+Player
+  ↓
+Lineup Selection
+  ↓
+Match
+  ↓
+Minutes / Performance
+  ↓
+Season Aggregation
+  ↓
+Performance Factor
+  +
+Playing Time Factor
+  ↓
+Career Engine
+  ↓
+Development
+  ↓
+Player Attributes
+  ↓
+OVR
+  ↓
+Future Lineup Selection
+```
+
+This is the central gameplay loop.
+
+---
+
+# 104. BREAKTHROUGH LOOP
+
+A young player may naturally enter a positive feedback loop:
+
+```text
+high OVR/fit
+↓
+higher selection probability
+↓
+more minutes
+↓
+better development opportunity
+↓
+attributes increase
+↓
+OVR increases
+↓
+more selection probability
+```
+
+This should emerge from the systems rather than be scripted.
+
+---
+
+# 105. STAGNATION LOOP
+
+Likewise:
+
+```text
+low OVR / poor fit
+↓
+bench
+↓
+low minutes
+↓
+slow development
+↓
+stagnation
+```
+
+This should naturally support failed wonderkid careers.
+
+---
+
+# 106. MATCH VARIANCE PRINCIPLE
+
+A strong team should not always win.
+
+A player with OVR 85 should not always obtain a 7.3 rating.
+
+A player with OVR 75 should occasionally have an outstanding match.
+
+The same deterministic seed must reproduce those surprises.
+
+---
+
+# 107. MATCH RESULT ACCEPTANCE CRITERIA
+
+After Phase 5 resolution is implemented, large statistical samples should be evaluated.
+
+At minimum:
+
+```text
+100,000 matches
+```
+
+Measure:
+
+- average goals per match
+- home advantage
+- draw percentage
+- upset frequency
+- shots
+- shots on target
+- xG distribution
+- player rating distribution
+- goal distribution
+- assist distribution
+```
+
+The goal is plausibility, not exact replication of real-world statistics.
+
+---
+
+# 108. CAREER ACCEPTANCE CRITERIA WITH MATCH ENGINE
+
+Run approximately:
+
+```text
+1,000 careers
+```
+
+Compare:
+
+```text
+CAREER ENGINE WITHOUT MATCH ENGINE
+vs
+CAREER ENGINE + MATCH ENGINE
+```
+
+The integrated system should produce meaningful differences in:
+
+- minutes
+- performance
+- development
+- potential realization
+- peak age
+- peak OVR
+- career archetypes
+
+---
+
+# 109. PHASE 5A ACCEPTANCE TEST
+
+Must support:
+
+```text
+Create MatchContext
+↓
+Create MatchResult
+↓
+Create PlayerMatchPerformance
+↓
+Create MatchEvents
+```
+
+All domain objects must remain infrastructure-independent.
+
+---
+
+# 110. PHASE 5B ACCEPTANCE TEST
+
+Must support:
+
+```text
+Select XI
+↓
+Choose formation
+↓
+Calculate Role Effectiveness
+↓
+Calculate Tactical Fit
+↓
+Calculate XI Quality
+↓
+Calculate Effective Team Strength
+```
+
+---
+
+# 111. PHASE 5C ACCEPTANCE TEST
+
+Must support:
+
+```text
+Team Strength
+↓
+Home Advantage
+↓
+Win Probability
+↓
+xG
+↓
+Score
+```
+
+Upsets must be possible.
+
+---
+
+# 112. PHASE 5D ACCEPTANCE TEST
+
+Must support:
+
+```text
+Lineup
+↓
+Player opportunities
+↓
+Goals / assists
+↓
+Defensive contributions
+↓
+Minutes
+↓
+Match Rating
+```
+
+---
+
+# 113. PHASE 5E ACCEPTANCE TEST
+
+Must support:
+
+```text
+Match performances
+↓
+Season aggregation
+↓
+Minutes
+↓
+Goals
+↓
+Assists
+↓
+Average rating
+↓
+Performance Factor
+```
+
+---
+
+# 114. PHASE 5F ACCEPTANCE TEST
+
+Must support:
+
+```text
+Season Performance
+↓
+Performance Factor
++
+Playing Time Factor
+↓
+Career Engine
+↓
+Development
+↓
+Next Season
+```
+
+No duplication of Career Engine development logic.
+
+---
+
+# 115. PHASE 5 EXPLICIT NON-GOALS
+
+Do NOT implement in Phase 5:
+
+- transfers
+- contracts
+- persistent injuries
+- relationship engine
+- narrative generation
+- community decisions
+- TikTok integration
+- presentation mode
+- advanced tactical AI
+- full accounting simulation
+- mandatory LLM integration
+- complete real-world fixtures database
+
+---
+
+# 116. PERSISTENCE PRINCIPLES
+
+Persistence models remain separate from domain objects.
+
+Match persistence should only be introduced where needed for:
+
+- debugging
+- career history
+- season statistics
+- reproducibility
+
+Do not persist every simulated micro-action unless a later requirement justifies it.
+
+Prefer storing structured match results and meaningful player performance summaries.
+
+---
+
+# 117. DATABASE DIRECTION
+
+Conceptual future relationships:
+
+```text
+Career
+  ↓
+Season
+  ↓
+SeasonPerformance
+  ↓
+Match
+  ↓
+PlayerMatchPerformance
+```
+
+Foreign keys and indexes should be explicit.
+
+Player remains the single football identity source.
+
+---
+
+# 118. TESTING REQUIREMENTS
+
+## World
 
 Test:
 
-- Development speed
-- Potential realization
-- Stagnation
-- Late bloomers
-- Early decline
-- Peak age
-- Attribute soft caps
-- Club environment influence
-- Professionalism influence
-- Development profile influence
+- club calculations
+- league calculations
+- normalization
+- deterministic seed
+- manager quality
+- momentum
 
-Do not judge final career realism until the Match Engine exists.
+## Player
+
+Test:
+
+- attribute ranges
+- visible groups
+- mental calculation
+- Current Ability
+- position OVR
+- roles
+- traits
+- personality
+- state
+- development
+- deterministic generation
+
+## Career
+
+Test:
+
+- initialization
+- age progression
+- development budget
+- potential factor
+- age factor
+- development rate
+- playing time
+- environment
+- professionalism
+- performance factor
+- state factor
+- deterministic RNG
+- stage-two allocation
+- soft caps
+- decline
+- peak tracking
+- snapshots
+
+## Archetypes
+
+Test:
+
+- multi-label classification
+- configurable thresholds
+- evidence output
+- fallback behavior
+
+## Match
+
+Test:
+
+- MatchContext
+- lineups
+- tactical fit
+- XI quality
+- team strength
+- home advantage
+- win probabilities
+- xG
+- score generation
+- deterministic variance
+- minutes
+- goals
+- assists
+- defensive contributions
+- player ratings
+- trait effects
+
+## Season
+
+Test:
+
+- match aggregation
+- minutes
+- appearances
+- starts
+- goals
+- assists
+- average rating
+- performance factor
+- playing-time factor
+
+## Integration
+
+Test:
+
+```text
+Match
+↓
+Season Performance
+↓
+Career Engine
+↓
+Development
+```
 
 ---
 
-# 103. MATCH ENGINE
+# 119. BALANCE TESTING
 
-The match engine does not require full tactical simulation.
+Do not optimize a simulation from a single seed.
 
-Inputs:
+Use:
 
-```text
-team_strength
-opponent_strength
-home_advantage
-form
-fatigue
-tactical_style
-player_roles
-player_form
-player_traits
-randomness
-```
+- hundreds of matches
+- thousands of matches
+- thousands of careers when practical
+- distributions
+- percentiles
+- controlled experiments
+- matched-player comparisons
 
-Outputs:
-
-```text
-score
-winner
-player_minutes
-player_goals
-player_assists
-player_shots
-player_key_passes
-player_rating
-```
+Avoid fragile tests requiring exact random outputs unless testing determinism.
 
 ---
 
-# 104. INJURY ENGINE
+# 120. DEBUGGER REQUIREMENTS
 
-Categories:
-
-```text
-minor
-moderate
-severe
-career_threatening
-```
-
-Injury:
+A useful internal developer/debug view should eventually expose:
 
 ```text
-type
-duration
-recurrence_probability
-attribute_impact
-narrative_importance
-```
-
----
-
-# 105. TRANSFER ENGINE
-
-Transfer probability depends on:
-
-```text
-player_overall
+career seed
+current season
+player
+club
+current position
+role
+CA
+OVR
 potential
-age
-performance
-reputation
-contract
-club_prestige
-market_need
-club_attractiveness
-player_fit
+development rate
+profile
+form
+fitness
+confidence
+club strength
+match importance
+team strength
+xG
+minutes
+match rating
+season performance
+development budget
+peak data
 ```
 
 ---
 
-# 106. RELATIONSHIPS
+# 121. PRESENTATION MODE
 
-Supported:
+Target:
 
 ```text
-Player ↔ Manager
-Player ↔ Club
-Player ↔ Agent
-Player ↔ Teammate
-Player ↔ Rival
-Player ↔ Fans
+1080 × 1920
+9:16
 ```
 
-Range:
+Keyboard navigation can later support:
 
 ```text
--100 → +100
-```
-
----
-
-# 107. EVENT ENGINE
-
-Events must be data-driven.
-
-Categories:
-
-```text
-SPORT
-TRANSFER
-INJURY
-PERSONAL
-MEDIA
-RELATIONSHIP
-FINANCIAL
-NATIONAL_TEAM
-ACHIEVEMENT
-CHAOS
-```
-
-Each event:
-
-```text
-id
-category
-weight
-conditions
-text
-options
-effects
-narrative_importance
+SPACE → next scene
+LEFT  → previous scene
+RIGHT → next scene
+ESC   → exit
 ```
 
 ---
 
-# 108. DECISION SYSTEM
+# 122. NARRATIVE ENGINE FUTURE
 
-MVP decisions are automatically resolved.
+Narrative should eventually identify:
 
-Future:
+- breakthroughs
+- failures
+- title wins
+- major performances
+- records
+- transfers
+- injuries
+- rivalries
+- comebacks
+- retirement
 
-```text
-Decision
-   ↓
-Community Vote
-   ↓
-Selected Option
-   ↓
-Simulation
-```
-
----
-
-# 109. NARRATIVE ENGINE
-
-The narrative engine must identify:
-
-- Turning points
-- Emotional peaks
-- Successes
-- Failures
-- Comebacks
-- Rivalries
-- Unexpected changes
-- Major transfers
-- Major injuries
-- Historic matches
-- Awards
-- Records
-- Retirement
+Phase 5 may expose `narrative_importance` as structured metadata, but must not generate prose narrative.
 
 ---
 
-# 110. CAREER ARC DETECTION
+# 123. CAREER ARC FUTURE
 
-Possible archetypes:
+Possible future arcs:
 
 ```text
 RISE_TO_GLORY
@@ -3271,19 +3161,13 @@ GOAT
 CULT_HERO
 ```
 
-Multiple arcs may coexist.
+These are future narrative concepts, not Phase 5 simulation rules.
 
 ---
 
-# 111. LEGACY SYSTEM
+# 124. LEGACY FUTURE
 
-At retirement:
-
-```text
-legacy_score
-```
-
-Factors:
+At retirement, a future Legacy System may use:
 
 ```text
 titles
@@ -3300,15 +3184,15 @@ narrative_significance
 
 ---
 
-# 112. STORY GENERATION
+# 125. STORY GENERATION FUTURE
 
-Target:
+Target final story duration:
 
 ```text
 5–6 minutes
 ```
 
-Suggested:
+Possible structure:
 
 ```text
 HOOK
@@ -3326,29 +3210,7 @@ CTA
 
 ---
 
-# 113. AI INTEGRATION
-
-LLM integration is not mandatory for MVP.
-
-Start with:
-
-```text
-Structured data
-+
-Templates
-+
-Narrative rules
-```
-
-Future:
-
-```text
-NarrativeProvider
-```
-
----
-
-# 114. UI PHILOSOPHY
+# 126. UI PHILOSOPHY
 
 Target aesthetic:
 
@@ -3356,16 +3218,16 @@ Target aesthetic:
 
 Avoid:
 
-- Generic admin dashboard
-- Spreadsheet-heavy UI
-- Excessive neon
-- Rainbow gradients
-- Excessive glassmorphism
-- Cheap gaming aesthetics
+- generic admin dashboard
+- spreadsheet-heavy UI
+- excessive neon
+- rainbow gradients
+- cheap gaming aesthetics
+- excessive glassmorphism
 
 ---
 
-# 115. VISUAL LANGUAGE
+# 127. VISUAL LANGUAGE
 
 Default:
 
@@ -3376,201 +3238,23 @@ Dark
 Suggested palette:
 
 ```text
-Background:      #08090B
-Surface:         #111318
-Elevated:        #181B21
-Border:          #272B33
-Primary text:    #F5F5F5
-Secondary text:  #8E949F
+Background: #08090B
+Surface:    #111318
+Elevated:   #181B21
+Border:     #272B33
+Text:       #F5F5F5
+Secondary:  #8E949F
 ```
 
 Accent:
 
 ```text
-Muted football green / lime
+muted football green / lime
 ```
 
 ---
 
-# 116. PRESENTATION MODE
-
-Target:
-
-```text
-1080 × 1920
-9:16
-```
-
-Keyboard:
-
-```text
-SPACE → next scene
-LEFT  → previous scene
-RIGHT → next scene
-ESC   → exit
-```
-
----
-
-# 117. DEBUGGER
-
-Internal developer view:
-
-```text
-Career seed
-Current season
-Player identity
-Player attributes
-Current ability
-Overall by position
-Potential
-Development profile
-Role
-Form
-Confidence
-Club strength
-Development budget
-Development summary
-Peak data
-World ratings
-```
-
----
-
-# 118. BALANCE TESTING
-
-Once enough systems exist, run hundreds or thousands of careers.
-
-Collect:
-
-```text
-average_peak_overall
-average_final_overall
-average_career_length
-average_transfers
-average_injuries
-average_goals
-average_trophies
-average_market_value
-average_retirement_age
-percentage_reaching_potential
-percentage_winning_major_titles
-percentage_late_bloomers
-percentage_one_club_legends
-percentage_failed_wonderkids
-```
-
-Analyze distributions, not only averages.
-
----
-
-# 119. TESTING REQUIREMENTS
-
-## World
-
-Test:
-
-- Club calculations
-- League calculations
-- External normalization
-- Squad generation
-- Deterministic seed
-- Manager quality
-- Momentum
-
-## Player
-
-Test:
-
-- Player creation
-- Internal attribute generation
-- Attribute ranges
-- PAC
-- SHO
-- PAS
-- DRI
-- DEF
-- PHY
-- MENTAL
-- Current Ability
-- Position OVR
-- Role Fit
-- Role Familiarity
-- Role Effectiveness
-- Potential
-- Development Rate
-- Development Profiles
-- Traits
-- Personality
-- Player State
-- Aging factor
-- GK OVR
-- Deterministic generation
-
-## Career / Phase 4
-
-Test:
-
-- Career initialization
-- Season initialization
-- Age progression
-- Career phase
-- Potential factor
-- Development budget
-- Playing time factor
-- Environment factor
-- Professionalism factor
-- Performance factor
-- State factor
-- Random factor
-- Development profile distribution
-- Internal attribute changes
-- Current Ability recalculation
-- OVR recalculation
-- Peak tracking
-- Season snapshot
-- Career determinism
-
-## Match
-
-Test:
-
-- Match result
-- Player performance
-- Minutes
-- Role influence
-- Trait influence
-
-## Transfers
-
-Test:
-
-- Market value
-- Club requirements
-- Player fit
-- Transfer generation
-
-## Events
-
-Test:
-
-- Conditions
-- Probability
-- Effects
-- Decision resolution
-
-## Narrative
-
-Test:
-
-- Importance
-- Arc detection
-- Story generation
-- Duration estimation
-
----
-
-# 120. DEFINITION OF DONE
+# 128. TESTING DEFINITION OF DONE
 
 A feature is complete only when:
 
@@ -3591,14 +3275,14 @@ For simulation systems:
 ```text
 Feature works
 +
-Repeated simulations produce believable results
+Repeated simulations produce believable distributions
 +
 Deterministic reproduction works
 ```
 
 ---
 
-# 121. PHASE 1 ACCEPTANCE TEST
+# 129. PHASE 1 ACCEPTANCE TEST
 
 ```text
 Angular starts
@@ -3620,209 +3304,325 @@ Tests pass
 
 ---
 
-# 122. PHASE 2 ACCEPTANCE TEST
+# 130. PHASE 2 ACCEPTANCE TEST
 
 ```text
 World Seed
-    ↓
+ ↓
 Countries
-    ↓
+ ↓
 Leagues
-    ↓
+ ↓
 Clubs
-    ↓
+ ↓
 Managers
-    ↓
+ ↓
 Competitions
-    ↓
+ ↓
 Players
-    ↓
-Club Memberships
-    ↓
+ ↓
+ClubMemberships
+ ↓
 Club Ratings
-    ↓
+ ↓
 League Ratings
 ```
 
-The world must be reproducible.
+World seed must be reproducible.
 
 ---
 
-# 123. PHASE 3 ACCEPTANCE TEST
+# 131. PHASE 3 ACCEPTANCE TEST
 
 ```text
 Create Player
-    ↓
+ ↓
 Generate Internal Attributes
-    ↓
-Generate PAC / SHO / PAS / DRI / DEF / PHY
-    ↓
+ ↓
+Generate visible groups
+ ↓
 Calculate MENTAL
-    ↓
+ ↓
 Calculate Current Ability
-    ↓
-Calculate Position-specific OVR
-    ↓
+ ↓
+Calculate Position OVR
+ ↓
 Assign Potential
-    ↓
+ ↓
 Assign Development Rate
-    ↓
+ ↓
 Assign Development Profile
-    ↓
+ ↓
 Generate Role Familiarity
-    ↓
+ ↓
 Calculate Role Effectiveness
-    ↓
+ ↓
 Assign Traits
-    ↓
+ ↓
 Generate Personality
-    ↓
+ ↓
 Initialize Player State
-    ↓
+ ↓
 Persist Player
 ```
 
 ---
 
-# 124. PHASE 3.1 ACCEPTANCE TEST
+# 132. PHASE 3.1 ACCEPTANCE TEST
 
-The world generation must produce:
+The generated world must contain:
 
 - multiple player archetypes
-- multiple positional profiles
+- positional specialization
 - secondary positions
-- 0–3 traits
+- variable trait counts
 - realistic potential distribution
 - dedicated GK OVR
-- meaningful intra-club variation
-- deterministic output
+- meaningful intra-club variance
+- deterministic outputs
 
 ---
 
-# 125. PHASE 4 ACCEPTANCE TEST
-
-The system must support:
+# 133. PHASE 4 ACCEPTANCE TEST
 
 ```text
 Create Career
-     ↓
+ ↓
 Initialize Season
-     ↓
-Age progression
-     ↓
-Calculate development budget
-     ↓
-Allocate development
-     ↓
+ ↓
+Calculate Development Budget
+ ↓
+Allocate by profile
+ ↓
 Modify internal attributes
-     ↓
-Recalculate Current Ability
-     ↓
+ ↓
+Recalculate CA
+ ↓
 Recalculate OVR
-     ↓
-Update career phase
-     ↓
+ ↓
+Update age
+ ↓
+Update Career Phase
+ ↓
 Track peak
-     ↓
-Create snapshot
-     ↓
-Advance to next season
+ ↓
+Create Snapshot
+ ↓
+Advance season
 ```
 
-It must work repeatedly for many seasons.
+---
 
-It must not require the Match Engine.
+# 134. PHASE 4.1B ACCEPTANCE TEST
+
+The classifier must:
+
+- support multiple tags
+- produce evidence
+- use configurable thresholds
+- leave simulation unchanged
+- provide useful fallback behavior
 
 ---
 
-# 126. PHASE 4 EXPLICIT NON-GOALS
+# 135. PHASE 5 ACCEPTANCE TEST
 
-Do NOT implement:
+The full match loop must eventually support:
 
-- Match simulation
-- Transfers
-- Contracts
-- Injuries
-- Relationships
-- Narrative
-- Awards
-- Titles
-- International career simulation
-- Community decisions
-- TikTok
-- Presentation Mode
-
-Phase 4 builds the career progression loop only.
+```text
+Player + Club + Opponent + Context
+ ↓
+Lineup
+ ↓
+Team Strength
+ ↓
+Match Resolution
+ ↓
+Player Performance
+ ↓
+Minutes / Goals / Assists / Rating
+ ↓
+Season Aggregation
+ ↓
+Performance Factor
+ ↓
+Playing Time Factor
+ ↓
+Career Engine
+ ↓
+Development
+ ↓
+Next Season
+```
 
 ---
 
-# 127. IMPLEMENTATION RULE FOR JULES
+# 136. PHASE 5 BALANCE TARGETS
 
-Before implementing a phase:
+Phase 5 is not expected to reproduce real-world football exactly.
+
+It should instead produce broadly plausible distributions for:
+
+- goals per match
+- home advantage
+- draws
+- scorelines
+- xG
+- shots
+- player ratings
+- minutes
+- goals per player
+- assists per player
+- clean sheets
+- upset rate
+
+The exact targets should be defined through statistical audits after implementation.
+
+---
+
+# 137. MATCH ENGINE DESIGN PRINCIPLES
+
+1. Strong teams are favored, not guaranteed.
+2. OVR matters, but does not determine everything.
+3. Role Effectiveness matters.
+4. Form and Fitness matter.
+5. Traits create contextual behavior.
+6. Match variance creates surprises.
+7. Player rating emerges from performance.
+8. Minutes are generated by selection and substitutions.
+9. Season Performance emerges from matches.
+10. Career Engine consumes aggregated seasonal inputs.
+11. Match Engine never directly modifies Career development.
+12. Deterministic randomness is mandatory.
+
+---
+
+# 138. MATCH ENGINE PHASE ORDER
+
+The recommended order is:
+
+```text
+5A Match Domain
+ ↓
+5B Lineup + Team Strength
+ ↓
+5C Match Resolution
+ ↓
+5D Player Performance
+ ↓
+5E Season Aggregation
+ ↓
+5F Career Integration
+```
+
+Each stage must be independently testable.
+
+---
+
+# 139. PERSISTENCE RULES FOR MATCHES
+
+Do not store every simulated micro-action unless required.
+
+Prefer storing:
+
+```text
+Match
+PlayerMatchPerformance
+SeasonPerformance
+```
+
+over every individual possession/chance object.
+
+Use structured event storage only where it adds future narrative/debugging value.
+
+---
+
+# 140. CAREER SIMULATION BALANCE
+
+When enough systems exist, run large samples and collect:
+
+```text
+average_peak_overall
+average_final_overall
+average_career_length
+average_transfers
+average_injuries
+average_goals
+average_assists
+average_trophies
+average_market_value
+average_retirement_age
+percentage_reaching_potential
+percentage_winning_major_titles
+percentage_late_bloomers
+percentage_failed_wonderkids
+percentage_long_primes
+```
+
+Analyze distributions, not only averages.
+
+---
+
+# 141. JULES IMPLEMENTATION RULE
+
+Before implementing any phase:
 
 1. Read `PROJECT_SPEC.md`.
 2. Read `.github/instructions/reglas.instructions.md`.
 3. Read `AGENTS.md`.
-4. Inspect the current repository.
-5. Identify the exact requested scope.
-6. Produce a concise implementation plan.
-7. Wait for approval for major phase changes.
-8. Implement only the approved scope.
-9. Run tests.
-10. Verify the application.
+4. Inspect current repository state.
+5. Produce an implementation plan for major phase work.
+6. Wait for approval when requested.
+7. Implement only approved scope.
+8. Run tests.
+9. Run regression tests.
+10. Verify deterministic behavior.
 11. Report results.
 12. Stop.
 
-Never automatically continue to the next phase.
+Do not continue automatically to a future phase.
 
 ---
 
-# 128. JULES PULL REQUEST DISCIPLINE
+# 142. JULES PULL REQUEST DISCIPLINE
 
-Each major phase or refactor should use its own branch and pull request.
+Each major phase or architectural refactor should use its own branch and pull request.
 
 A PR must contain:
 
-- Only the requested scope
-- Tests for the implemented functionality
-- Required migrations
-- Required configuration
-- No unrelated refactors
-- No future-phase implementations
+- only requested scope
+- required tests
+- required migrations
+- required configuration
+- no unrelated refactors
+- no future-phase implementation
 
 ---
 
-# 129. SIMULATION BALANCE PRINCIPLE
+# 143. DOCUMENTATION RULE
 
-Do not optimize against one seed.
+Update documentation when:
 
-Balance must be evaluated using:
+- architecture changes
+- API contracts change
+- a major phase is completed
+- important simulation rules change
 
-- multiple seeds
-- statistical distributions
-- broad range assertions
-- regression tests
-- long-run career simulations once available
-
-Avoid brittle tests based on exact random outcomes unless determinism itself is being tested.
+Do not silently rewrite the specification during implementation.
 
 ---
 
-# 130. FINAL PRODUCT STRATEGY
+# 144. FINAL PRODUCT STRATEGY
 
 TikTok is initially the distribution channel.
 
-Football Life is the underlying product.
+Football Life is the underlying simulation product.
 
 The simulator should remain useful independently of social media.
 
 ---
 
-# 131. FINAL PRODUCT VISION
-
-Football Life should ultimately feel like:
-
-> **A football career RPG that happens to be a machine for creating stories.**
+# 145. FINAL PRODUCT VISION
 
 The complete long-term loop:
 
@@ -3830,6 +3630,8 @@ The complete long-term loop:
 PLAYER
    ↓
 CAREER
+   ↓
+MATCHES
    ↓
 STORY
    ↓
@@ -3844,51 +3646,29 @@ COMMUNITY DECISIONS
 NEW CAREER
 ```
 
-But the MVP remains:
+The current core loop is:
 
 ```text
 PLAYER
    ↓
-SIMULATE
-   ↓
 CAREER
    ↓
-STORY
+MATCHES
+   ↓
+PERFORMANCE
+   ↓
+DEVELOPMENT
 ```
 
 ---
 
-# 132. FINAL DESIGN PRINCIPLE
+# 146. FINAL DESIGN PRINCIPLE
 
-The simulator should always answer:
+Football Life should always answer:
 
 > **Would someone watch the entire 5–6 minute career because they genuinely want to know how it ends?**
 
-If yes:
-
-```text
-Football Life is succeeding.
-```
-
-If the simulator produces statistically accurate but boring careers:
-
-```text
-It has failed.
-```
-
-If it produces beautiful screens but predictable careers:
-
-```text
-It has failed.
-```
-
-If it produces chaotic careers that make no sense:
-
-```text
-It has failed.
-```
-
-The target is:
+The simulator must target:
 
 ```text
 BELIEVABLE
@@ -3901,7 +3681,23 @@ DYNAMIC WORLD
      +
 MEANINGFUL PLAYER EVOLUTION
      +
+MEANINGFUL MATCH PERFORMANCE
+     +
 VISUALLY ATTRACTIVE
      =
 FOOTBALL LIFE
 ```
+
+The simulation must not become:
+
+```text
+statistically accurate but boring
+```
+
+nor:
+
+```text
+chaotic but implausible
+```
+
+The goal is believable unpredictability that naturally creates stories.
