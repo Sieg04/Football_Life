@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local database
+backend/*.db
+
+# Angular
+frontend/football-life/node_modules/
+frontend/football-life/dist/
+.angular/

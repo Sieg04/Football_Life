@@ -1,0 +1,26 @@
+{
+  "secondary_positions": {
+    "GK": [], "CB": ["DM"], "LB": ["LWB"], "RB": ["RWB"], "DM": ["CM", "CB"], "CM": ["CAM", "DM"], "CAM": ["CM"], "AM": ["CAM", "CM"], "LW": ["RW"], "RW": ["LW"], "ST": ["CAM"]
+  },
+  "archetypes": {
+    "ST": {
+      "FINISHER": {"SHO": 1.20, "PAC": 1.10, "DRI": 1.10, "PHY": 1.00, "PAS": 0.90, "DEF": 0.55, "MENTAL": 1.00},
+      "TARGET": {"SHO": 1.15, "PHY": 1.25, "PAS": 0.95, "DRI": 0.90, "PAC": 0.85, "DEF": 0.55, "MENTAL": 1.00}
+    },
+    "CM": {
+      "PLAYMAKER": {"PAS": 1.25, "MENTAL": 1.20, "DRI": 1.10, "SHO": 0.95, "DEF": 0.95, "PAC": 0.95, "PHY": 0.95},
+      "BOX_TO_BOX": {"PAS": 1.05, "MENTAL": 1.05, "DRI": 1.00, "SHO": 1.00, "DEF": 1.05, "PAC": 1.00, "PHY": 1.10}
+    },
+    "CB": {
+      "BALL_PLAYING": {"DEF": 1.25, "PHY": 1.15, "PAS": 1.15, "PAC": 0.95, "DRI": 0.85, "SHO": 0.50, "MENTAL": 1.05},
+      "STOPPER": {"DEF": 1.30, "PHY": 1.20, "PAS": 0.90, "PAC": 0.90, "DRI": 0.75, "SHO": 0.45, "MENTAL": 1.05}
+    },
+    "GK": {
+      "SHOT_STOPPER": {"MENTAL": 1.10, "PHY": 1.05},
+      "SWEEPER_KEEPER": {"MENTAL": 1.10, "PAS": 1.10, "PAC": 1.05}
+    },
+    "DEFAULT": {
+      "BALANCED": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0}
+    }
+  }
+}

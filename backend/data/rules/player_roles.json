@@ -1,0 +1,17 @@
+{
+  "roles": {
+    "ADVANCED_FORWARD": {"compatible_positions": ["ST"], "attribute_weights": {"SHO": 0.3, "PAC": 0.2, "DRI": 0.15, "MENTAL": 0.15, "PHY": 0.1, "PAS": 0.1}},
+    "POACHER": {"compatible_positions": ["ST"], "attribute_weights": {"SHO": 0.4, "MENTAL": 0.2, "DRI": 0.15, "PAC": 0.1, "PHY": 0.1, "PAS": 0.05}},
+    "FALSE_9": {"compatible_positions": ["ST", "CAM", "AM"], "attribute_weights": {"PAS": 0.3, "DRI": 0.2, "MENTAL": 0.25, "SHO": 0.1, "PAC": 0.05, "PHY": 0.1}},
+    "TARGET_FORWARD": {"compatible_positions": ["ST"], "attribute_weights": {"PHY": 0.3, "SHO": 0.25, "MENTAL": 0.2, "PAS": 0.1, "DRI": 0.1, "PAC": 0.05}},
+    "WINGER": {"compatible_positions": ["LW", "RW"], "attribute_weights": {"DRI": 0.3, "PAC": 0.3, "PAS": 0.15, "SHO": 0.15, "MENTAL": 0.05, "PHY": 0.05}},
+    "PLAYMAKER": {"compatible_positions": ["CAM", "AM", "CM"], "attribute_weights": {"PAS": 0.3, "DRI": 0.2, "MENTAL": 0.25, "SHO": 0.1, "PAC": 0.05, "PHY": 0.1}},
+    "BALL_WINNER": {"compatible_positions": ["DM", "CM"], "attribute_weights": {"DEF": 0.3, "PHY": 0.25, "MENTAL": 0.2, "PAS": 0.1, "DRI": 0.1, "PAC": 0.05}},
+    "CENTRE_BACK": {"compatible_positions": ["CB"], "attribute_weights": {"DEF": 0.35, "PHY": 0.25, "MENTAL": 0.2, "PAS": 0.1, "PAC": 0.05, "DRI": 0.05}},
+    "SWEEPER_KEEPER": {"compatible_positions": ["GK"], "attribute_weights": {"MENTAL": 0.35, "PAS": 0.25, "DEF": 0.2, "PHY": 0.1, "PAC": 0.1}},
+    "TRADITIONAL_KEEPER": {"compatible_positions": ["GK"], "attribute_weights": {"DEF": 0.4, "PHY": 0.25, "MENTAL": 0.2, "PAS": 0.05, "PAC": 0.05, "DRI": 0.05}},
+    "FULL_BACK": {"compatible_positions": ["LB", "RB"], "attribute_weights": {"DEF": 0.3, "PAC": 0.2, "PAS": 0.2, "DRI": 0.15, "PHY": 0.1, "MENTAL": 0.05}},
+    "WING_BACK": {"compatible_positions": ["LB", "RB", "LWB", "RWB"], "attribute_weights": {"PAC": 0.25, "DEF": 0.2, "PAS": 0.2, "DRI": 0.2, "PHY": 0.1, "MENTAL": 0.05}},
+    "INVERTED_FULL_BACK": {"compatible_positions": ["LB", "RB"], "attribute_weights": {"PAS": 0.25, "DEF": 0.25, "MENTAL": 0.2, "DRI": 0.15, "PAC": 0.1, "PHY": 0.05}}
+  }
+}

@@ -1,0 +1,25 @@
+<main class="shell">
+  <header class="masthead">
+    <span class="eyebrow">Football career simulator</span>
+    <span class="phase">Phase 01 / Foundation</span>
+  </header>
+
+  <section class="hero" aria-labelledby="title">
+    <p class="kicker">The story starts here</p>
+    <h1 id="title">Football<br /><em>Life</em></h1>
+    <p class="intro">Build a player. Simulate a life. Tell the story.</p>
+  </section>
+
+  <section class="status-panel" aria-labelledby="status-title">
+    <div>
+      <p class="kicker">System status</p>
+      <h2 id="status-title">Foundation online</h2>
+    </div>
+    @if (health$ | async; as health) {
+      <div class="status" [class.offline]="health.status !== 'ok'">
+        <span class="status-dot" aria-hidden="true"></span>
+        {{ health.status === 'ok' ? 'API connected' : 'API offline' }}
+      </div>
+    }
+  </section>
+</main>

@@ -1,0 +1,19 @@
+{
+  "distribution": {"0": 0.35, "1": 0.40, "2": 0.20, "3": 0.05},
+  "traits": {
+    "FINESSE_SHOT": {"category": "SHOOTING", "requirement": {"SHO": 78}},
+    "POWER_SHOT": {"category": "SHOOTING", "requirement": {"SHO": 78}},
+    "FIRST_TOUCH": {"category": "TECHNICAL", "requirement": {"DRI": 72}},
+    "LONG_BALL": {"category": "PASSING", "requirement": {"PAS": 78}},
+    "SET_PIECE": {"category": "PASSING", "requirement": {"PAS": 75}},
+    "RAPID": {"category": "PHYSICAL", "requirement": {"PAC": 80}},
+    "STRONG": {"category": "PHYSICAL", "requirement": {"PHY": 80}},
+    "AERIAL": {"category": "PHYSICAL", "requirement": {"PHY": 78}},
+    "ENDURANCE": {"category": "PHYSICAL", "requirement": {"PHY": 75}},
+    "BIG_GAME_PLAYER": {"category": "MENTAL", "requirement": {"MENTAL": 78}},
+    "LEADER": {"category": "MENTAL", "requirement": {"MENTAL": 78}},
+    "COMPOSED": {"category": "MENTAL", "requirement": {"MENTAL": 78}},
+    "CREATIVE": {"category": "MENTAL", "requirement": {"MENTAL": 78}},
+    "CLUTCH": {"category": "MENTAL", "requirement": {"MENTAL": 82}}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "BALANCED": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0},
+    "TECHNICAL": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.2, "DRI": 1.2, "DEF": 0.9, "PHY": 0.9, "MENTAL": 1.0},
+    "PHYSICAL": {"PAC": 1.1, "SHO": 1.0, "PAS": 0.9, "DRI": 1.0, "DEF": 1.0, "PHY": 1.2, "MENTAL": 0.9},
+    "CREATIVE": {"PAC": 0.95, "SHO": 0.95, "PAS": 1.2, "DRI": 1.15, "DEF": 0.9, "PHY": 0.9, "MENTAL": 1.2},
+    "DEFENSIVE": {"PAC": 1.0, "SHO": 0.85, "PAS": 1.0, "DRI": 0.9, "DEF": 1.3, "PHY": 1.2, "MENTAL": 1.1},
+    "FINISHER": {"PAC": 1.05, "SHO": 1.3, "PAS": 1.0, "DRI": 1.1, "DEF": 0.9, "PHY": 1.0, "MENTAL": 1.05},
+    "PLAYMAKER": {"PAC": 0.95, "SHO": 0.95, "PAS": 1.3, "DRI": 1.15, "DEF": 0.95, "PHY": 0.9, "MENTAL": 1.25},
+    "ATHLETIC": {"PAC": 1.3, "SHO": 1.0, "PAS": 0.95, "DRI": 1.1, "DEF": 1.0, "PHY": 1.3, "MENTAL": 0.95},
+    "LATE_BLOOMER": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0}
+  },
+  "age_factors": {"16-18": 1.4, "19-21": 1.25, "22-24": 1.1, "25-27": 0.85, "28-30": 0.6, "31-33": 0.35, "34+": 0.1}
+}

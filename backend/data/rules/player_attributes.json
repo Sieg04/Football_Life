@@ -1,0 +1,24 @@
+{
+  "groups": {
+    "PAC": {"acceleration": 0.5, "sprint_speed": 0.5},
+    "SHO": {"finishing": 0.35, "shot_power": 0.2, "long_shots": 0.2, "volleys": 0.15, "penalties": 0.1},
+    "PAS": {"vision": 0.25, "short_passing": 0.3, "long_passing": 0.2, "crossing": 0.15, "curve": 0.1},
+    "DRI": {"agility": 0.2, "balance": 0.15, "ball_control": 0.25, "dribbling": 0.25, "reactions": 0.15},
+    "DEF": {"defensive_awareness": 0.3, "standing_tackle": 0.25, "interceptions": 0.25, "heading": 0.2},
+    "PHY": {"strength": 0.3, "stamina": 0.3, "jumping": 0.2, "aggression": 0.2},
+    "MENTAL": {"decision_making": 0.2, "composure": 0.15, "creativity": 0.15, "positioning": 0.15, "concentration": 0.15, "work_rate": 0.1, "leadership": 0.1}
+  },
+  "ability_weights": {"PAC": 0.15, "SHO": 0.15, "PAS": 0.15, "DRI": 0.15, "DEF": 0.15, "PHY": 0.15, "MENTAL": 0.1},
+  "position_weights": {
+    "ST": {"SHO": 0.35, "PAC": 0.2, "DRI": 0.2, "PHY": 0.1, "PAS": 0.1, "MENTAL": 0.05},
+    "LW": {"DRI": 0.25, "PAC": 0.25, "SHO": 0.2, "PAS": 0.15, "PHY": 0.1, "MENTAL": 0.05},
+    "RW": {"DRI": 0.25, "PAC": 0.25, "SHO": 0.2, "PAS": 0.15, "PHY": 0.1, "MENTAL": 0.05},
+    "CAM": {"PAS": 0.25, "DRI": 0.2, "MENTAL": 0.2, "SHO": 0.15, "PAC": 0.1, "PHY": 0.1},
+    "AM": {"PAS": 0.25, "DRI": 0.2, "MENTAL": 0.2, "SHO": 0.15, "PAC": 0.1, "PHY": 0.1},
+    "CM": {"PAS": 0.25, "DRI": 0.2, "MENTAL": 0.2, "DEF": 0.15, "PHY": 0.1, "SHO": 0.1},
+    "DM": {"DEF": 0.25, "PAS": 0.25, "MENTAL": 0.2, "PHY": 0.15, "DRI": 0.1, "SHO": 0.05},
+    "CB": {"DEF": 0.35, "PHY": 0.25, "MENTAL": 0.15, "PAS": 0.15, "PAC": 0.1},
+    "LB": {"DEF": 0.25, "PAC": 0.2, "PHY": 0.15, "PAS": 0.15, "DRI": 0.15, "MENTAL": 0.1},
+    "RB": {"DEF": 0.25, "PAC": 0.2, "PHY": 0.15, "PAS": 0.15, "DRI": 0.15, "MENTAL": 0.1}
+  }
+}
