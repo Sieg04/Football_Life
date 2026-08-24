@@ -1,4 +1,6 @@
 {
+  "base_rate": 4.0,
+  "potential_gap_max": 30.0,
   "profiles": {
     "BALANCED": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0},
     "TECHNICAL": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.2, "DRI": 1.2, "DEF": 0.9, "PHY": 0.9, "MENTAL": 1.0},
@@ -10,5 +12,37 @@
     "ATHLETIC": {"PAC": 1.3, "SHO": 1.0, "PAS": 0.95, "DRI": 1.1, "DEF": 1.0, "PHY": 1.3, "MENTAL": 0.95},
     "LATE_BLOOMER": {"PAC": 1.0, "SHO": 1.0, "PAS": 1.0, "DRI": 1.0, "DEF": 1.0, "PHY": 1.0, "MENTAL": 1.0}
   },
-  "age_factors": {"16-18": 1.4, "19-21": 1.25, "22-24": 1.1, "25-27": 0.85, "28-30": 0.6, "31-33": 0.35, "34+": 0.1}
+  "age_factors": {
+    "16-18": 1.4,
+    "19-21": 1.25,
+    "22-24": 1.1,
+    "25-27": 0.85,
+    "28-30": 0.6,
+    "31-33": 0.35,
+    "34+": 0.1
+  },
+  "playing_time_factors": [
+    {"max_minutes": 300, "factor": 0.30},
+    {"max_minutes": 750, "factor": 0.55},
+    {"max_minutes": 1400, "factor": 0.80},
+    {"max_minutes": 2200, "factor": 1.00},
+    {"max_minutes": 3000, "factor": 1.05},
+    {"max_minutes": 99999, "factor": 1.00}
+  ],
+  "soft_caps": [
+    {"max_val": 80.0, "multiplier": 1.00},
+    {"max_val": 89.0, "multiplier": 0.85},
+    {"max_val": 94.0, "multiplier": 0.60},
+    {"max_val": 97.0, "multiplier": 0.30},
+    {"max_val": 100.0, "multiplier": 0.10}
+  ],
+  "decline": {
+    "start_age": 29,
+    "physical_attributes": ["acceleration", "sprint_speed", "agility", "stamina", "jumping", "reactions"],
+    "technical_attributes": ["finishing", "shot_power", "long_shots", "volleys", "penalties", "vision", "short_passing", "long_passing", "crossing", "curve", "balance", "ball_control", "dribbling", "defensive_awareness", "standing_tackle", "interceptions", "heading"],
+    "mental_attributes": ["decision_making", "composure", "creativity", "positioning", "concentration", "work_rate", "leadership"],
+    "physical_rate": 0.15,
+    "technical_rate": 0.015,
+    "mental_rate": 0.0
+  }
 }
