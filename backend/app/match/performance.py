@@ -10,7 +10,7 @@ from app.match.domain import (
     PlayerMatchPerformance,
     SimulationMode,
 )
-from app.match.lineup import Lineup, LineupSlot
+from app.match.lineup import Lineup, LineupSlot, evaluate_player_for_slot
 from app.match.resolution import MatchResolutionState
 from app.player.domain import Player
 
@@ -407,8 +407,42 @@ def calculate_minutes_and_substitutions(
             key=lambda slot: (slot.player.state.fitness, slot.role_effectiveness),
         )[:num_subs]
 
-        # Bench candidates
-        sub_on_candidates = bench[:num_subs]
+        # Model D: Deterministic Weighted Stochastic Substitute Selection
+        # Exclude GKs unless sub_off is GK
+        field_bench = [p for p in bench if p.primary_position != "GK"]
+        if not field_bench:
+            field_bench = list(bench)
+
+        # Select unique substitute candidates using sub_priority_score weights
+        sub_on_candidates = []
+        available_bench = list(field_bench)
+
+        # High importance match exponent sharpens preference for top bench players
+        importance_exponent = 1.0 + (max(0.0, match_importance - 50.0) / 25.0)
+
+        for _ in range(min(num_subs, len(available_bench))):
+            bench_scores = []
+            for p in available_bench:
+                # Retrieve precomputed sub_priority_score from Lineup or calculate using manager context
+                if p.id in lineup.sub_priority_scores:
+                    score = lineup.sub_priority_scores[p.id]
+                else:
+                    _, slot = evaluate_player_for_slot(
+                        p,
+                        p.primary_position,
+                        manager=lineup.manager,
+                        competition_importance=match_importance,
+                    )
+                    score = slot.sub_priority_score
+                bench_scores.append((p, score))
+
+            # Calculate exponentiated weights for sampling
+            weights = [max(0.001, (score / 50.0) ** importance_exponent) for _, score in bench_scores]
+            candidate_players = [p for p, _ in bench_scores]
+
+            chosen = rng.choices(candidate_players, weights=weights, k=1)[0]
+            sub_on_candidates.append(chosen)
+            available_bench.remove(chosen)
 
         sub_minutes = [60, 68, 75, 80, 85]
 
@@ -531,7 +565,7 @@ def simulate_player_performances(
                 event_type=sub_ev["event_type"],
                 primary_player_id=sub_ev["primary_player_id"],
                 secondary_player_id=sub_ev["secondary_player_id"],
-                metadata=sub_ev["metadata"],
+                metadata={"reason": sub_ev["metadata"].get("reason", "TACTICAL")},
             ))
 
         # Active participants (starters + substitutes with >0 mins)

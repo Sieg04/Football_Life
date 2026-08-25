@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from datetime import date
 import json
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from app.player.engine import (
     position_ovr,
     role_effectiveness as calc_role_effectiveness,
 )
+from app.world.entities import Manager
 
 
 def _load_player_roles() -> dict:
@@ -37,6 +39,7 @@ class LineupSlot:
     role_familiarity: float
     role_attribute_fit: float
     role_effectiveness: float
+    sub_priority_score: float = 0.0
 
 
 @dataclass
@@ -48,6 +51,8 @@ class Lineup:
     average_ovr: float
     average_role_effectiveness: float
     tactical_fit: float
+    manager: Manager | None = None
+    sub_priority_scores: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
@@ -235,11 +240,47 @@ def _get_default_role_for_position(position: str) -> str:
     return defaults.get(position, "PLAYMAKER")
 
 
+def calculate_youth_bonus(
+    player: Player,
+    manager: Manager | None = None,
+    competition_importance: float = 50.0,
+    max_bonus: float = 12.0,
+    as_of: date | None = None,
+) -> float:
+    youth_pref = manager.youth_preference if manager else 50.0
+    ref_date = as_of if as_of is not None else date(2026, 7, 1)
+    age = ref_date.year - player.birth_date.year - ((ref_date.month, ref_date.day) < (player.birth_date.month, player.birth_date.day))
+    age_factor_val = max(0.0, (22.0 - age) / 5.0)
+    importance_factor = max(0.0, min(1.0, (100.0 - competition_importance) / 100.0))
+
+    bonus = (youth_pref / 100.0) * age_factor_val * importance_factor * max_bonus
+    return max(0.0, bonus)
+
+
+def calculate_rotation_bonus(
+    player: Player,
+    manager: Manager | None = None,
+    competition_importance: float = 50.0,
+    season_minutes: int = 0,
+    max_bonus: float = 10.0,
+) -> float:
+    rotation_pref = manager.rotation if manager else 50.0
+    importance_factor = max(0.0, min(1.0, (100.0 - competition_importance) / 100.0))
+    mins_factor = 1.0 - (min(season_minutes, 3000) / 3000.0)
+
+    bonus = (rotation_pref / 100.0) * importance_factor * mins_factor * max_bonus
+    return max(0.0, bonus)
+
+
 def evaluate_player_for_slot(
     player: Player,
     slot_position: str,
     target_role: str | None = None,
     manager_pref: float = 50.0,
+    manager: Manager | None = None,
+    competition_importance: float = 50.0,
+    season_minutes: int = 0,
+    as_of: date | None = None,
 ) -> tuple[float, LineupSlot]:
     if not target_role or target_role not in _ROLE_DEFINITIONS:
         target_role = _get_default_role_for_position(slot_position)
@@ -268,12 +309,29 @@ def evaluate_player_for_slot(
     form = player.state.form
     fitness = player.state.fitness
 
-    selection_score = (
+    base_selection_score = (
         eval_ovr * 0.50
         + role_eff * 0.20
         + form * 0.10
         + fitness * 0.10
         + manager_pref * 0.10
+    )
+
+    # Bounded youth bonus for starting XI (max 3.0 pts)
+    starter_youth_bonus = calculate_youth_bonus(player, manager, competition_importance, max_bonus=3.0, as_of=as_of)
+    selection_score = base_selection_score + starter_youth_bonus
+
+    # Sub Priority Score for bench evaluation
+    bench_youth_bonus = calculate_youth_bonus(player, manager, competition_importance, max_bonus=12.0, as_of=as_of)
+    rotation_bonus = calculate_rotation_bonus(player, manager, competition_importance, season_minutes, max_bonus=10.0)
+
+    sub_priority_score = (
+        eval_ovr * 0.40
+        + role_eff * 0.20
+        + form * 0.15
+        + fitness * 0.15
+        + bench_youth_bonus
+        + rotation_bonus
     )
 
     slot = LineupSlot(
@@ -283,6 +341,7 @@ def evaluate_player_for_slot(
         role_familiarity=familiarity,
         role_attribute_fit=attr_fit,
         role_effectiveness=role_eff,
+        sub_priority_score=sub_priority_score,
     )
     return selection_score, slot
 
@@ -362,15 +421,23 @@ def select_lineup(
     club_id: int,
     formation: TacticalPreset | None = None,
     manager_pref_map: dict[str, float] | None = None,
+    manager: Manager | None = None,
+    competition_importance: float = 50.0,
+    season_minutes_map: dict[str, int] | None = None,
+    as_of: date | None = None,
 ) -> Lineup:
     if formation is None:
         formation = FORMATION_PRESETS["4-3-3"]
     if manager_pref_map is None:
         manager_pref_map = {}
+    if season_minutes_map is None:
+        season_minutes_map = {}
 
     available_players = list(squad)
     starters: list[LineupSlot] = []
     selected_player_ids = set()
+
+    sub_priority_scores: dict[str, float] = {}
 
     for slot_pos in formation.position_slots:
         target_role = formation.role_requirements.get(slot_pos)
@@ -390,7 +457,17 @@ def select_lineup(
                     continue
 
             pref = manager_pref_map.get(p.id, 50.0)
-            score, slot = evaluate_player_for_slot(p, slot_pos, target_role, pref)
+            mins = season_minutes_map.get(p.id, 0)
+            score, slot = evaluate_player_for_slot(
+                p,
+                slot_pos,
+                target_role,
+                manager_pref=pref,
+                manager=manager,
+                competition_importance=competition_importance,
+                season_minutes=mins,
+                as_of=as_of,
+            )
             # Deterministic tie-breaker: (-score, player.id)
             candidates.append((score, p.id, slot))
 
@@ -402,8 +479,24 @@ def select_lineup(
 
     # Remaining players go to bench
     bench = [p for p in squad if p.id not in selected_player_ids]
-    # Sort bench deterministically by position_ovr
-    bench.sort(key=lambda p: (-position_ovr(p, p.primary_position), p.id))
+
+    # Precompute sub_priority_score for all squad members for fast access in match performance
+    for p in squad:
+        pref = manager_pref_map.get(p.id, 50.0)
+        mins = season_minutes_map.get(p.id, 0)
+        _, slot = evaluate_player_for_slot(
+            p,
+            p.primary_position,
+            target_role=None,
+            manager_pref=pref,
+            manager=manager,
+            competition_importance=competition_importance,
+            season_minutes=mins,
+            as_of=as_of,
+        )
+        sub_priority_scores[p.id] = slot.sub_priority_score
+
+    bench.sort(key=lambda p: (-sub_priority_scores.get(p.id, 0.0), p.id))
 
     if starters:
         avg_ovr = sum(position_ovr(slot.player, slot.slot_position) for slot in starters) / len(starters)
@@ -422,4 +515,6 @@ def select_lineup(
         average_ovr=avg_ovr,
         average_role_effectiveness=avg_role_eff,
         tactical_fit=tac_fit,
+        manager=manager,
+        sub_priority_scores=sub_priority_scores,
     )

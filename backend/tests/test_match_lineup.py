@@ -8,11 +8,33 @@ from app.match.lineup import (
     LineupSlot,
     TacticalPreset,
     calculate_effective_team_strength,
+    calculate_rotation_bonus,
     calculate_tactical_fit,
     calculate_xi_quality,
+    calculate_youth_bonus,
+    evaluate_player_for_slot,
     select_lineup,
 )
 from app.player.domain import DevelopmentProfile, Player, PlayerAttributes, PlayerState
+from app.world.entities import Manager
+
+
+def _create_mock_manager(
+    name: str = "Manager",
+    youth_pref: float = 50.0,
+    rotation: float = 50.0,
+) -> Manager:
+    return Manager(
+        name=name,
+        tactical_quality=80.0,
+        player_development=80.0,
+        game_management=80.0,
+        rotation=rotation,
+        adaptability=80.0,
+        tactical_style="balanced",
+        youth_preference=youth_pref,
+        discipline=80.0,
+    )
 
 
 def _create_mock_player(
@@ -24,6 +46,7 @@ def _create_mock_player(
     fitness: float = 100.0,
     sec_positions: tuple[str, ...] = (),
     attr_val: float = 70.0,
+    birth_year: int = 2000,
 ) -> Player:
     attrs = PlayerAttributes(
         acceleration=attr_val,
@@ -70,7 +93,7 @@ def _create_mock_player(
         name="Name",
         surname=player_id,
         nationality="ARG",
-        birth_date=date(2000, 1, 1),
+        birth_date=date(birth_year, 1, 1),
         height=180.0,
         weight=75.0,
         preferred_foot="RIGHT",
@@ -105,6 +128,56 @@ def _create_full_squad() -> list[Player]:
         _create_mock_player("CM3", "CM", attr_val=68.0),
     ]
     return squad
+
+
+def test_youth_preference_changes_opportunity() -> None:
+    p_youth = _create_mock_player("YOUTH17", "ST", attr_val=70.0, birth_year=2009) # 17yo
+    mgr_low = _create_mock_manager(youth_pref=10.0)
+    mgr_high = _create_mock_manager(youth_pref=90.0)
+
+    bonus_low = calculate_youth_bonus(p_youth, mgr_low, competition_importance=20.0, max_bonus=12.0)
+    bonus_high = calculate_youth_bonus(p_youth, mgr_high, competition_importance=20.0, max_bonus=12.0)
+
+    assert bonus_high > bonus_low > 0.0
+
+
+def test_rotation_preference_changes_opportunity() -> None:
+    p_rot = _create_mock_player("ROT_PLAYER", "CM", attr_val=70.0)
+    mgr_low = _create_mock_manager(rotation=10.0)
+    mgr_high = _create_mock_manager(rotation=90.0)
+
+    bonus_low = calculate_rotation_bonus(p_rot, mgr_low, competition_importance=20.0, season_minutes=100)
+    bonus_high = calculate_rotation_bonus(p_rot, mgr_high, competition_importance=20.0, season_minutes=100)
+
+    assert bonus_high > bonus_low > 0.0
+
+
+def test_competition_importance_suppresses_bonuses() -> None:
+    p_youth = _create_mock_player("YOUTH17", "ST", attr_val=70.0, birth_year=2009)
+    mgr = _create_mock_manager(youth_pref=90.0, rotation=90.0)
+
+    youth_high_imp = calculate_youth_bonus(p_youth, mgr, competition_importance=100.0)
+    youth_low_imp = calculate_youth_bonus(p_youth, mgr, competition_importance=20.0)
+
+    rot_high_imp = calculate_rotation_bonus(p_youth, mgr, competition_importance=100.0, season_minutes=100)
+    rot_low_imp = calculate_rotation_bonus(p_youth, mgr, competition_importance=20.0, season_minutes=100)
+
+    assert youth_high_imp == 0.0
+    assert rot_high_imp == 0.0
+    assert youth_low_imp > 0.0
+    assert rot_low_imp > 0.0
+
+
+def test_high_minute_player_receives_lower_rotation_bonus() -> None:
+    p_play = _create_mock_player("P_PLAY", "CM", attr_val=70.0)
+    mgr = _create_mock_manager(rotation=80.0)
+
+    bonus_0mins = calculate_rotation_bonus(p_play, mgr, competition_importance=30.0, season_minutes=0)
+    bonus_2000mins = calculate_rotation_bonus(p_play, mgr, competition_importance=30.0, season_minutes=2000)
+    bonus_3000mins = calculate_rotation_bonus(p_play, mgr, competition_importance=30.0, season_minutes=3000)
+
+    assert bonus_0mins > bonus_2000mins > bonus_3000mins
+    assert bonus_3000mins == 0.0
 
 
 def test_1_formation_presets() -> None:
@@ -259,7 +332,6 @@ def test_14_natural_position_lineup_better_tactical_fit() -> None:
     squad_natural = _create_full_squad()
     lineup_nat = select_lineup(squad_natural, club_id=1)
 
-    # Forced out of position squad (all defenders forced to play ST/LW/RW)
     squad_forced = [
         _create_mock_player("GK1", "GK"),
         _create_mock_player("CB1", "CB"), _create_mock_player("CB2", "CB"),
@@ -291,7 +363,6 @@ def test_16_effective_team_strength_calculation() -> None:
     )
     assert isinstance(eff_str, EffectiveTeamStrength)
     assert 1.0 <= eff_str.effective_strength <= 100.0
-    # Expected weighted sum calculation check
     expected = (80.0 * 0.65) + (75.0 * 0.15) + (70.0 * 0.05) + (85.0 * 0.05) + (70.0 * 0.05) + (100.0 * 0.05)
     assert abs(eff_str.effective_strength - expected) < 1e-4
 
@@ -309,7 +380,6 @@ def test_17_deterministic_lineup_selection() -> None:
 
 
 def test_18_stable_tie_breaking() -> None:
-    # Two identical players
     p_b = _create_mock_player("B_PLAYER", "ST", attr_val=75.0)
     p_a = _create_mock_player("A_PLAYER", "ST", attr_val=75.0)
 
@@ -323,14 +393,12 @@ def test_18_stable_tie_breaking() -> None:
     ]
     lineup = select_lineup(squad, club_id=1)
     st_slot = next(s for s in lineup.starters if s.slot_position == "ST")
-    # Alphabetically earlier ID ('A_PLAYER') wins stable tie-break
     assert st_slot.player.id == "A_PLAYER"
 
 
 def test_19_no_potential_guarantee_for_youth() -> None:
-    # High OVR veteran vs Low OVR wonderkid with 99 potential
     vet = _create_mock_player("VETERAN", "ST", ca=85.0, pot=85.0, attr_val=85.0)
-    kid = _create_mock_player("YOUTH_POT99", "ST", ca=60.0, pot=99.0, attr_val=60.0)
+    kid = _create_mock_player("YOUTH_POT99", "ST", ca=60.0, pot=99.0, attr_val=60.0, birth_year=2009)
 
     squad = [
         _create_mock_player("GK1", "GK"), _create_mock_player("CB1", "CB"),
