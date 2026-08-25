@@ -18,17 +18,33 @@ class CareerPhase(StrEnum):
 @dataclass
 class SeasonalPlayingTimeInput:
     minutes_played: int = 2000
+    playing_time_factor: float | None = None
 
 
 @dataclass
 class SeasonalPerformanceInput:
     average_rating: float = 6.8
+    performance_factor: float | None = None
 
 
 @dataclass
 class SeasonalEnvironmentInput:
     facilities: float = 50.0
     manager_player_development: float = 50.0
+
+
+@dataclass
+class MatchDrivenSeasonInput:
+    season_performance: object
+    environment_input: SeasonalEnvironmentInput = field(default_factory=SeasonalEnvironmentInput)
+
+    @property
+    def playing_time_factor(self) -> float:
+        return float(getattr(self.season_performance, "playing_time_factor", 1.0))
+
+    @property
+    def performance_factor(self) -> float:
+        return float(getattr(self.season_performance, "performance_factor", 1.0))
 
 
 @dataclass

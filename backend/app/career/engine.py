@@ -7,12 +7,14 @@ from pathlib import Path
 from app.career.domain import (
     Career,
     CareerPhase,
+    MatchDrivenSeasonInput,
     Season,
     SeasonalEnvironmentInput,
     SeasonalPerformanceInput,
     SeasonalPlayingTimeInput,
     SeasonSnapshot,
 )
+from app.match.aggregation import SeasonPerformance
 from app.player.domain import Player
 from app.player.engine import current_ability, position_ovr
 
@@ -102,7 +104,11 @@ def calculate_development_budget(
 
     age_factor_val = get_age_factor(starting_age)
     development_rate_factor = 0.5 + (player.development_rate / 100.0)
-    playing_time_factor = get_playing_time_factor(playing_time.minutes_played)
+
+    if playing_time.playing_time_factor is not None:
+        playing_time_factor = playing_time.playing_time_factor
+    else:
+        playing_time_factor = get_playing_time_factor(playing_time.minutes_played)
 
     facilities_mod = 1.0 + ((environment.facilities - 50.0) / 500.0)
     manager_mod = 1.0 + ((environment.manager_player_development - 50.0) / 500.0)
@@ -111,7 +117,10 @@ def calculate_development_budget(
     prof = player.personality.get("professionalism", 50.0)
     professionalism_factor = 1.0 + ((prof - 50.0) / 625.0)
 
-    performance_factor = 1.0 + ((performance.average_rating - 6.8) / 10.0)
+    if performance.performance_factor is not None:
+        performance_factor = performance.performance_factor
+    else:
+        performance_factor = 1.0 + ((performance.average_rating - 6.8) / 10.0)
 
     state_avg = (player.state.confidence + player.state.morale + player.state.fitness + player.state.happiness) / 4.0
     player_state_factor = 1.0 + ((state_avg - 70.0) / 300.0)
@@ -385,3 +394,34 @@ def simulate_season(
     career.current_season_label = f"{next_start_year}/{str(next_start_year + 1)[-2:]}"
 
     return season
+
+
+def simulate_match_driven_season(
+    career: Career,
+    season_performance: SeasonPerformance,
+    environment: SeasonalEnvironmentInput | None = None,
+) -> Season:
+    """Adapts a match-aggregated SeasonPerformance into Season inputs and executes simulate_season."""
+    if environment is None:
+        environment = SeasonalEnvironmentInput()
+
+    driven_input = MatchDrivenSeasonInput(
+        season_performance=season_performance,
+        environment_input=environment,
+    )
+
+    playing_time_input = SeasonalPlayingTimeInput(
+        minutes_played=season_performance.minutes_played,
+        playing_time_factor=driven_input.playing_time_factor,
+    )
+    performance_input = SeasonalPerformanceInput(
+        average_rating=season_performance.average_rating,
+        performance_factor=driven_input.performance_factor,
+    )
+
+    return simulate_season(
+        career=career,
+        playing_time=playing_time_input,
+        performance=performance_input,
+        environment=environment,
+    )
