@@ -8,6 +8,32 @@ from app.competition.domain import (
     CompetitionStageType,
     CompetitionType,
 )
+from app.competition.fixtures import (
+    Fixture,
+    FixtureStatus,
+    calculate_match_importance,
+    generate_fixture_seed,
+    generate_round_robin_fixtures,
+    generate_single_elimination_fixtures,
+    generate_two_leg_elimination_fixtures,
+)
+from app.competition.form import (
+    FormRecord,
+    build_form_table,
+    calculate_form_points,
+    calculate_form_rate,
+    calculate_goal_difference,
+    record_form_result,
+)
+from app.competition.standings import (
+    PointsRule,
+    StandingEntry,
+    StandingsTable,
+    apply_match_result,
+    get_club_rank,
+    initialize_standings,
+    rank_standings,
+)
 
 __all__ = [
     "Competition",
@@ -18,4 +44,24 @@ __all__ = [
     "CompetitionParticipant",
     "CompetitionSeason",
     "CompetitionSeasonStatus",
+    "FixtureStatus",
+    "Fixture",
+    "generate_round_robin_fixtures",
+    "generate_single_elimination_fixtures",
+    "generate_two_leg_elimination_fixtures",
+    "generate_fixture_seed",
+    "calculate_match_importance",
+    "PointsRule",
+    "StandingEntry",
+    "StandingsTable",
+    "initialize_standings",
+    "apply_match_result",
+    "rank_standings",
+    "get_club_rank",
+    "FormRecord",
+    "record_form_result",
+    "build_form_table",
+    "calculate_form_points",
+    "calculate_form_rate",
+    "calculate_goal_difference",
 ]
