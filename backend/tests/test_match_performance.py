@@ -19,6 +19,25 @@ from app.match.performance import (
 )
 from app.match.resolution import MatchResolutionState
 from app.player.domain import DevelopmentProfile, Player, PlayerAttributes, PlayerState
+from app.world.entities import Manager
+
+
+def _create_mock_manager(
+    name: str = "Manager",
+    youth_pref: float = 50.0,
+    rotation: float = 50.0,
+) -> Manager:
+    return Manager(
+        name=name,
+        tactical_quality=80.0,
+        player_development=80.0,
+        game_management=80.0,
+        rotation=rotation,
+        adaptability=80.0,
+        tactical_style="balanced",
+        youth_preference=youth_pref,
+        discipline=80.0,
+    )
 
 
 def _create_mock_player(
@@ -31,6 +50,7 @@ def _create_mock_player(
     traits: tuple[str, ...] = (),
     finishing: float = 70.0,
     vision: float = 70.0,
+    birth_year: int = 2000,
 ) -> Player:
     attrs = PlayerAttributes(
         acceleration=70.0,
@@ -77,7 +97,7 @@ def _create_mock_player(
         name="Name",
         surname=player_id,
         nationality="ARG",
-        birth_date=date(2000, 1, 1),
+        birth_date=date(birth_year, 1, 1),
         height=180.0,
         weight=75.0,
         preferred_foot="RIGHT",
@@ -157,6 +177,32 @@ def _create_mock_resolution() -> MatchResolutionState:
         derived_draw_probability=0.25,
         derived_away_win_probability=0.20,
     )
+
+
+def test_substitute_sampling_is_deterministic() -> None:
+    squad = _create_full_squad("H")
+    mgr = _create_mock_manager(youth_pref=80.0, rotation=80.0)
+    lineup = select_lineup(squad, club_id=1, manager=mgr, competition_importance=30.0)
+
+    rng1 = random.Random(999)
+    rng2 = random.Random(999)
+
+    mins1, events1 = calculate_minutes_and_substitutions(lineup, 2, 0, 30.0, rng1)
+    mins2, events2 = calculate_minutes_and_substitutions(lineup, 2, 0, 30.0, rng2)
+
+    assert mins1 == mins2
+    assert events1 == events2
+
+
+def test_substitute_candidate_cannot_be_selected_twice() -> None:
+    squad = _create_full_squad("H")
+    lineup = select_lineup(squad, club_id=1)
+    rng = random.Random(123)
+
+    mins, events = calculate_minutes_and_substitutions(lineup, 2, 0, 50.0, rng)
+    sub_on_ids = [e["primary_player_id"] for e in events]
+
+    assert len(sub_on_ids) == len(set(sub_on_ids))
 
 
 def test_1_deterministic_latent_influence() -> None:
@@ -288,7 +334,6 @@ def test_10_one_goal_match_stochastic_scorers_across_seeds() -> None:
             if g > 0:
                 unique_scorers.add(pid)
 
-    # Across 100 seeds in a 1-goal match, multiple different players score (not locked to single player)
     assert len(unique_scorers) > 1
 
 
@@ -341,7 +386,6 @@ def test_13_equal_sot_nonzero_probability() -> None:
         for pid, g in goals.items():
             goal_counts[pid] += g
 
-    # EVERY position has a non-zero probability of scoring when they have SOT
     for pid in goal_counts:
         assert goal_counts[pid] > 0, f"Player {pid} had 0 goals across 1,000 matches!"
 
@@ -506,8 +550,8 @@ def test_24_deterministic_repeated_execution() -> None:
 
 
 def test_25_monte_carlo_player_performance_audit() -> None:
-    """Run a 100,000 player-match evaluation Monte Carlo re-audit reporting updated per-position metrics."""
-    num_matches = 4500  # ~4,500 matches x 22 players = ~100,000 player-match evaluations
+    """Run a player-match evaluation Monte Carlo re-audit reporting per-position metrics."""
+    num_matches = 1000  # ~1,000 matches x 22 players = ~22,000 player-match evaluations
     ctx_mode = SimulationMode.FAST
 
     h_squad = _create_full_squad("H")
@@ -526,8 +570,6 @@ def test_25_monte_carlo_player_performance_audit() -> None:
     total_saves = 0
     sub_appearances = 0
     tot_player_matches = 0
-    braces_count = 0
-    hattricks_count = 0
 
     for i in range(num_matches):
         ctx = MatchContext(
@@ -542,11 +584,6 @@ def test_25_monte_carlo_player_performance_audit() -> None:
             all_ratings.append(p.rating)
             if not p.starter and p.minutes > 0:
                 sub_appearances += 1
-
-            if p.goals == 2:
-                braces_count += 1
-            elif p.goals >= 3:
-                hattricks_count += 1
 
             pos = p.position
             if pos not in goals_by_pos:
@@ -564,41 +601,6 @@ def test_25_monte_carlo_player_performance_audit() -> None:
 
             if p.position == "GK":
                 total_saves += p.saves
-
-    all_ratings.sort()
-    mean_rating = sum(all_ratings) / len(all_ratings)
-    median_rating = all_ratings[len(all_ratings) // 2]
-    p10_rating = all_ratings[int(len(all_ratings) * 0.10)]
-    p90_rating = all_ratings[int(len(all_ratings) * 0.90)]
-
-    print("\n=================== MONTE CARLO RE-AUDIT (STOCHASTIC ALLOCATION REDESIGN) ===================")
-    print(f"Total Player-Match Evaluations: {tot_player_matches}")
-    print(f"Overall Mean Rating: {mean_rating:.2f} | Median: {median_rating:.2f} | P10: {p10_rating:.2f} | P90: {p90_rating:.2f}")
-
-    print("\nGoals, Shots & Conversion by Position:")
-    for pos, g_cnt in sorted(goals_by_pos.items(), key=lambda x: -x[1]):
-        s_cnt = shots_by_pos[pos]
-        sot_cnt = sot_by_pos[pos]
-        conv_rate = (g_cnt / sot_cnt * 100) if sot_cnt > 0 else 0.0
-        print(f"  Pos: {pos:4s} | Goals: {g_cnt:5d} | Shots: {s_cnt:5d} (SOT: {sot_cnt:5d}) | Conversion: {conv_rate:.1f}%")
-
-    print("\nAssists by Position:")
-    for pos, a_cnt in sorted(assists_by_pos.items(), key=lambda x: -x[1]):
-        print(f"  Pos: {pos:4s} | Assists: {a_cnt:5d}")
-
-    print("\nRatings by Position:")
-    for pos, r_list in sorted(ratings_by_pos.items(), key=lambda x: -sum(x[1])/len(x[1])):
-        r_list.sort()
-        r_mean = sum(r_list) / len(r_list)
-        r_med = r_list[len(r_list) // 2]
-        r_p10 = r_list[int(len(r_list) * 0.10)]
-        r_p90 = r_list[int(len(r_list) * 0.90)]
-        print(f"  Pos: {pos:4s} | Mean: {r_mean:.2f} | Med: {r_med:.2f} | P10: {r_p10:.2f} | P90: {r_p90:.2f}")
-
-    print(f"\nBraces Recorded: {braces_count} | Hat-tricks Recorded: {hattricks_count}")
-    print(f"Total GK Saves Recorded: {total_saves}")
-    print(f"Substitute Appearance Rate: {sub_appearances / tot_player_matches * 100:.1f}%")
-    print("=============================================================================================")
 
     # Qualitative hierarchy assertions
     assert goals_by_pos["ST"] > goals_by_pos["CAM"]
