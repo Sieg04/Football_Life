@@ -3,7 +3,7 @@
 **Version:** 1.5
 **Status:** Approved Architecture Specification
 **Project:** Football Life
-**Primary Goal:** Deterministic football career simulation with emergent player development, competition, performance and career trajectories.
+**Primary Goal:** Deterministic football career simulation with emergent player development, competition, match performance and career trajectories.
 
 ---
 
@@ -31,7 +31,7 @@ Development
 Next Season
 ```
 
-The project is designed around independent simulation domains that communicate through explicit domain objects.
+The project is designed around independent simulation domains communicating through explicit domain objects.
 
 The system must support:
 
@@ -134,6 +134,8 @@ player_roles.json
 player_traits.json
 player_archetypes.json
 career_archetypes.json
+competitions.json
+competition_formats.json
 ```
 
 New configurable systems should prefer JSON configuration over hardcoded constants.
@@ -288,7 +290,7 @@ Player
 
 # 8. INTERNAL PLAYER ATTRIBUTES
 
-Attributes are integer-like values constrained to:
+Attributes are constrained to:
 
 ```text
 1–100
@@ -653,7 +655,7 @@ Next Season
 
 # 23. CAREER DOMAIN
 
-```python
+```text
 Career
 Season
 SeasonSnapshot
@@ -725,7 +727,7 @@ BASE_RATE = 4.0
 
 # 26. POTENTIAL FACTOR
 
-Current baseline:
+Baseline:
 
 ```text
 potential_gap =
@@ -857,7 +859,7 @@ Rules are data-driven through:
 career_archetypes.json
 ```
 
-Current approved thresholds include:
+Approved thresholds include:
 
 ```text
 WONDERKID:
@@ -1016,7 +1018,7 @@ youth_bonus =
   × MAX_YOUTH_BONUS
 ```
 
-Approved defaults:
+Defaults:
 
 ```text
 Starter bonus = 3
@@ -1154,7 +1156,7 @@ GK            0.01
 
 Goal assignment uses seeded weighted stochastic sampling.
 
-Repeat goals apply diminishing return:
+Repeat goals apply diminishing returns:
 
 ```text
 0.70^k
@@ -1197,7 +1199,8 @@ GK  → saves, goals prevented
 
 Clamp:
 
-```text 1.0–10.0
+```text
+1.0–10.0
 ```
 
 ---
@@ -1314,16 +1317,15 @@ Phase 5 must maintain:
 
 Phase 6 introduces the competition structure that connects individual matches into complete football seasons.
 
-Phase 6 exists because the current Match Engine can simulate individual matches but does not yet own:
+Phase 6 exists because the Match Engine can simulate individual matches but does not own:
 
 * fixture sequencing
 * competition progression
 * standings
 * form tables
 * season lifecycle
-* tournament progression
 
-Phase 6 creates that layer.
+Phase 6 creates this layer.
 
 ---
 
@@ -1344,9 +1346,9 @@ Standings
         ↓
 Form
         ↓
-Season Performance
+Season Progression
         ↓
-Career Engine
+Career Context
 ```
 
 ---
@@ -1363,6 +1365,7 @@ CompetitionParticipant
 Fixture
 FixtureRound
 Standing
+FormRecord
 SeasonCompetitionResult
 SeasonSimulation
 ```
@@ -1383,18 +1386,20 @@ presentation
 
 # 55. COMPETITION DOMAIN
 
-The domain must define:
+The domain defines:
 
 ```text
 CompetitionType
 CompetitionFormat
 CompetitionStageType
+CompetitionSeasonStatus
 Competition
 CompetitionSeason
 CompetitionParticipant
+CompetitionStage
 ```
 
-Competition types include:
+Competition types:
 
 ```text
 LEAGUE
@@ -1403,7 +1408,14 @@ EUROPEAN
 INTERNATIONAL
 ```
 
-Formats must be configurable.
+Formats:
+
+```text
+ROUND_ROBIN
+SINGLE_ELIMINATION
+TWO_LEG_ELIMINATION
+LEAGUE_PHASE
+```
 
 ---
 
@@ -1423,13 +1435,21 @@ participant_count
 rules
 ```
 
-Competition definitions must be data-driven.
+Validation:
+
+* non-empty ID
+* non-empty name
+* importance `0–100`
+* level positive
+* participant count >= 2
+
+Competition rules must be data-driven.
 
 ---
 
 # 57. COMPETITION SEASON
 
-A CompetitionSeason represents one competition instance in a given football season.
+A CompetitionSeason represents one competition instance in one football season.
 
 ```text
 id
@@ -1439,55 +1459,76 @@ start_date
 end_date
 participants
 stages
+current_stage_index
 status
 winner_id
+seed
 ```
+
+Status:
+
+```text
+NOT_STARTED
+ACTIVE
+COMPLETED
+```
+
+Validation must ensure:
+
+* valid dates
+* at least two participants
+* unique participant clubs
+* participant season IDs match
+* unique stage IDs
+* stage season IDs match
+* non-empty seed
 
 ---
 
 # 58. COMPETITION PARTICIPANT
 
-Participant object:
-
 ```text
-club_id
 competition_season_id
+club_id
 seed
-status
 ```
 
-Participant status may include:
+Validation:
 
-```text
-ACTIVE
-ELIMINATED
-CHAMPION
-```
+* valid season ID
+* positive club ID
+* non-empty seed
+
+No database lookup is performed in the domain.
 
 ---
 
-# 59. COMPETITION STAGES
-
-Examples:
+# 59. COMPETITION STAGE
 
 ```text
-REGULAR_SEASON
-GROUP_STAGE
-LEAGUE_PHASE
-ROUND_OF_32
-ROUND_OF_16
-QUARTER_FINAL
-SEMI_FINAL
-FINAL
+id
+competition_season_id
+stage_type
+stage_number
+participant_club_ids
+completed
 ```
 
-Stage definitions must be configurable.
+Validation:
+
+* non-empty ID
+* valid season ID
+* stage number >= 1
+* at least two participant clubs
+* no duplicate participant clubs
+
+Stage progression is implemented later in 6D.
 
 ---
 
 # 60. FIXTURE DOMAIN
 
-Fixture contains:
+A Fixture contains:
 
 ```text
 fixture_id
@@ -1499,44 +1540,52 @@ away_club_id
 scheduled_date
 match_importance
 competition_importance
+rivalry_factor
 status
 match_id
 ```
 
----
-
-# 61. FIXTURE GENERATION
-
-Fixture generation must be deterministic.
-
-Input:
+Status initially:
 
 ```text
-competition participants
+SCHEDULED
+PLAYED
+```
+
+Future states may include:
+
+```text
+POSTPONED
+CANCELLED
+```
+
+---
+
+# 61. FIXTURE & CALENDAR ENGINE
+
+Stage 6B owns deterministic fixture generation.
+
+Inputs:
+
+```text
+participants
 competition format
+rules
+start date
 season seed
 ```
 
-Output:
+Outputs:
 
 ```text
-ordered fixture list
+ordered fixtures
 ```
 
-Identical inputs must produce identical fixtures.
+Identical inputs must always generate identical fixtures.
 
 ---
 
-# 62. LEAGUE FIXTURE GENERATION
-
-Standard league scheduling should support:
-
-* home/away balancing
-* round-robin scheduling
-* fixed participant count
-* deterministic round ordering
-* no duplicate pairing in the same half-season
-* configurable number of rounds
+# 62. ROUND-ROBIN FIXTURE GENERATION
 
 For a standard double round-robin:
 
@@ -1545,48 +1594,93 @@ matches_per_club =
 2 × (participant_count - 1)
 ```
 
+For 20 clubs:
+
+```text
+38 matches per club
+380 total matches
+```
+
+Requirements:
+
+* every pairing exactly twice
+* one home match
+* one away match
+* deterministic round ordering
+
 ---
 
-# 63. HOME / AWAY BALANCE
+# 63. ODD PARTICIPANT COUNTS
+
+Odd participant counts must be supported using a temporary bye slot.
+
+The bye:
+
+* is never persisted as a club
+* does not create a fixture
+* does not affect standings
+
+---
+
+# 64. HOME / AWAY BALANCE
 
 Fixture generation should minimize:
 
-```text
-consecutive home matches
-consecutive away matches
-```
+* excessive consecutive home matches
+* excessive consecutive away matches
 
-Subject to the configured competition format.
+Exact scheduling optimization must remain deterministic.
 
 ---
 
-# 64. COMPETITION IMPORTANCE
+# 65. CALENDAR DATES
 
-Fixture importance is generated from context.
+Default league interval:
 
-Inputs may include:
+```text
+7 days
+```
+
+Cup and European intervals are configurable.
+
+Phase 6 does not attempt to reproduce real-world fixture calendars.
+
+---
+
+# 66. MATCH IMPORTANCE
+
+Phase 6 calculates contextual importance from:
 
 ```text
 competition importance
 stage importance
-league position
-title race proximity
-relegation race proximity
 rivalry factor
-knockout status
+standings context
 ```
 
-Phase 6 may calculate contextual match importance.
+Initial baseline examples:
 
-Phase 6 must not duplicate Match Engine resolution.
+```text
+League         50
+Domestic Cup   55
+European       70
+Final          95
+```
+
+Clamp:
+
+```text
+0–100
+```
 
 ---
 
-# 65. STANDINGS
+# 67. STANDINGS ENGINE
 
-League standings must maintain:
+StandingEntry:
 
 ```text
+club_id
 played
 wins
 draws
@@ -1597,7 +1691,7 @@ goal_difference
 points
 ```
 
-Standard points:
+Default points:
 
 ```text
 win  = 3
@@ -1607,9 +1701,34 @@ loss = 0
 
 ---
 
-# 66. STANDINGS ORDER
+# 68. STANDINGS UPDATE
 
-Default ordering:
+Input:
+
+```text
+MatchResult
+```
+
+Output:
+
+```text
+updated standings
+```
+
+Update:
+
+1. played
+2. goals
+3. result
+4. goal difference
+5. points
+6. ranking
+
+---
+
+# 69. STANDINGS ORDER
+
+Default:
 
 ```text
 points DESC
@@ -1618,40 +1737,21 @@ goals_for DESC
 deterministic_tiebreak
 ```
 
-Competition-specific ordering can override this through configuration.
+Default deterministic tiebreak may use `club_id` until competition-specific head-to-head rules exist.
 
 ---
 
-# 67. STANDINGS UPDATE
+# 70. FORM ENGINE
 
-After every completed league fixture:
+Track recent completed matches.
 
-```text
-MatchResult
- ↓
-Validate
- ↓
-Update home club
-Update away club
- ↓
-Recompute ranking
-```
-
-Standings must be deterministic.
-
----
-
-# 68. FORM ENGINE
-
-Recent form tracks previous results.
-
-Default form window:
+Default window:
 
 ```text
-last 5 matches
+5 matches
 ```
 
-Form can include:
+Form stores:
 
 ```text
 wins
@@ -1660,60 +1760,184 @@ losses
 goals_for
 goals_against
 points
+results
 ```
 
-Form is exposed to Match Engine context.
+Results:
+
+```text
+W
+D
+L
+```
+
+Form can be passed to Match Engine as context.
+
+Phase 6 must not duplicate Match Engine form calculations.
 
 ---
 
-# 69. SEASON ORCHESTRATOR
+# 71. COMPETITION PROGRESSION
 
-The Season Orchestrator executes a competition season.
+Phase 6D handles stage progression.
+
+## League
+
+```text
+fixture completed
+↓
+standings updated
+↓
+next fixture
+```
+
+Competition is complete when all fixtures are played.
+
+Winner:
+
+```text
+rank 1
+```
+
+---
+
+# 72. SINGLE ELIMINATION
+
+Example:
+
+```text
+16 teams
+ ↓
+Round of 16
+ ↓
+Quarter-final
+ ↓
+Semi-final
+ ↓
+Final
+```
+
+Winners advance.
+
+Eliminated teams stop participating.
+
+---
+
+# 73. TWO-LEG TIES
+
+Two-leg competitions aggregate:
+
+```text
+Leg 1
++
+Leg 2
+↓
+Aggregate Score
+↓
+Winner
+```
+
+Initial defaults:
+
+* no away-goals rule
+* extra time configurable
+* penalties configurable
+* replay configurable
+
+---
+
+# 74. DRAW RESOLUTION
+
+When a competition requires a winner:
+
+```text
+DRAW_ALLOWED
+EXTRA_TIME
+PENALTIES
+REPLAY
+```
+
+These are Competition rules.
+
+Match Engine remains responsible only for normal match resolution.
+
+---
+
+# 75. CUP COMPETITIONS
+
+Cup rules may support:
+
+* single elimination
+* two-leg rounds
+* replays
+* home/away rules
+* extra time
+* penalties
+
+Exact rules are data-driven.
+
+---
+
+# 76. EUROPEAN COMPETITIONS
+
+Initial Phase 6 does not need to reproduce real-world UEFA formats exactly.
+
+Generic support is sufficient for:
+
+```text
+league phase
+qualification
+knockout
+```
+
+Real-world fixture replication is explicitly out of scope.
+
+---
+
+# 77. SEASON ORCHESTRATOR
+
+Phase 6E performs a complete competition season.
 
 Conceptual flow:
 
 ```text
-initialize competition season
+Initialize Competition Season
         ↓
-generate fixtures
+Generate Fixtures
         ↓
-for fixture:
-    create MatchContext
-    select lineups
-    resolve match
-    generate performances
-    aggregate results
-    update standings
-    update form
+For each fixture:
+    Create MatchContext
+    Select Lineups
+    Resolve Match
+    Generate Player Performances
+    Aggregate Results
+    Update Standings
+    Update Form
         ↓
-competition complete
+Competition Complete
         ↓
-determine winner
+Determine Winner
 ```
 
 ---
 
-# 70. MATCH ENGINE BOUNDARY
+# 78. MATCH ENGINE BOUNDARY
 
-Phase 6 must call:
+Phase 6 calls Match Engine.
 
-```text
-Match Engine
-```
-
-It must not reproduce:
+Phase 6 must not duplicate:
 
 * xG formulas
 * Poisson sampling
 * lineup selection
-* player rating formulas
-* development formulas
+* role effectiveness
+* player ratings
+* goal allocation
+* player development
 
 ---
 
-# 71. SEASON PERFORMANCE BOUNDARY
-
-Phase 6 produces match results and season context.
+# 79. SEASON PERFORMANCE BOUNDARY
 
 Phase 5E remains responsible for:
 
@@ -1728,97 +1952,15 @@ Phase 4 remains responsible for:
 ```text
 development budget
 attribute growth
-aging
+age curve
 decline
 ```
 
 ---
 
-# 72. COMPETITION PROGRESSION
+# 80. GLOBAL SEASON STATE
 
-For knockout competitions:
-
-```text
-Stage
- ↓
-Generate pairings
- ↓
-Play fixtures
- ↓
-Determine winners
- ↓
-Generate next stage
-```
-
-Knockout ties may be:
-
-```text
-single_leg
-two_leg
-```
-
-according to configuration.
-
----
-
-# 73. DRAW HANDLING
-
-If a competition requires a winner and the match ends drawn:
-
-Phase 6 may invoke competition-specific resolution:
-
-```text
-extra_time
-penalties
-replay
-```
-
-This must be a Competition rule, not hardcoded into Match Engine.
-
----
-
-# 74. CUP COMPETITIONS
-
-Cup rules must support:
-
-* single elimination
-* optional two-leg rounds
-* configured replays
-* configured home/away rules
-* configured extra time
-* configured penalties
-
----
-
-# 75. EUROPEAN COMPETITIONS
-
-The initial implementation does not need to reproduce real-world competition formats exactly.
-
-The system should support generic configurable forms such as:
-
-```text
-league phase
-qualification stage
-knockout rounds
-```
-
-Exact real-world scheduling is not required in Phase 6.
-
----
-
-# 76. INTERNATIONAL COMPETITIONS
-
-International competitions use the same competition abstractions.
-
-However, international squad selection is outside Phase 6.
-
-Phase 6 can operate on provided participants.
-
----
-
-# 77. SEASON STATE
-
-The Season Engine should maintain:
+The future global season runner should be able to track:
 
 ```text
 season_label
@@ -1828,56 +1970,7 @@ competition_states
 completed_competitions
 ```
 
----
-
-# 78. GLOBAL SEASON ORCHESTRATION
-
-A future WorldSeason runner can coordinate:
-
-```text
-league fixtures
-cup fixtures
-European fixtures
-international fixtures
-```
-
-without changing Match Engine formulas.
-
----
-
-# 79. MATCH IMPORTANCE FROM STANDINGS
-
-Phase 6 may derive contextual importance.
-
-Examples:
-
-```text
-title deciding match
-relegation battle
-European qualification
-cup final
-semi-final
-dead-rubber
-```
-
-This modifies MatchContext.
-
-It does not modify Match Resolution mathematics directly.
-
----
-
-# 80. PLAYER CONTEXT
-
-Competition results may indirectly affect:
-
-```text
-player form
-player reputation
-career evaluation
-future selection
-```
-
-but Phase 6 must not implement transfer or narrative systems.
+This may coordinate multiple competitions.
 
 ---
 
@@ -1889,170 +1982,244 @@ Recommended:
 backend/app/competition/
 ├── __init__.py
 ├── domain.py
-├── formats.py
 ├── fixtures.py
+├── calendar.py
 ├── standings.py
 ├── form.py
-└── season.py
+├── progression.py
+├── season.py
+└── orchestrator.py
 ```
 
-Core engine remains pure.
+All core calculations remain pure.
 
 ---
 
 # 82. PHASE 6 PERSISTENCE
 
-Persistence belongs outside the pure competition engine.
+Persistence is external to the pure engine.
 
-Potential tables:
+Potential models:
 
 ```text
-competitions
-competition_seasons
-competition_participants
-competition_stages
-fixtures
-standings
+CompetitionModel
+CompetitionSeasonModel
+CompetitionParticipantModel
+CompetitionStageModel
+FixtureModel
+StandingModel
 ```
 
-Existing tables should be reused where appropriate.
+Existing models should be reused where appropriate.
 
-No duplication of:
+Do not duplicate:
 
 ```text
-clubs
-players
-managers
-matches
+ClubModel
+PlayerModel
+ManagerModel
+MatchModel
 ```
 
 ---
 
 # 83. PHASE 6 REPOSITORIES
 
-Possible repository layer:
+Potential repository layer:
 
 ```text
 CompetitionRepository
+CompetitionSeasonRepository
 FixtureRepository
 StandingRepository
-SeasonRepository
 ```
 
-Repositories translate between domain and SQLAlchemy.
+Repositories perform:
+
+* domain ↔ ORM mapping
+* load
+* save
+* transactional persistence
+
+Repositories must not contain simulation formulas.
 
 ---
 
 # 84. PHASE 6 CONFIGURATION
 
-Recommended configuration:
+Recommended files:
 
 ```text
 backend/data/rules/competitions.json
 backend/data/rules/competition_formats.json
 ```
 
-Configuration should contain:
+Configuration includes:
 
 * point systems
-* stage structures
 * participant counts
 * round counts
+* home/away rules
+* stage structures
 * knockout rules
 * importance levels
-* tie-breaking rules
+* tie-break rules
+* calendar intervals
 
 ---
 
 # 85. PHASE 6 TESTING
 
-Phase 6 must include unit tests for:
+## 85.1 6A Competition Domain
 
-## Competition Domain
+Tests:
 
 * valid Competition
+* invalid Competition
+* valid Participant
+* invalid Participant
+* valid Stage
+* duplicate stage participants
 * valid CompetitionSeason
-* stage validation
-* participant validation
+* invalid dates
+* duplicate clubs
+* mismatched season IDs
+* enum values
+* immutable equality
+* zero infrastructure imports
 
-## Fixtures
+Target:
 
-* deterministic generation
-* no duplicate pairings
+```text
+20–30 tests
+```
+
+---
+
+## 85.2 6B Fixtures
+
+Tests:
+
+* deterministic round-robin
+* 20-team 380 fixture validation
+* every pairing exactly twice
 * home/away balance
-* correct round count
-* correct participant count
+* odd participant handling
+* round count
+* date progression
 
-## Standings
+---
+
+## 85.3 6C Standings and Form
+
+Tests:
 
 * points
 * goals
 * goal difference
-* ranking
+* rankings
 * tie-breaks
-
-## Form
-
-* last five results
+* five-match form window
 * deterministic ordering
-* points calculation
-
-## Knockouts
-
-* stage progression
-* winner advancement
-* elimination
-
-## Season Orchestration
-
-* complete league season
-* complete cup
-* complete competition
-* correct final standings
-* correct winner
+* input-order independence
 
 ---
 
-# 86. PHASE 6 DETERMINISM TESTS
+## 85.4 6D Progression
 
-Tests must verify:
+Tests:
+
+* knockout advancement
+* elimination
+* bracket integrity
+* two-leg aggregate
+* draw resolution
+* winner determination
+* deterministic progression
+
+---
+
+## 85.5 6E Season Orchestrator
+
+Tests:
+
+* complete league
+* complete cup
+* Match Engine integration
+* standings progression
+* form progression
+* season winner
+* deterministic full-season replay
+* Phase 4/5 regression
+
+---
+
+# 86. PHASE 6 STATISTICAL AUDITS
+
+## Audit A — Fixture Audit
+
+100 competitions.
+
+Measure:
+
+* duplicated pairings
+* home/away balance
+* consecutive home/away streaks
+* fixture coverage
+* rounds
+
+## Audit B — League Audit
+
+100 complete league seasons.
+
+Measure:
+
+* winner distribution
+* points distribution
+* wins/draws/losses
+* goals
+* table concentration
+
+## Audit C — Full Season Audit
+
+100 complete world seasons.
+
+Measure:
+
+* total fixtures
+* total goals
+* average points
+* champion diversity
+* form distribution
+* player minutes
+* player performance
+* development impact
+
+---
+
+# 87. PHASE 6 DETERMINISM
+
+Must verify:
 
 ```text
-same competition seed
-+
 same participants
 +
 same rules
++
+same season seed
 =
-identical fixture list
+same fixtures
++
+same match contexts
++
+same results
++
+same standings
++
+same winner
 ```
 
-and:
-
-```text
-same fixture seed
-=
-identical season result
-```
-
-Cross-process determinism must be verified.
-
----
-
-# 87. PHASE 6 STATISTICAL AUDITS
-
-Large audits should measure:
-
-```text
-home/away balance
-fixture distribution
-points distribution
-wins/draws/losses
-goals
-standings concentration
-```
-
-No competitive balance correction should be hardcoded without empirical evidence.
+Cross-process determinism is mandatory.
 
 ---
 
@@ -2060,15 +2227,22 @@ No competitive balance correction should be hardcoded without empirical evidence
 
 Phase 6 is complete when:
 
-* a league can generate a complete fixture list
-* all fixtures resolve through Match Engine
-* standings update correctly
-* form updates correctly
-* a winner is determined
-* match importance can be derived contextually
-* complete season results are deterministic
-* Phase 1–5 tests remain green
-* no infrastructure leaks into pure competition domain
+```text
+[ ] Competition domain validated
+[ ] Fixtures deterministic
+[ ] No duplicate fixtures
+[ ] Home/away balanced
+[ ] Standings mathematically correct
+[ ] Form correctly maintained
+[ ] Knockout progression correct
+[ ] Complete league season works
+[ ] Complete cup season works
+[ ] Match Engine integration works
+[ ] Career Engine integration remains intact
+[ ] Cross-process deterministic
+[ ] No infrastructure leaks in pure domain
+[ ] All previous tests remain green
+```
 
 ---
 
@@ -2084,11 +2258,12 @@ Relationships
 Narrative
 Economy
 Sponsorship
-Media
-International player selection
+Board System
+International Player Selection
+Media System
 Presentation Mode
-Full real-world fixture replication
-Advanced tactical AI
+Advanced Tactical AI
+Full Real-World Fixture Replication
 ```
 
 ---
@@ -2097,14 +2272,15 @@ Advanced tactical AI
 
 Deferred.
 
-Phase 7 will eventually depend on:
+Phase 7 will depend on:
 
 * competition performance
 * player reputation
 * club attractiveness
 * squad needs
-* contract state
+* contract status
 * market value
+* playing time
 
 Phase 7 must not be implemented during Phase 6.
 
@@ -2116,13 +2292,12 @@ Deferred.
 
 Potential inputs:
 
-```text fatigue
-minutes
-physical profile
-match load
-```
+* fatigue
+* minutes
+* physical profile
+* match load
 
-No persistent injury simulation is part of Phase 6.
+No persistent injury simulation belongs to Phase 6.
 
 ---
 
@@ -2132,12 +2307,11 @@ Deferred.
 
 Potential systems:
 
-```text manager changes
-club objectives
-club philosophy
-youth academy
-board expectations
-```
+* manager changes
+* club objectives
+* club philosophy
+* youth academy
+* board expectations
 
 ---
 
@@ -2147,12 +2321,11 @@ Deferred.
 
 Potential systems:
 
-```text events
-relationships
-media
-morale
-career decisions
-```
+* relationships
+* media
+* morale events
+* career decisions
+* narrative events
 
 ---
 
@@ -2162,10 +2335,9 @@ Deferred.
 
 Potential systems:
 
-```text national selection
-international tournaments
-national team reputation
-```
+* national selection
+* international tournaments
+* national team reputation
 
 ---
 
@@ -2175,7 +2347,7 @@ Deferred.
 
 Presentation must consume simulation results.
 
-Presentation must not alter simulation logic.
+Presentation must never alter simulation logic.
 
 ---
 
@@ -2189,7 +2361,7 @@ Full regression command:
 PYTHONPATH=backend python3 -m pytest backend/tests
 ```
 
-No phase is considered complete with failing previous tests.
+No phase is complete with failing previous tests.
 
 ---
 
@@ -2199,11 +2371,11 @@ Large Monte Carlo audits should be staged:
 
 ```text
 10
-↓
+ ↓
 100
-↓
+ ↓
 500
-↓
+ ↓
 1000+
 ```
 
@@ -2220,7 +2392,7 @@ For every engine:
 3. structural independence tests
 4. targeted behavioral audit
 5. larger statistical audit
-6. regression suite
+6. full regression suite
 
 ---
 
@@ -2230,11 +2402,11 @@ When an audit fails:
 
 ```text
 single entity
-↓
+ ↓
 single season
-↓
+ ↓
 small population
-↓
+ ↓
 large population
 ```
 
@@ -2297,9 +2469,46 @@ Each sub-stage must be implemented and audited independently.
 
 ---
 
-# 102. FINAL ARCHITECTURAL RULE
+# 102. FIRST IMPLEMENTATION TASK
 
-The simulation must always preserve this dependency direction:
+The immediate implementation target is:
+
+```text
+PHASE 6A — COMPETITION DOMAIN
+```
+
+Only create:
+
+```text
+backend/app/competition/__init__.py
+backend/app/competition/domain.py
+backend/tests/test_competition_domain.py
+```
+
+unless a minimal pure configuration adjustment is strictly necessary.
+
+Do not implement:
+
+* fixture generation
+* calendar generation
+* standings
+* form engine
+* progression
+* season orchestration
+* Match Engine integration
+* Career Engine integration
+* persistence
+* SQLAlchemy
+* Alembic
+* repositories
+
+Stop after 6A.
+
+---
+
+# 103. FINAL ARCHITECTURAL RULE
+
+The simulation must preserve this dependency direction:
 
 ```text
 World
@@ -2319,7 +2528,7 @@ Season Aggregation
 Development
 ```
 
-Future systems may consume information from earlier systems, but must not duplicate their internal rules.
+Future systems may consume information from earlier systems but must not duplicate their internal rules.
 
 The ultimate goal is a deterministic, modular football world where careers emerge from the interaction between:
 
@@ -2340,5 +2549,7 @@ season progression
 ```
 
 rather than from scripted career outcomes.
+
+---
 
 **END OF PROJECT SPEC v1.5**
