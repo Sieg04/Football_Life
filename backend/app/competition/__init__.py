@@ -34,12 +34,18 @@ from app.competition.match_executor import (
     execute_fixture_with_match_engine,
 )
 from app.competition.orchestrator import (
+    CompetitionSeasonBinding,
     FixtureExecutionResult,
     FixtureExecutor,
+    FullCompetitionSeasonResult,
+    MultiCompetitionSeasonResult,
     OrchestrationContext,
     SeasonSimulationConfig,
     SeasonSimulationResult,
+    TieBreakProvider,
     simulate_competition_season,
+    simulate_full_competition_season,
+    simulate_multi_competition_season,
 )
 from app.competition.progression import (
     ProgressionResult,
@@ -118,6 +124,12 @@ __all__ = [
     "SeasonSimulationResult",
     "FixtureExecutor",
     "simulate_competition_season",
+    "FullCompetitionSeasonResult",
+    "CompetitionSeasonBinding",
+    "MultiCompetitionSeasonResult",
+    "TieBreakProvider",
+    "simulate_full_competition_season",
+    "simulate_multi_competition_season",
     "MatchFixtureExecutionResult",
     "MatchSimulationParticipants",
     "ParticipantResolver",
