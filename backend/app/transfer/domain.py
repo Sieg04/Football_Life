@@ -36,36 +36,3 @@ class MarketValue:
     def __post_init__(self) -> None:
         if self.value < 0:
             raise ValueError(f"market value ({self.value}) cannot be negative")
-
-
-@dataclass(frozen=True)
-class ClubNeed:
-    position: str
-    need_score: float
-    depth_gap: float = 0.0
-    quality_gap: float = 0.0
-    age_risk: float = 0.0
-    role_gap: float = 0.0
-    squad_balance: float = 0.0
-    breakdown: dict[str, float] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        if not (0.0 <= self.need_score <= 100.0):
-            raise ValueError(f"need_score ({self.need_score}) must be between 0 and 100")
-
-
-@dataclass(frozen=True)
-class PlayerFit:
-    player_id: str
-    club_id: int | str
-    fit_score: float
-    quality_fit: float = 0.0
-    role_fit: float = 0.0
-    tactical_fit: float = 0.0
-    age_fit: float = 0.0
-    squad_need_fit: float = 0.0
-    breakdown: dict[str, float] = field(default_factory=dict)
-
-    def __post_init__(self) -> None:
-        if not (0.0 <= self.fit_score <= 100.0):
-            raise ValueError(f"fit_score ({self.fit_score}) must be between 0 and 100")

@@ -58,48 +58,5 @@
     "one_year": 65.0,
     "sub_year": 85.0,
     "expired": 100.0
-  },
-  "club_needs": {
-    "target_squad_size": 25,
-    "target_quality_base": 45.0,
-    "target_quality_prestige_weight": 0.45,
-    "weights": {
-      "depth_gap": 0.35,
-      "quality_gap": 0.35,
-      "age_risk": 0.15,
-      "role_gap": 0.10,
-      "squad_balance": 0.05
-    },
-    "ideal_depth": {
-      "GK": 2,
-      "CB": 4,
-      "LB": 2,
-      "RB": 2,
-      "DM": 2,
-      "CM": 3,
-      "CAM": 2,
-      "LW": 2,
-      "RW": 2,
-      "ST": 3
-    }
-  },
-  "player_fit": {
-    "weights": {
-      "squad_need_fit": 0.35,
-      "quality_fit": 0.30,
-      "role_fit": 0.15,
-      "tactical_fit": 0.10,
-      "age_fit": 0.10
-    }
-  },
-  "club_attractiveness": {
-    "weights": {
-      "prestige": 0.30,
-      "league_strength": 0.25,
-      "financial_power": 0.20,
-      "manager_quality": 0.10,
-      "facilities": 0.10,
-      "squad_quality": 0.05
-    }
   }
 }
