@@ -25,6 +25,14 @@ from app.competition.form import (
     calculate_goal_difference,
     record_form_result,
 )
+from app.competition.match_executor import (
+    MatchFixtureExecutionResult,
+    MatchSimulationParticipants,
+    ParticipantResolver,
+    build_match_context,
+    build_match_engine_executor,
+    execute_fixture_with_match_engine,
+)
 from app.competition.orchestrator import (
     FixtureExecutionResult,
     FixtureExecutor,
@@ -94,4 +102,10 @@ __all__ = [
     "SeasonSimulationResult",
     "FixtureExecutor",
     "simulate_competition_season",
+    "MatchFixtureExecutionResult",
+    "MatchSimulationParticipants",
+    "ParticipantResolver",
+    "build_match_context",
+    "execute_fixture_with_match_engine",
+    "build_match_engine_executor",
 ]
