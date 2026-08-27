@@ -79,5 +79,31 @@
     "max_targets_per_club": 5,
     "min_negotiation_factor": 0.90,
     "max_negotiation_factor": 1.25
+  },
+  "player_decision": {
+    "acceptance_threshold": 50.0,
+    "weights": {
+      "wage": 0.35,
+      "prestige": 0.25,
+      "playing_time": 0.25,
+      "ambition": 0.15
+    }
+  },
+  "club_decision": {
+    "acceptance_threshold": 50.0,
+    "weights": {
+      "fee_vs_value": 0.45,
+      "player_importance": 0.25,
+      "contract_pressure": 0.20,
+      "squad_depth": 0.10
+    }
+  },
+  "competing_offers": {
+    "weights": {
+      "transfer_fee": 0.40,
+      "buyer_prestige": 0.30,
+      "wage_offer": 0.20,
+      "fit_score": 0.10
+    }
   }
 }

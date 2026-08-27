@@ -21,6 +21,21 @@ class StructuredReason(StrEnum):
     STAR_REPLACEMENT = "STAR_REPLACEMENT"
     CONTRACT_EXPIRY = "CONTRACT_EXPIRY"
     VALUE_OPPORTUNITY = "VALUE_OPPORTUNITY"
+    PLAYER_WAGE = "PLAYER_WAGE"
+    DESTINATION_PRESTIGE = "DESTINATION_PRESTIGE"
+    PLAYING_TIME = "PLAYING_TIME"
+    CONTRACT_PRESSURE = "CONTRACT_PRESSURE"
+    MARKET_VALUE = "MARKET_VALUE"
+    TRANSFER_FEE = "TRANSFER_FEE"
+    PLAYER_IMPORTANCE = "PLAYER_IMPORTANCE"
+
+
+class OfferDecisionStatus(StrEnum):
+    ACCEPTED = "ACCEPTED"
+    PLAYER_REJECTED = "PLAYER_REJECTED"
+    CLUB_REJECTED = "CLUB_REJECTED"
+    BOTH_REJECTED = "BOTH_REJECTED"
+    COMPETING_OFFER_LOST = "COMPETING_OFFER_LOST"
 
 
 @dataclass(frozen=True)
@@ -94,3 +109,42 @@ class TransferOffer:
             raise ValueError(f"wage_offer ({self.wage_offer}) cannot be negative")
         if self.contract_years <= 0:
             raise ValueError(f"contract_years ({self.contract_years}) must be strictly positive")
+
+
+@dataclass(frozen=True)
+class PlayerDecision:
+    accepted: bool
+    score: float
+    reasons: list[StructuredReason] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        import math
+        if math.isnan(self.score) or math.isinf(self.score) or not (0.0 <= self.score <= 100.0):
+            raise ValueError(f"score ({self.score}) must be a valid float between 0.0 and 100.0")
+
+
+@dataclass(frozen=True)
+class ClubDecision:
+    accepted: bool
+    score: float
+    reasons: list[StructuredReason] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        import math
+        if math.isnan(self.score) or math.isinf(self.score) or not (0.0 <= self.score <= 100.0):
+            raise ValueError(f"score ({self.score}) must be a valid float between 0.0 and 100.0")
+
+
+@dataclass(frozen=True)
+class TransferDecision:
+    offer_id: str
+    player_id: str
+    buying_club_id: int | str
+    selling_club_id: int | str
+    status: OfferDecisionStatus
+    player_decision: PlayerDecision
+    club_decision: ClubDecision
+
+    def __post_init__(self) -> None:
+        if self.selling_club_id == self.buying_club_id:
+            raise ValueError("buying_club_id and selling_club_id must be different")
