@@ -50,6 +50,15 @@ from app.competition.progression import (
     evaluate_round_robin_completion,
     resolve_two_leg_tie,
 )
+from app.competition.season_state import (
+    CompetitionSeasonState,
+    apply_match_result_to_season_state,
+    apply_match_results_to_season_state,
+    get_club_form,
+    get_ranked_standings,
+    get_season_club_rank,
+    initialize_competition_season_state,
+)
 from app.competition.standings import (
     PointsRule,
     StandingEntry,
@@ -108,4 +117,11 @@ __all__ = [
     "build_match_context",
     "execute_fixture_with_match_engine",
     "build_match_engine_executor",
+    "CompetitionSeasonState",
+    "initialize_competition_season_state",
+    "apply_match_result_to_season_state",
+    "apply_match_results_to_season_state",
+    "get_ranked_standings",
+    "get_season_club_rank",
+    "get_club_form",
 ]
