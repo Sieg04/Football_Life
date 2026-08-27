@@ -25,6 +25,15 @@ from app.competition.form import (
     calculate_goal_difference,
     record_form_result,
 )
+from app.competition.progression import (
+    ProgressionResult,
+    TieBreakResult,
+    build_next_stage_participants,
+    calculate_aggregate_score,
+    evaluate_knockout_stage_progression,
+    evaluate_round_robin_completion,
+    resolve_two_leg_tie,
+)
 from app.competition.standings import (
     PointsRule,
     StandingEntry,
@@ -64,4 +73,11 @@ __all__ = [
     "calculate_form_points",
     "calculate_form_rate",
     "calculate_goal_difference",
+    "ProgressionResult",
+    "TieBreakResult",
+    "evaluate_round_robin_completion",
+    "calculate_aggregate_score",
+    "resolve_two_leg_tie",
+    "evaluate_knockout_stage_progression",
+    "build_next_stage_participants",
 ]
