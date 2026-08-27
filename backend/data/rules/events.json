@@ -4,5 +4,17 @@
     "priority_min": 0,
     "priority_max": 100,
     "default_cooldown": 0
+  },
+  "conditions": {
+    "enabled": true
+  },
+  "probability": {
+    "default_base_probability": 0.05,
+    "min_probability": 0.0,
+    "max_probability": 1.0,
+    "clamp_probabilities": true
+  },
+  "selection": {
+    "default_max_candidates": 10
   }
 }
