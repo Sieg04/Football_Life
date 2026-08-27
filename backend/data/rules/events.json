@@ -1,0 +1,8 @@
+{
+  "event_engine": {
+    "enabled": true,
+    "priority_min": 0,
+    "priority_max": 100,
+    "default_cooldown": 0
+  }
+}
