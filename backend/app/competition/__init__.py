@@ -50,6 +50,13 @@ from app.competition.progression import (
     evaluate_round_robin_completion,
     resolve_two_leg_tie,
 )
+from app.competition.progression_state import (
+    CompetitionProgressionState,
+    advance_current_stage,
+    advance_knockout_stage,
+    advance_round_robin_stage,
+    initialize_competition_progression_state,
+)
 from app.competition.season_state import (
     CompetitionSeasonState,
     apply_match_result_to_season_state,
@@ -124,4 +131,9 @@ __all__ = [
     "get_ranked_standings",
     "get_season_club_rank",
     "get_club_form",
+    "CompetitionProgressionState",
+    "initialize_competition_progression_state",
+    "advance_round_robin_stage",
+    "advance_knockout_stage",
+    "advance_current_stage",
 ]
