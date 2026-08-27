@@ -1,0 +1,9 @@
+{
+  "season_start_month": 7,
+  "season_start_day": 1,
+  "transient_reset": {
+    "reset_club_momentum": true,
+    "reset_transient_flags": true
+  },
+  "default_contract_years": 3
+}
