@@ -148,3 +148,77 @@ class TransferDecision:
     def __post_init__(self) -> None:
         if self.selling_club_id == self.buying_club_id:
             raise ValueError("buying_club_id and selling_club_id must be different")
+
+
+class TransferApplicationStatus(StrEnum):
+    PENDING = "PENDING"
+    APPLIED = "APPLIED"
+    SKIPPED = "SKIPPED"
+    REJECTED_INVALID = "REJECTED_INVALID"
+    CONFLICT = "CONFLICT"
+    DUPLICATE = "DUPLICATE"
+
+
+@dataclass(frozen=True)
+class TransferApplication:
+    application_id: str
+    transfer_decision_id: str
+    player_id: str
+    seller_club_id: int | str
+    buyer_club_id: int | str
+    transfer_fee: float
+    wage: float
+    contract_years: int
+    status: TransferApplicationStatus
+    season: int
+    reason: str = ""
+
+    def __post_init__(self) -> None:
+        import math
+        if not str(self.application_id).strip():
+            raise ValueError("application_id cannot be empty")
+        if not str(self.transfer_decision_id).strip():
+            raise ValueError("transfer_decision_id cannot be empty")
+        if not str(self.player_id).strip():
+            raise ValueError("player_id cannot be empty")
+        if not str(self.seller_club_id).strip():
+            raise ValueError("seller_club_id cannot be empty")
+        if not str(self.buyer_club_id).strip():
+            raise ValueError("buyer_club_id cannot be empty")
+        if self.seller_club_id == self.buyer_club_id:
+            raise ValueError("buyer_club_id and seller_club_id must be different")
+        if math.isnan(self.transfer_fee) or math.isinf(self.transfer_fee) or self.transfer_fee < 0:
+            raise ValueError(f"transfer_fee ({self.transfer_fee}) must be a non-negative finite number")
+        if math.isnan(self.wage) or math.isinf(self.wage) or self.wage < 0:
+            raise ValueError(f"wage ({self.wage}) must be a non-negative finite number")
+        if self.contract_years <= 0:
+            raise ValueError(f"contract_years ({self.contract_years}) must be strictly positive")
+        if self.season <= 1900 or self.season >= 2200:
+            raise ValueError(f"season ({self.season}) must be a valid year")
+
+
+@dataclass(frozen=True)
+class TransferHistoryRecord:
+    application_id: str
+    transfer_decision_id: str
+    season: int
+    player_id: str
+    seller_club_id: int | str
+    buyer_club_id: int | str
+    transfer_fee: float
+    wage: float
+    contract_years: int
+    status: TransferApplicationStatus
+    applied_date: date
+
+    def __post_init__(self) -> None:
+        if not str(self.application_id).strip():
+            raise ValueError("application_id cannot be empty")
+        if not str(self.player_id).strip():
+            raise ValueError("player_id cannot be empty")
+        if self.transfer_fee < 0:
+            raise ValueError("transfer_fee cannot be negative")
+        if self.wage < 0:
+            raise ValueError("wage cannot be negative")
+        if self.contract_years <= 0:
+            raise ValueError("contract_years must be strictly positive")
