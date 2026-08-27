@@ -58,5 +58,26 @@
     "one_year": 65.0,
     "sub_year": 85.0,
     "expired": 100.0
+  },
+  "transfer_windows": {
+    "SUMMER_WINDOW": {
+      "start_month": 7,
+      "start_day": 1,
+      "end_month": 9,
+      "end_day": 1
+    },
+    "WINTER_WINDOW": {
+      "start_month": 1,
+      "start_day": 1,
+      "end_month": 2,
+      "end_day": 1
+    }
+  },
+  "offer_generation": {
+    "min_interest_score": 40.0,
+    "max_offers_per_player": 3,
+    "max_targets_per_club": 5,
+    "min_negotiation_factor": 0.90,
+    "max_negotiation_factor": 1.25
   }
 }
