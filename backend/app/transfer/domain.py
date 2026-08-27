@@ -9,6 +9,20 @@ class ContractStatus(StrEnum):
     EXPIRED = "EXPIRED"
 
 
+class TransferWindow(StrEnum):
+    SUMMER_WINDOW = "SUMMER_WINDOW"
+    WINTER_WINDOW = "WINTER_WINDOW"
+
+
+class StructuredReason(StrEnum):
+    DEPTH = "DEPTH"
+    STARTING_ROLE = "STARTING_ROLE"
+    YOUTH_INVESTMENT = "YOUTH_INVESTMENT"
+    STAR_REPLACEMENT = "STAR_REPLACEMENT"
+    CONTRACT_EXPIRY = "CONTRACT_EXPIRY"
+    VALUE_OPPORTUNITY = "VALUE_OPPORTUNITY"
+
+
 @dataclass(frozen=True)
 class ContractState:
     contract_start: date
@@ -39,33 +53,44 @@ class MarketValue:
 
 
 @dataclass(frozen=True)
-class ClubNeed:
-    position: str
-    need_score: float
-    depth_gap: float = 0.0
-    quality_gap: float = 0.0
-    age_risk: float = 0.0
-    role_gap: float = 0.0
-    squad_balance: float = 0.0
-    breakdown: dict[str, float] = field(default_factory=dict)
+class TransferCandidate:
+    player_id: str
+    selling_club_id: int | str
+    buying_club_id: int | str
+    market_value: float
+    fit_score: float
+    interest_score: float
+    priority_score: float
 
     def __post_init__(self) -> None:
-        if not (0.0 <= self.need_score <= 100.0):
-            raise ValueError(f"need_score ({self.need_score}) must be between 0 and 100")
+        if self.selling_club_id == self.buying_club_id:
+            raise ValueError("buying_club_id and selling_club_id must be different")
+        if self.market_value < 0:
+            raise ValueError(f"market_value ({self.market_value}) cannot be negative")
+        if not (0.0 <= self.fit_score <= 100.0):
+            raise ValueError(f"fit_score ({self.fit_score}) must be between 0 and 100")
+        if not (0.0 <= self.interest_score <= 100.0):
+            raise ValueError(f"interest_score ({self.interest_score}) must be between 0 and 100")
 
 
 @dataclass(frozen=True)
-class PlayerFit:
+class TransferOffer:
+    id: str
     player_id: str
-    club_id: int | str
-    fit_score: float
-    quality_fit: float = 0.0
-    role_fit: float = 0.0
-    tactical_fit: float = 0.0
-    age_fit: float = 0.0
-    squad_need_fit: float = 0.0
-    breakdown: dict[str, float] = field(default_factory=dict)
+    selling_club_id: int | str
+    buying_club_id: int | str
+    transfer_fee: float
+    wage_offer: float
+    contract_years: int
+    structured_reason: StructuredReason
+    seed: str
 
     def __post_init__(self) -> None:
-        if not (0.0 <= self.fit_score <= 100.0):
-            raise ValueError(f"fit_score ({self.fit_score}) must be between 0 and 100")
+        if self.selling_club_id == self.buying_club_id:
+            raise ValueError("buying_club_id and selling_club_id must be different")
+        if self.transfer_fee < 0:
+            raise ValueError(f"transfer_fee ({self.transfer_fee}) cannot be negative")
+        if self.wage_offer < 0:
+            raise ValueError(f"wage_offer ({self.wage_offer}) cannot be negative")
+        if self.contract_years <= 0:
+            raise ValueError(f"contract_years ({self.contract_years}) must be strictly positive")
