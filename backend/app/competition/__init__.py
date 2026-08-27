@@ -25,6 +25,14 @@ from app.competition.form import (
     calculate_goal_difference,
     record_form_result,
 )
+from app.competition.orchestrator import (
+    FixtureExecutionResult,
+    FixtureExecutor,
+    OrchestrationContext,
+    SeasonSimulationConfig,
+    SeasonSimulationResult,
+    simulate_competition_season,
+)
 from app.competition.progression import (
     ProgressionResult,
     TieBreakResult,
@@ -80,4 +88,10 @@ __all__ = [
     "resolve_two_leg_tie",
     "evaluate_knockout_stage_progression",
     "build_next_stage_participants",
+    "SeasonSimulationConfig",
+    "FixtureExecutionResult",
+    "OrchestrationContext",
+    "SeasonSimulationResult",
+    "FixtureExecutor",
+    "simulate_competition_season",
 ]
