@@ -520,6 +520,117 @@ def to_json_bytes(obj: Any) -> bytes:
                 "status": obj.status.value,
             }
         else:
-            raise ValueError(f"Unserializable object type: {type(obj)}")
+            try:
+                from app.event.career_domain import (
+                    CareerArc,
+                    CareerEvent,
+                    CareerMilestone,
+                    CareerRecord,
+                    CareerRelationship,
+                    CareerTurningPoint,
+                    NarrativeSeed,
+                )
+
+                if isinstance(obj, CareerEvent):
+                    payload = {
+                        "category": obj.category.value,
+                        "clubs": list(obj.clubs),
+                        "competitions": list(obj.competitions),
+                        "event_id": obj.event_id,
+                        "event_type": obj.event_type.value,
+                        "participants": list(obj.participants),
+                        "player_id": obj.player_id,
+                        "season": str(obj.season),
+                        "sequence": obj.sequence,
+                        "significance": obj.significance.value,
+                        "source_event_id": obj.source_event_id,
+                        "state_changes": serialize_mapping(obj.state_changes),
+                        "summary_data": serialize_mapping(obj.summary_data),
+                        "tags": list(obj.tags),
+                    }
+                elif isinstance(obj, CareerMilestone):
+                    payload = {
+                        "club_id": obj.club_id,
+                        "competition_id": obj.competition_id,
+                        "event_id": obj.event_id,
+                        "metadata": serialize_mapping(obj.metadata),
+                        "milestone_id": obj.milestone_id,
+                        "milestone_type": obj.milestone_type.value,
+                        "player_id": obj.player_id,
+                        "season": str(obj.season),
+                        "sequence": obj.sequence,
+                        "significance": obj.significance.value,
+                        "value": obj.value,
+                    }
+                elif isinstance(obj, CareerRelationship):
+                    payload = {
+                        "event_ids": list(obj.event_ids),
+                        "last_updated_sequence": obj.last_updated_sequence,
+                        "metadata": serialize_mapping(obj.metadata),
+                        "player_id": obj.player_id,
+                        "relationship_id": obj.relationship_id,
+                        "relationship_type": obj.relationship_type.value,
+                        "source_entity": obj.source_entity,
+                        "start_sequence": obj.start_sequence,
+                        "status": obj.status.value,
+                        "strength": obj.strength,
+                        "target_entity": obj.target_entity,
+                    }
+                elif isinstance(obj, CareerTurningPoint):
+                    payload = {
+                        "metadata": serialize_mapping(obj.metadata),
+                        "player_id": obj.player_id,
+                        "season": str(obj.season),
+                        "sequence": obj.sequence,
+                        "significance": obj.significance.value,
+                        "source_event_id": obj.source_event_id,
+                        "summary_data": serialize_mapping(obj.summary_data),
+                        "turning_point_id": obj.turning_point_id,
+                        "turning_point_type": obj.turning_point_type.value,
+                    }
+                elif isinstance(obj, CareerArc):
+                    payload = {
+                        "arc_id": obj.arc_id,
+                        "arc_type": obj.arc_type.value,
+                        "end_sequence": obj.end_sequence,
+                        "event_ids": list(obj.event_ids),
+                        "metadata": serialize_mapping(obj.metadata),
+                        "milestone_ids": list(obj.milestone_ids),
+                        "player_id": obj.player_id,
+                        "significance": obj.significance.value,
+                        "start_sequence": obj.start_sequence,
+                        "status": obj.status.value,
+                        "turning_point_ids": list(obj.turning_point_ids),
+                    }
+                elif isinstance(obj, NarrativeSeed):
+                    payload = {
+                        "arc_id": obj.arc_id,
+                        "emotional_direction": obj.emotional_direction,
+                        "event_ids": list(obj.event_ids),
+                        "factual_context": serialize_mapping(obj.factual_context),
+                        "milestone_ids": list(obj.milestone_ids),
+                        "narrative_weight": obj.narrative_weight,
+                        "player_id": obj.player_id,
+                        "priority": obj.priority.value,
+                        "relationship_ids": list(obj.relationship_ids),
+                        "seed_id": obj.seed_id,
+                        "seed_type": obj.seed_type.value,
+                        "sequence": obj.sequence,
+                    }
+                elif isinstance(obj, CareerRecord):
+                    payload = {
+                        "arcs": [json.loads(to_json_bytes(a).decode("utf-8")) for a in obj.arcs],
+                        "events": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.events],
+                        "last_sequence": obj.last_sequence,
+                        "milestones": [json.loads(to_json_bytes(m).decode("utf-8")) for m in obj.milestones],
+                        "narrative_seeds": [json.loads(to_json_bytes(ns).decode("utf-8")) for ns in obj.narrative_seeds],
+                        "player_id": obj.player_id,
+                        "relationships": [json.loads(to_json_bytes(r).decode("utf-8")) for r in obj.relationships],
+                        "turning_points": [json.loads(to_json_bytes(tp).decode("utf-8")) for tp in obj.turning_points],
+                    }
+                else:
+                    raise ValueError(f"Unserializable object type: {type(obj)}")
+            except ImportError:
+                raise ValueError(f"Unserializable object type: {type(obj)}")
 
     return json.dumps(payload, sort_keys=True, ensure_ascii=True).encode("utf-8")
