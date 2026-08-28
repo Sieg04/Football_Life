@@ -412,8 +412,45 @@ def to_json_bytes(obj: Any) -> bytes:
             EffectApplicationResult,
             EffectTarget,
         )
+        from app.event.decisions import (
+            Decision,
+            DecisionOption,
+            DecisionResult,
+        )
 
-        if isinstance(obj, EffectApplication):
+        if isinstance(obj, DecisionOption):
+            payload = {
+                "available": obj.available,
+                "description": obj.description,
+                "effects": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.effects],
+                "id": obj.id,
+                "label": obj.label,
+                "metadata": serialize_mapping(obj.metadata),
+                "weight": obj.weight,
+            }
+        elif isinstance(obj, Decision):
+            payload = {
+                "default_option_id": obj.default_option_id,
+                "id": obj.id,
+                "metadata": serialize_mapping(obj.metadata),
+                "options": [json.loads(to_json_bytes(o).decode("utf-8")) for o in obj.options],
+                "prompt": obj.prompt,
+                "resolution_type": obj.resolution_type.value,
+            }
+        elif isinstance(obj, DecisionResult):
+            payload = {
+                "decision_id": obj.decision_id,
+                "effects": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.effects],
+                "error_code": obj.error_code.value if obj.error_code else None,
+                "error_message": obj.error_message,
+                "metadata": serialize_mapping(obj.metadata),
+                "reasons": [json.loads(to_json_bytes(r).decode("utf-8")) for r in obj.reasons],
+                "resolution_type": obj.resolution_type.value,
+                "seed": obj.seed,
+                "selected_option": json.loads(to_json_bytes(obj.selected_option).decode("utf-8")) if obj.selected_option else None,
+                "success": obj.success,
+            }
+        elif isinstance(obj, EffectApplication):
             payload = {
                 "applied": obj.applied,
                 "effect_id": obj.effect_id,
