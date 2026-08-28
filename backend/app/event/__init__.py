@@ -31,6 +31,18 @@ from app.event.probability import (
     evaluate_event_candidates,
 )
 from app.event.registry import EventRegistry
+from app.event.effects import (
+    EffectApplication,
+    EffectApplicationError,
+    EffectApplicationResult,
+    EffectErrorCode,
+    EffectOperation,
+    EffectTarget,
+    apply_effect,
+    apply_effects,
+    apply_event_outcome,
+    apply_event_resolution,
+)
 from app.event.resolution import (
     EventEffect,
     EventEffectType,
@@ -84,4 +96,15 @@ __all__ = [
     "select_event_outcome",
     "resolve_event",
     "resolve_event_outcome",
+    # Phase 8E Effect Application Primitives
+    "EffectOperation",
+    "EffectErrorCode",
+    "EffectTarget",
+    "EffectApplicationError",
+    "EffectApplication",
+    "EffectApplicationResult",
+    "apply_effect",
+    "apply_effects",
+    "apply_event_outcome",
+    "apply_event_resolution",
 ]

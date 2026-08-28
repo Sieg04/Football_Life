@@ -53,6 +53,7 @@ class EventEffect:
     min_bound: float | int | None = 0.0
     max_bound: float | int | None = 100.0
     parameters: MappingProxyType = field(default_factory=lambda: MappingProxyType({}))
+    operation: Any = "ADD"
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, str) or not self.id.strip():
@@ -97,6 +98,18 @@ class EventEffect:
 
         immutable_params = _to_immutable_mapping(self.parameters)
         object.__setattr__(self, "parameters", immutable_params)
+
+        try:
+            from app.event.effects import EffectOperation
+            if isinstance(self.operation, str):
+                try:
+                    object.__setattr__(self, "operation", EffectOperation(self.operation))
+                except ValueError:
+                    raise ValueError(f"Invalid EffectOperation: '{self.operation}'")
+            elif not isinstance(self.operation, EffectOperation):
+                raise ValueError(f"Invalid EffectOperation: '{self.operation}'")
+        except ImportError:
+            pass
 
 
 @dataclass(frozen=True)
