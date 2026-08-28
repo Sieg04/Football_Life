@@ -31,6 +31,17 @@ from app.event.probability import (
     evaluate_event_candidates,
 )
 from app.event.registry import EventRegistry
+from app.event.resolution import (
+    EventEffect,
+    EventEffectType,
+    EventOutcome,
+    EventResolution,
+    EventResolutionStatus,
+    derive_deterministic_outcome_roll,
+    resolve_event,
+    resolve_event_outcome,
+    select_event_outcome,
+)
 
 __all__ = [
     # Phase 8B Domain Primitives
@@ -63,4 +74,14 @@ __all__ = [
     "derive_deterministic_roll",
     "evaluate_event_candidate",
     "evaluate_event_candidates",
+    # Phase 8D Resolution Primitives
+    "EventResolutionStatus",
+    "EventEffectType",
+    "EventEffect",
+    "EventOutcome",
+    "EventResolution",
+    "derive_deterministic_outcome_roll",
+    "select_event_outcome",
+    "resolve_event",
+    "resolve_event_outcome",
 ]

@@ -16,5 +16,11 @@
   },
   "selection": {
     "default_max_candidates": 10
+  },
+  "resolution": {
+    "enabled": true,
+    "default_effect_min_bound": 0.0,
+    "default_effect_max_bound": 100.0,
+    "allow_zero_weight_selection": false
   }
 }
