@@ -404,6 +404,42 @@ def to_json_bytes(obj: Any) -> bytes:
             "weight": obj.weight,
         }
     else:
-        raise ValueError(f"Unserializable object type: {type(obj)}")
+        # Import lazily to avoid circular imports
+        from app.event.resolution import EventEffect, EventOutcome, EventResolution
+
+        if isinstance(obj, EventEffect):
+            payload = {
+                "delta_or_value": obj.delta_or_value,
+                "effect_type": obj.effect_type.value,
+                "id": obj.id,
+                "max_bound": obj.max_bound,
+                "min_bound": obj.min_bound,
+                "parameters": serialize_mapping(obj.parameters),
+                "target_id": obj.target_id,
+                "target_type": obj.target_type,
+            }
+        elif isinstance(obj, EventOutcome):
+            payload = {
+                "effects": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.effects],
+                "id": obj.id,
+                "label": obj.label,
+                "reasons": [json.loads(to_json_bytes(r).decode("utf-8")) for r in obj.reasons],
+                "weight": obj.weight,
+            }
+        elif isinstance(obj, EventResolution):
+            payload = {
+                "effects": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.effects],
+                "event_id": obj.event_id,
+                "event_instance_id": obj.event_instance_id,
+                "metadata": serialize_mapping(obj.metadata),
+                "outcome_id": obj.outcome_id,
+                "outcome_label": obj.outcome_label,
+                "reasons": [json.loads(to_json_bytes(r).decode("utf-8")) for r in obj.reasons],
+                "resolution_score": obj.resolution_score,
+                "seed": obj.seed,
+                "status": obj.status.value,
+            }
+        else:
+            raise ValueError(f"Unserializable object type: {type(obj)}")
 
     return json.dumps(payload, sort_keys=True, ensure_ascii=True).encode("utf-8")
