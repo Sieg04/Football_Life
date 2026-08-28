@@ -99,6 +99,18 @@ class EventEffect:
         immutable_params = _to_immutable_mapping(self.parameters)
         object.__setattr__(self, "parameters", immutable_params)
 
+        try:
+            from app.event.effects import EffectOperation
+            if isinstance(self.operation, str):
+                try:
+                    object.__setattr__(self, "operation", EffectOperation(self.operation))
+                except ValueError:
+                    raise ValueError(f"Invalid EffectOperation: '{self.operation}'")
+            elif not isinstance(self.operation, EffectOperation):
+                raise ValueError(f"Invalid EffectOperation: '{self.operation}'")
+        except ImportError:
+            pass
+
 
 @dataclass(frozen=True)
 class EventOutcome:
