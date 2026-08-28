@@ -54,6 +54,17 @@ from app.event.resolution import (
     resolve_event_outcome,
     select_event_outcome,
 )
+from app.event.decisions import (
+    DecisionResolutionType,
+    DecisionErrorCode,
+    DecisionOption,
+    Decision,
+    DecisionResult,
+    derive_deterministic_decision_roll,
+    is_option_available,
+    resolve_decision,
+    apply_decision_result,
+)
 
 __all__ = [
     # Phase 8B Domain Primitives
@@ -107,4 +118,14 @@ __all__ = [
     "apply_effects",
     "apply_event_outcome",
     "apply_event_resolution",
+    # Phase 8F Decision & Choice Primitives
+    "DecisionResolutionType",
+    "DecisionErrorCode",
+    "DecisionOption",
+    "Decision",
+    "DecisionResult",
+    "derive_deterministic_decision_roll",
+    "is_option_available",
+    "resolve_decision",
+    "apply_decision_result",
 ]
