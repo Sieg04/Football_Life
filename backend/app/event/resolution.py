@@ -53,6 +53,7 @@ class EventEffect:
     min_bound: float | int | None = 0.0
     max_bound: float | int | None = 100.0
     parameters: MappingProxyType = field(default_factory=lambda: MappingProxyType({}))
+    operation: Any = "ADD"
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, str) or not self.id.strip():
