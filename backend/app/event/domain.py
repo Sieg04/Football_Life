@@ -406,14 +406,57 @@ def to_json_bytes(obj: Any) -> bytes:
     else:
         # Import lazily to avoid circular imports
         from app.event.resolution import EventEffect, EventOutcome, EventResolution
+        from app.event.effects import (
+            EffectApplication,
+            EffectApplicationError,
+            EffectApplicationResult,
+            EffectTarget,
+        )
 
-        if isinstance(obj, EventEffect):
+        if isinstance(obj, EffectApplication):
+            payload = {
+                "applied": obj.applied,
+                "effect_id": obj.effect_id,
+                "effect_index": obj.effect_index,
+                "event_id": obj.event_id,
+                "metadata": serialize_mapping(obj.metadata),
+                "operation": obj.operation.value,
+                "previous_value": obj.previous_value,
+                "requested_value": obj.requested_value,
+                "resulting_value": obj.resulting_value,
+                "target": obj.target,
+            }
+        elif isinstance(obj, EffectApplicationError):
+            payload = {
+                "code": obj.code.value,
+                "details": serialize_mapping(obj.details),
+                "effect_id": obj.effect_id,
+                "effect_index": obj.effect_index,
+                "message": obj.message,
+                "target": obj.target,
+            }
+        elif isinstance(obj, EffectApplicationResult):
+            payload = {
+                "applications": [json.loads(to_json_bytes(a).decode("utf-8")) for a in obj.applications],
+                "errors": [json.loads(to_json_bytes(e).decode("utf-8")) for e in obj.errors],
+                "metadata": serialize_mapping(obj.metadata),
+                "success": obj.success,
+            }
+        elif isinstance(obj, EffectTarget):
+            payload = {
+                "attribute": obj.attribute,
+                "scope": obj.scope,
+                "target_id": obj.target_id,
+                "target_type": obj.target_type,
+            }
+        elif isinstance(obj, EventEffect):
             payload = {
                 "delta_or_value": obj.delta_or_value,
                 "effect_type": obj.effect_type.value,
                 "id": obj.id,
                 "max_bound": obj.max_bound,
                 "min_bound": obj.min_bound,
+                "operation": str(obj.operation),
                 "parameters": serialize_mapping(obj.parameters),
                 "target_id": obj.target_id,
                 "target_type": obj.target_type,
