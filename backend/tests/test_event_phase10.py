@@ -363,7 +363,46 @@ sys.stdout.buffer.write(to_json_bytes(story))
     assert len(res1.stdout) > 0
 
 
-# 13. End-to-End Integration (Phase 8 -> Phase 9 -> Phase 10)
+# 13. Retirement Edge Cases Audit
+def test_retirement_edge_cases():
+    # Case 1: Retirement event + milestones
+    ev_ret = CareerEvent(
+        event_id="ce_ret1", source_event_id="se_ret1", player_id="p_ret1", season=10, sequence=10,
+        event_type=EventType.PLAYER, category=EventCategory.RETIREMENT, significance=EventSignificance.MAJOR,
+    )
+    ms_ret = CareerMilestone(
+        milestone_id="ms_ret1", milestone_type=MilestoneType.RETIREMENT, player_id="p_ret1", season=10, sequence=10,
+    )
+    rec1 = CareerRecord(player_id="p_ret1", events=(ev_ret,), milestones=(ms_ret,))
+    story1 = build_narrative_story(rec1)
+    assert story1.resolution_type == ResolutionType.RETIREMENT
+
+    # Case 2: Retirement event + NO milestones
+    rec2 = CareerRecord(player_id="p_ret2", events=(ev_ret,))
+    story2 = build_narrative_story(rec2)
+    assert story2.resolution_type == ResolutionType.RETIREMENT
+
+    # Case 3: Retirement milestone + NO events
+    rec3 = CareerRecord(player_id="p_ret3", milestones=(ms_ret,))
+    story3 = build_narrative_story(rec3)
+    assert story3.resolution_type == ResolutionType.RETIREMENT
+
+    # Case 4: Active career (no retirement)
+    ev_app = CareerEvent(
+        event_id="ce_app", source_event_id="se_app", player_id="p_act", season=1, sequence=1,
+        event_type=EventType.PLAYER, category=EventCategory.APPEARANCE, significance=EventSignificance.MINOR,
+    )
+    rec4 = CareerRecord(player_id="p_act", events=(ev_app,))
+    story4 = build_narrative_story(rec4)
+    assert story4.resolution_type == ResolutionType.ONGOING
+
+    # Case 5: Empty career
+    rec5 = CareerRecord(player_id="p_empty")
+    story5 = build_narrative_story(rec5)
+    assert story5.resolution_type == ResolutionType.ONGOING
+
+
+# 14. End-to-End Integration (Phase 8 -> Phase 9 -> Phase 10)
 def test_e2e_phase8_to_phase9_to_phase10_integration():
     player = create_test_player("p_e2e_p10")
     def_eb = create_event_definition(
