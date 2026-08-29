@@ -1,0 +1,46 @@
+{
+  "density_max_beats": {
+    "COMPACT": 5,
+    "STANDARD": 12,
+    "DETAILED": 25,
+    "COMPLETE": 1000
+  },
+  "significance_weights": {
+    "TRIVIAL": 0.1,
+    "MINOR": 0.3,
+    "MODERATE": 0.6,
+    "MAJOR": 1.0,
+    "CRITICAL": 1.5,
+    "LEGENDARY": 2.0
+  },
+  "seed_priority_weights": {
+    "LOW": 0.2,
+    "MEDIUM": 0.5,
+    "HIGH": 0.8,
+    "CRITICAL": 1.0
+  },
+  "act_type_weights": {
+    "ORIGIN": 1.0,
+    "SETUP": 1.0,
+    "RISE": 1.2,
+    "CONFLICT": 1.3,
+    "CRISIS": 1.4,
+    "BREAKTHROUGH": 1.5,
+    "PEAK": 1.5,
+    "FALL": 1.3,
+    "RECOVERY": 1.4,
+    "RESOLUTION": 1.0,
+    "LEGACY": 1.1
+  },
+  "pacing_seconds_per_beat": 15.0,
+  "opening_strategy_weights": {
+    "CHRONOLOGICAL_ORIGIN": 1.0,
+    "COLD_OPEN": 1.2,
+    "MAJOR_ACHIEVEMENT": 1.3,
+    "CAREER_CONTRAST": 1.1,
+    "MYSTERY": 0.9,
+    "RIVALRY": 1.0,
+    "CRISIS": 1.0
+  },
+  "climax_min_significance": "MAJOR"
+}

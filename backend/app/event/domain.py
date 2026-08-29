@@ -629,7 +629,125 @@ def to_json_bytes(obj: Any) -> bytes:
                         "turning_points": [json.loads(to_json_bytes(tp).decode("utf-8")) for tp in obj.turning_points],
                     }
                 else:
-                    raise ValueError(f"Unserializable object type: {type(obj)}")
+                    try:
+                        from app.event.narrative_domain import (
+                            NarrativeAct,
+                            NarrativeBeat,
+                            NarrativeBuildResult,
+                            NarrativeConflict,
+                            NarrativeProtagonist,
+                            NarrativeStory,
+                            NarrativeThread,
+                            StoryPremise,
+                        )
+
+                        if isinstance(obj, StoryPremise):
+                            payload = {
+                                "central_conflict_id": obj.central_conflict_id,
+                                "premise_type": obj.premise_type.value,
+                                "primary_arc_id": obj.primary_arc_id,
+                                "protagonist_goal": obj.protagonist_goal,
+                                "resolution_type": obj.resolution_type.value,
+                                "supporting_facts": serialize_mapping(obj.supporting_facts),
+                            }
+                        elif isinstance(obj, NarrativeProtagonist):
+                            payload = {
+                                "career_stage": obj.career_stage,
+                                "defining_events": list(obj.defining_events),
+                                "important_clubs": list(obj.important_clubs),
+                                "important_relationships": list(obj.important_relationships),
+                                "key_traits": list(obj.key_traits),
+                                "metadata": serialize_mapping(obj.metadata),
+                                "origin": obj.origin,
+                                "player_id": obj.player_id,
+                                "position": obj.position,
+                            }
+                        elif isinstance(obj, NarrativeAct):
+                            payload = {
+                                "act_id": obj.act_id,
+                                "act_type": obj.act_type.value,
+                                "beat_ids": list(obj.beat_ids),
+                                "description": obj.description,
+                                "end_sequence": obj.end_sequence,
+                                "metadata": serialize_mapping(obj.metadata),
+                                "pacing": obj.pacing.value,
+                                "sequence": obj.sequence,
+                                "start_sequence": obj.start_sequence,
+                                "title": obj.title,
+                            }
+                        elif isinstance(obj, NarrativeBeat):
+                            payload = {
+                                "beat_id": obj.beat_id,
+                                "beat_type": obj.beat_type.value,
+                                "emotional_direction": obj.emotional_direction.value,
+                                "factual_context": serialize_mapping(obj.factual_context),
+                                "importance": obj.importance,
+                                "narrative_function": obj.narrative_function.value,
+                                "pacing": obj.pacing.value,
+                                "sequence": obj.sequence,
+                                "source_event_ids": list(obj.source_event_ids),
+                                "source_milestone_ids": list(obj.source_milestone_ids),
+                                "source_seed_ids": list(obj.source_seed_ids),
+                                "source_turning_point_ids": list(obj.source_turning_point_ids),
+                            }
+                        elif isinstance(obj, NarrativeConflict):
+                            payload = {
+                                "conflict_id": obj.conflict_id,
+                                "conflict_type": obj.conflict_type.value,
+                                "end_sequence": obj.end_sequence,
+                                "intensity": obj.intensity,
+                                "metadata": serialize_mapping(obj.metadata),
+                                "resolution_status": obj.resolution_status.value,
+                                "source_events": list(obj.source_events),
+                                "start_sequence": obj.start_sequence,
+                            }
+                        elif isinstance(obj, NarrativeThread):
+                            payload = {
+                                "beat_ids": list(obj.beat_ids),
+                                "end_sequence": obj.end_sequence,
+                                "importance": obj.importance,
+                                "metadata": serialize_mapping(obj.metadata),
+                                "start_sequence": obj.start_sequence,
+                                "status": obj.status,
+                                "thread_id": obj.thread_id,
+                                "thread_type": obj.thread_type.value,
+                            }
+                        elif isinstance(obj, NarrativeStory):
+                            payload = {
+                                "acts": [json.loads(to_json_bytes(a).decode("utf-8")) for a in obj.acts],
+                                "climax_beat_id": obj.climax_beat_id,
+                                "conflicts": [json.loads(to_json_bytes(c).decode("utf-8")) for c in obj.conflicts],
+                                "density": obj.density.value,
+                                "featured_arcs": list(obj.featured_arcs),
+                                "featured_events": list(obj.featured_events),
+                                "featured_milestones": list(obj.featured_milestones),
+                                "featured_relationships": list(obj.featured_relationships),
+                                "featured_turning_points": list(obj.featured_turning_points),
+                                "metadata": serialize_mapping(obj.metadata),
+                                "narrative_beats": [json.loads(to_json_bytes(nb).decode("utf-8")) for nb in obj.narrative_beats],
+                                "opening_beat_id": obj.opening_beat_id,
+                                "opening_strategy": obj.opening_strategy.value,
+                                "player_id": obj.player_id,
+                                "premise": json.loads(to_json_bytes(obj.premise).decode("utf-8")),
+                                "protagonist": json.loads(to_json_bytes(obj.protagonist).decode("utf-8")),
+                                "resolution_type": obj.resolution_type.value,
+                                "story_id": obj.story_id,
+                                "target_duration_seconds": obj.target_duration_seconds,
+                                "themes": [t.value if hasattr(t, "value") else str(t) for t in obj.themes],
+                                "threads": [json.loads(to_json_bytes(th).decode("utf-8")) for th in obj.threads],
+                                "title_context": obj.title_context,
+                            }
+                        elif isinstance(obj, NarrativeBuildResult):
+                            payload = {
+                                "error_code": obj.error_code.value if obj.error_code else None,
+                                "error_message": obj.error_message,
+                                "story": json.loads(to_json_bytes(obj.story).decode("utf-8")) if obj.story else None,
+                                "success": obj.success,
+                            }
+                        else:
+                            raise ValueError(f"Unserializable object type: {type(obj)}")
+                    except ImportError:
+                        raise ValueError(f"Unserializable object type: {type(obj)}")
             except ImportError:
                 raise ValueError(f"Unserializable object type: {type(obj)}")
 
