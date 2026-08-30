@@ -1,10 +1,10 @@
-<div class="decision-overlay" *ngIf="decision">
+<div class="decision-overlay animate-fade-in" *ngIf="decision">
   <div class="decision-modal">
-    <div class="decision-badge">
+    <div class="decision-badge display-font">
       ⚡ DECISION REQUIRED ⚡
     </div>
 
-    <h3 class="decision-title">
+    <h3 class="decision-title display-font">
       {{ decision.prompt || 'CRITICAL CAREER CHOICE' }}
     </h3>
 
@@ -14,7 +14,7 @@
         class="option-card"
         (click)="onChoice(option)"
       >
-        <span class="option-label">{{ option.label }}</span>
+        <span class="option-label display-font">{{ option.label }}</span>
         <span class="option-desc" *ngIf="option.description">{{ option.description }}</span>
       </button>
     </div>

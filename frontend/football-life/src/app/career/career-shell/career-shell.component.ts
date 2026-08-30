@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CareerPresentationService } from '../../core/services/presentation.service';
-import { CareerPresentation } from '../../core/models/presentation.model';
+import { CareerSessionService, CareerSession } from '../../core/services/career-session.service';
 
 @Component({
   selector: 'app-career-shell',
@@ -12,8 +11,8 @@ import { CareerPresentation } from '../../core/models/presentation.model';
   styleUrls: ['./career-shell.component.scss']
 })
 export class CareerShellComponent implements OnInit {
-  presentation: CareerPresentation | null = null;
-  loading = true;
+  session: CareerSession | null = null;
+  recordingMode = false;
 
   navItems = [
     { label: 'DASHBOARD', path: '/dashboard' },
@@ -28,12 +27,26 @@ export class CareerShellComponent implements OnInit {
     { label: 'SCRIPT', path: '/script' }
   ];
 
-  constructor(private presentationService: CareerPresentationService) {}
+  constructor(private sessionService: CareerSessionService) {}
 
   ngOnInit(): void {
-    this.presentationService.getPresentation().subscribe((data) => {
-      this.presentation = data;
-      this.loading = false;
+    this.sessionService.activeSession$.subscribe((s) => {
+      this.session = s;
     });
+    this.sessionService.recordingMode$.subscribe((rec) => {
+      this.recordingMode = rec;
+    });
+  }
+
+  get currentSeason(): string {
+    return this.session?.current_season || '2026/27';
+  }
+
+  get playerName(): string {
+    return this.session?.presentation?.player?.name || 'ADRIAN MARTÍNEZ';
+  }
+
+  get playerOvr(): number {
+    return this.session?.presentation?.player?.overall_rating || 75;
   }
 }

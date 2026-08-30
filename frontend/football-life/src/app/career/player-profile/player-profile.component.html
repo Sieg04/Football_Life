@@ -6,11 +6,11 @@
       <h2 class="card-title display-font">PERSONAL & IDENTITY</h2>
       <div class="info-row">
         <span class="label">Full Name</span>
-        <span class="value">{{ presentation.player.name }}</span>
+        <span class="value font-bold">{{ presentation.player.name }}</span>
       </div>
       <div class="info-row">
         <span class="label">Age</span>
-        <span class="value">{{ presentation.player.age || 24 }} years</span>
+        <span class="value">{{ presentation.player.age || 21 }} years</span>
       </div>
       <div class="info-row">
         <span class="label">Nationality</span>
@@ -18,7 +18,11 @@
       </div>
       <div class="info-row">
         <span class="label">Primary Position</span>
-        <span class="value font-bold">{{ presentation.player.position || 'CF' }}</span>
+        <span class="value font-bold">{{ presentation.player.position || 'ST' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Overall Rating</span>
+        <span class="value fl-badge fl-badge-gold display-font">{{ presentation.player.overall_rating || 75 }} OVR</span>
       </div>
       <div class="info-row">
         <span class="label">Status</span>
@@ -30,21 +34,21 @@
       <h2 class="card-title display-font">CONTRACT & CLUB STATUS</h2>
       <div class="info-row">
         <span class="label">Current Club</span>
-        <span class="value">{{ presentation.player.current_club || 'FC Barcelona' }}</span>
+        <span class="value font-bold">{{ presentation.player.current_club || 'FC Barcelona' }}</span>
       </div>
       <div class="info-row">
         <span class="label">Market Valuation</span>
-        <span class="value" *ngIf="presentation.player.market_value_eur !== undefined">€{{ (presentation.player.market_value_eur / 1000000) | number:'1.0-0' }}M</span>
-        <span class="value" *ngIf="presentation.player.market_value_eur === undefined">€74M</span>
+        <span class="value" *ngIf="presentation.player.market_value_eur !== undefined && presentation.player.market_value_eur !== null">€{{ (presentation.player.market_value_eur / 1000000) | number:'1.0-1' }}M</span>
+        <span class="value" *ngIf="presentation.player.market_value_eur === undefined || presentation.player.market_value_eur === null">Not Available</span>
       </div>
       <div class="info-row">
         <span class="label">Weekly Wage</span>
-        <span class="value" *ngIf="presentation.player.salary_eur !== undefined">€{{ presentation.player.salary_eur | number }} / wk</span>
-        <span class="value" *ngIf="presentation.player.salary_eur === undefined">€180,000 / wk</span>
+        <span class="value" *ngIf="presentation.player.salary_eur !== undefined && presentation.player.salary_eur !== null">€{{ presentation.player.salary_eur | number }} / wk</span>
+        <span class="value" *ngIf="presentation.player.salary_eur === undefined || presentation.player.salary_eur === null">Not Available</span>
       </div>
-      <div class="info-row">
+      <div class="info-row" *ngIf="presentation.player.primary_archetype">
         <span class="label">Primary Archetype</span>
-        <span class="value">{{ presentation.player.primary_archetype || 'Clinical Finisher' }}</span>
+        <span class="value">{{ presentation.player.primary_archetype }}</span>
       </div>
     </div>
   </div>
@@ -54,11 +58,11 @@
     <div class="relationships-grid" *ngIf="presentation.relationships && presentation.relationships.length > 0; else noRelationships">
       <div class="relationship-card fl-card" *ngFor="let rel of presentation.relationships">
         <div class="rel-header">
-          <span class="rel-name">{{ rel.target_entity || rel.target_entity_name }}</span>
+          <span class="rel-name font-bold">{{ rel.target_entity || rel.target_entity_name }}</span>
           <span class="fl-badge display-font">{{ rel.relationship_type }}</span>
         </div>
         <p class="rel-desc" *ngIf="rel.description">{{ rel.description }}</p>
-        <div class="strength-bar-container">
+        <div class="strength-bar-container" *ngIf="rel.strength !== undefined">
           <span class="label">Affinity / Trust</span>
           <div class="bar-bg">
             <div class="bar-fill" [style.width.%]="rel.strength * 100"></div>
@@ -68,7 +72,7 @@
     </div>
     <ng-template #noRelationships>
       <div class="empty-state fl-card">
-        <p>No active career relationships recorded yet.</p>
+        <p>No active career relationships recorded yet in this career.</p>
       </div>
     </ng-template>
   </section>

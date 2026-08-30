@@ -1,7 +1,7 @@
 .dashboard-shell {
   min-height: 100vh;
-  background: #08090b;
-  color: #f5f5f5;
+  background: var(--fl-bg);
+  color: var(--fl-text);
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
     justify-content: space-between;
     align-items: center;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #272b33;
+    border-bottom: 1px solid var(--fl-border);
 
     .brand {
       display: flex;
@@ -32,11 +32,11 @@
       gap: 0.75rem;
 
       .logo-mark {
-        background: #00ff88;
-        color: #08090b;
+        background: var(--fl-accent);
+        color: var(--fl-bg);
         font-weight: 900;
         padding: 0.3rem 0.6rem;
-        border-radius: 6px;
+        border-radius: var(--fl-radius-sm);
         font-size: 0.9rem;
       }
 
@@ -48,12 +48,12 @@
     }
 
     .season-pill {
-      background: #181b21;
-      border: 1px solid #272b33;
+      background: var(--fl-surface-elevated);
+      border: 1px solid var(--fl-border);
       padding: 0.4rem 1rem;
       border-radius: 20px;
       font-weight: 700;
-      color: #00ff88;
+      color: var(--fl-accent);
       letter-spacing: 0.05em;
     }
   }
@@ -64,9 +64,9 @@
     gap: 1.5rem;
 
     .player-hero-card {
-      background: #111318;
-      border: 1px solid #272b33;
-      border-radius: 12px;
+      background: var(--fl-surface);
+      border: 1px solid var(--fl-border);
+      border-radius: var(--fl-radius-lg);
       padding: 1.5rem 2rem;
       display: flex;
       align-items: center;
@@ -76,14 +76,14 @@
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: #181b21;
-        border: 2px solid #00ff88;
+        background: var(--fl-surface-elevated);
+        border: 2px solid var(--fl-accent);
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 1.8rem;
         font-weight: 800;
-        color: #00ff88;
+        color: var(--fl-accent);
       }
 
       .player-info {
@@ -97,18 +97,18 @@
         }
 
         .player-meta {
-          color: #8e949f;
+          color: var(--fl-text-secondary);
           font-size: 0.9rem;
           display: flex;
           align-items: center;
           gap: 0.5rem;
 
           .dot {
-            color: #272b33;
+            color: var(--fl-text-muted);
           }
 
           .position {
-            color: #00ff88;
+            color: var(--fl-accent);
             font-weight: 700;
           }
         }
@@ -118,22 +118,22 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        background: rgba(0, 255, 136, 0.1);
-        border: 1px solid #00ff88;
+        background: var(--fl-accent-soft);
+        border: 1px solid var(--fl-accent);
         padding: 0.75rem 1.25rem;
-        border-radius: 10px;
+        border-radius: var(--fl-radius-md);
 
         .ovr-num {
           font-size: 2rem;
           font-weight: 900;
-          color: #00ff88;
+          color: var(--fl-accent);
           line-height: 1;
         }
 
         .ovr-lbl {
           font-size: 0.7rem;
           font-weight: 700;
-          color: #8e949f;
+          color: var(--fl-text-secondary);
           letter-spacing: 0.1em;
         }
       }
@@ -145,9 +145,9 @@
       gap: 1rem;
 
       .stat-card {
-        background: #111318;
-        border: 1px solid #272b33;
-        border-radius: 10px;
+        background: var(--fl-surface);
+        border: 1px solid var(--fl-border);
+        border-radius: var(--fl-radius-md);
         padding: 1.25rem;
         display: flex;
         flex-direction: column;
@@ -155,19 +155,23 @@
         gap: 0.4rem;
 
         .stat-lbl {
-          color: #8e949f;
+          color: var(--fl-text-secondary);
           font-size: 0.75rem;
           font-weight: 700;
           letter-spacing: 0.1em;
         }
 
         .stat-val {
-          color: #f5f5f5;
+          color: var(--fl-text);
           font-size: 1.8rem;
           font-weight: 800;
 
           &.accent {
-            color: #00ff88;
+            color: var(--fl-accent);
+          }
+
+          &.gold {
+            color: var(--fl-accent-gold);
           }
         }
       }
@@ -181,21 +185,21 @@
 
       .advance-btn {
         width: 100%;
-        background: #00ff88;
-        color: #08090b;
+        background: var(--fl-accent);
+        color: var(--fl-bg);
         border: none;
-        border-radius: 10px;
+        border-radius: var(--fl-radius-md);
         padding: 1.25rem;
         font-size: 1.25rem;
         font-weight: 900;
         letter-spacing: 0.08em;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+        box-shadow: var(--fl-shadow-md);
 
         &:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(0, 255, 136, 0.3);
+          box-shadow: var(--fl-shadow-lg);
         }
 
         &:disabled {
@@ -206,10 +210,16 @@
       }
 
       .status-hint {
-        color: #ffb700;
+        color: var(--fl-accent-gold);
         font-size: 0.85rem;
         font-weight: 700;
         letter-spacing: 0.05em;
+      }
+
+      .error-hint {
+        color: var(--fl-danger);
+        font-size: 0.85rem;
+        font-weight: 700;
       }
     }
 
@@ -219,11 +229,11 @@
       gap: 0.75rem;
 
       .nav-btn {
-        background: #181b21;
-        border: 1px solid #272b33;
-        color: #8e949f;
+        background: var(--fl-surface-elevated);
+        border: 1px solid var(--fl-border);
+        color: var(--fl-text-secondary);
         padding: 0.85rem;
-        border-radius: 8px;
+        border-radius: var(--fl-radius-md);
         font-size: 0.85rem;
         font-weight: 700;
         letter-spacing: 0.05em;
@@ -231,8 +241,8 @@
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: #00ff88;
-          color: #f5f5f5;
+          border-color: var(--fl-accent);
+          color: var(--fl-text);
         }
       }
     }

@@ -28,6 +28,7 @@ export class CareerDashboardComponent implements OnInit {
   session: CareerSession | null = null;
   recordingMode = false;
   advancing = false;
+  errorMessage = '';
   activeOverlayEvent: any | null = null;
 
   constructor(
@@ -47,10 +48,14 @@ export class CareerDashboardComponent implements OnInit {
       this.recordingMode = rec;
     });
 
-    // If no session is active, load default or fallback session
     if (!this.session) {
       this.sessionService.getCareerSession('sample').subscribe();
     }
+  }
+
+  getInitial(name: string | undefined): string {
+    if (!name) return 'P';
+    return name.charAt(0).toUpperCase();
   }
 
   onAdvance(): void {
@@ -58,6 +63,7 @@ export class CareerDashboardComponent implements OnInit {
     if (this.session.status === CareerSessionStatus.DECISION_PENDING) return;
 
     this.advancing = true;
+    this.errorMessage = '';
     this.sessionService.advanceCareer(this.session.career_id).subscribe({
       next: (result) => {
         this.advancing = false;
@@ -67,6 +73,7 @@ export class CareerDashboardComponent implements OnInit {
       },
       error: () => {
         this.advancing = false;
+        this.errorMessage = 'Could not advance career. Please try again.';
       }
     });
   }
@@ -75,7 +82,11 @@ export class CareerDashboardComponent implements OnInit {
     if (!this.session || !this.session.pending_decision) return;
     this.sessionService
       .resolveDecision(this.session.career_id, this.session.pending_decision.id, optionId)
-      .subscribe();
+      .subscribe({
+        error: () => {
+          this.errorMessage = 'Failed to resolve decision. Please try again.';
+        }
+      });
   }
 
   onDismissEvent(): void {
