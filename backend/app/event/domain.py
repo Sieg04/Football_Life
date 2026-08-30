@@ -745,7 +745,124 @@ def to_json_bytes(obj: Any) -> bytes:
                                 "success": obj.success,
                             }
                         else:
-                            raise ValueError(f"Unserializable object type: {type(obj)}")
+                            try:
+                                from app.event.script_domain import (
+                                    ScriptBuildResult,
+                                    ScriptClosing,
+                                    ScriptHook,
+                                    ScriptMetadata,
+                                    ScriptSection,
+                                    ScriptSegment,
+                                    ScriptSourceReference,
+                                    ScriptTransition,
+                                    StoryScript,
+                                )
+
+                                if isinstance(obj, ScriptSourceReference):
+                                    payload = {
+                                        "act_ids": list(obj.act_ids),
+                                        "beat_ids": list(obj.beat_ids),
+                                        "conflict_ids": list(obj.conflict_ids),
+                                        "event_ids": list(obj.event_ids),
+                                        "milestone_ids": list(obj.milestone_ids),
+                                        "seed_ids": list(obj.seed_ids),
+                                        "story_id": obj.story_id,
+                                        "thread_ids": list(obj.thread_ids),
+                                        "turning_point_ids": list(obj.turning_point_ids),
+                                    }
+                                elif isinstance(obj, ScriptSegment):
+                                    payload = {
+                                        "estimated_duration_seconds": obj.estimated_duration_seconds,
+                                        "importance": obj.importance,
+                                        "metadata": serialize_mapping(obj.metadata),
+                                        "pacing": obj.pacing.value,
+                                        "segment_id": obj.segment_id,
+                                        "segment_type": obj.segment_type.value,
+                                        "sequence": obj.sequence,
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "text": obj.text,
+                                        "word_count": obj.word_count,
+                                    }
+                                elif isinstance(obj, ScriptTransition):
+                                    payload = {
+                                        "estimated_duration_seconds": obj.estimated_duration_seconds,
+                                        "from_section_id": obj.from_section_id,
+                                        "metadata": serialize_mapping(obj.metadata),
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "text": obj.text,
+                                        "to_section_id": obj.to_section_id,
+                                        "transition_id": obj.transition_id,
+                                        "transition_type": obj.transition_type.value,
+                                        "word_count": obj.word_count,
+                                    }
+                                elif isinstance(obj, ScriptHook):
+                                    payload = {
+                                        "hook_id": obj.hook_id,
+                                        "hook_type": obj.hook_type.value,
+                                        "metadata": serialize_mapping(obj.metadata),
+                                        "segment": json.loads(to_json_bytes(obj.segment).decode("utf-8")),
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "text": obj.text,
+                                    }
+                                elif isinstance(obj, ScriptClosing):
+                                    payload = {
+                                        "closing_id": obj.closing_id,
+                                        "closing_type": obj.closing_type.value,
+                                        "metadata": serialize_mapping(obj.metadata),
+                                        "segment": json.loads(to_json_bytes(obj.segment).decode("utf-8")),
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "text": obj.text,
+                                    }
+                                elif isinstance(obj, ScriptSection):
+                                    payload = {
+                                        "act_id": obj.act_id,
+                                        "metadata": serialize_mapping(obj.metadata),
+                                        "section_id": obj.section_id,
+                                        "section_type": obj.section_type.value,
+                                        "segments": [json.loads(to_json_bytes(s).decode("utf-8")) for s in obj.segments],
+                                        "sequence": obj.sequence,
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "title": obj.title,
+                                    }
+                                elif isinstance(obj, ScriptMetadata):
+                                    payload = {
+                                        "created_version": obj.created_version,
+                                        "density": obj.density.value,
+                                        "extra": serialize_mapping(obj.extra),
+                                        "player_id": obj.player_id,
+                                        "story_id": obj.story_id,
+                                        "style": obj.style.value,
+                                        "target_duration_seconds": obj.target_duration_seconds,
+                                        "tone": obj.tone.value,
+                                        "words_per_minute": obj.words_per_minute,
+                                    }
+                                elif isinstance(obj, StoryScript):
+                                    payload = {
+                                        "climax": json.loads(to_json_bytes(obj.climax).decode("utf-8")) if obj.climax else None,
+                                        "closing": json.loads(to_json_bytes(obj.closing).decode("utf-8")) if obj.closing else None,
+                                        "estimated_duration_seconds": obj.estimated_duration_seconds,
+                                        "hook": json.loads(to_json_bytes(obj.hook).decode("utf-8")) if obj.hook else None,
+                                        "introduction": json.loads(to_json_bytes(obj.introduction).decode("utf-8")) if obj.introduction else None,
+                                        "metadata": json.loads(to_json_bytes(obj.metadata).decode("utf-8")),
+                                        "resolution": json.loads(to_json_bytes(obj.resolution).decode("utf-8")) if obj.resolution else None,
+                                        "script_id": obj.script_id,
+                                        "sections": [json.loads(to_json_bytes(s).decode("utf-8")) for s in obj.sections],
+                                        "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                        "title": obj.title,
+                                        "transitions": [json.loads(to_json_bytes(tr).decode("utf-8")) for tr in obj.transitions],
+                                        "word_count": obj.word_count,
+                                    }
+                                elif isinstance(obj, ScriptBuildResult):
+                                    payload = {
+                                        "error_code": obj.error_code.value if obj.error_code else None,
+                                        "error_message": obj.error_message,
+                                        "script": json.loads(to_json_bytes(obj.script).decode("utf-8")) if obj.script else None,
+                                        "success": obj.success,
+                                    }
+                                else:
+                                    raise ValueError(f"Unserializable object type: {type(obj)}")
+                            except ImportError:
+                                raise ValueError(f"Unserializable object type: {type(obj)}")
                     except ImportError:
                         raise ValueError(f"Unserializable object type: {type(obj)}")
             except ImportError:
