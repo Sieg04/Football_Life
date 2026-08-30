@@ -1,0 +1,118 @@
+.player-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+  border-bottom: 2px solid var(--fl-border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .card-title {
+    font-size: 1.2rem;
+    color: var(--fl-accent-primary);
+    border-bottom: 1px solid var(--fl-border-subtle);
+    padding-bottom: 0.5rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+
+    .label {
+      color: var(--fl-text-secondary);
+    }
+
+    .value {
+      color: var(--fl-text-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.relationships-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: var(--fl-text-primary);
+}
+
+.relationships-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.relationship-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+
+  .rel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .rel-desc {
+    font-size: 0.95rem;
+    color: var(--fl-text-secondary);
+  }
+
+  .strength-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    .label {
+      font-size: 0.8rem;
+      color: var(--fl-text-muted);
+    }
+
+    .bar-bg {
+      height: 6px;
+      background-color: var(--fl-bg-elevated);
+      border-radius: var(--fl-radius-sm);
+      overflow: hidden;
+
+      .bar-fill {
+        height: 100%;
+        background-color: var(--fl-accent-primary);
+        border-radius: var(--fl-radius-sm);
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--fl-text-muted);
+}

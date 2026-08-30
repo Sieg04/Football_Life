@@ -1,0 +1,75 @@
+<div class="player-profile animate-fade-in" *ngIf="presentation">
+  <h1 class="page-title display-font">PLAYER PROFILE</h1>
+
+  <div class="profile-grid">
+    <div class="info-card fl-card">
+      <h2 class="card-title display-font">PERSONAL & IDENTITY</h2>
+      <div class="info-row">
+        <span class="label">Full Name</span>
+        <span class="value">{{ presentation.player.name }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Age</span>
+        <span class="value">{{ presentation.player.age || 24 }} years</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Nationality</span>
+        <span class="value">{{ presentation.player.nationality || 'Spain' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Primary Position</span>
+        <span class="value font-bold">{{ presentation.player.position || 'CF' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Status</span>
+        <span class="value fl-badge fl-badge-accent display-font">{{ presentation.player.career_status }}</span>
+      </div>
+    </div>
+
+    <div class="info-card fl-card">
+      <h2 class="card-title display-font">CONTRACT & CLUB STATUS</h2>
+      <div class="info-row">
+        <span class="label">Current Club</span>
+        <span class="value">{{ presentation.player.current_club || 'FC Barcelona' }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Market Valuation</span>
+        <span class="value" *ngIf="presentation.player.market_value_eur !== undefined">€{{ (presentation.player.market_value_eur / 1000000) | number:'1.0-0' }}M</span>
+        <span class="value" *ngIf="presentation.player.market_value_eur === undefined">€74M</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Weekly Wage</span>
+        <span class="value" *ngIf="presentation.player.salary_eur !== undefined">€{{ presentation.player.salary_eur | number }} / wk</span>
+        <span class="value" *ngIf="presentation.player.salary_eur === undefined">€180,000 / wk</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Primary Archetype</span>
+        <span class="value">{{ presentation.player.primary_archetype || 'Clinical Finisher' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="relationships-section">
+    <h2 class="section-title display-font">CAREER RELATIONSHIPS</h2>
+    <div class="relationships-grid" *ngIf="presentation.relationships && presentation.relationships.length > 0; else noRelationships">
+      <div class="relationship-card fl-card" *ngFor="let rel of presentation.relationships">
+        <div class="rel-header">
+          <span class="rel-name">{{ rel.target_entity || rel.target_entity_name }}</span>
+          <span class="fl-badge display-font">{{ rel.relationship_type }}</span>
+        </div>
+        <p class="rel-desc" *ngIf="rel.description">{{ rel.description }}</p>
+        <div class="strength-bar-container">
+          <span class="label">Affinity / Trust</span>
+          <div class="bar-bg">
+            <div class="bar-fill" [style.width.%]="rel.strength * 100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noRelationships>
+      <div class="empty-state fl-card">
+        <p>No active career relationships recorded yet.</p>
+      </div>
+    </ng-template>
+  </section>
+</div>

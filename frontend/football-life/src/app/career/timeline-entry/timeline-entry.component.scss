@@ -1,0 +1,58 @@
+.timeline-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+
+  &.prio-critical {
+    border-left: 4px solid var(--fl-accent-gold);
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.08) 0%, var(--fl-bg-card) 100%);
+  }
+
+  &.prio-high {
+    border-left: 4px solid var(--fl-accent-primary);
+  }
+
+  &.prio-standard {
+    border-left: 4px solid var(--fl-border-bright);
+  }
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+
+  .icon {
+    color: var(--fl-accent-primary);
+  }
+}
+
+.entry-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--fl-text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.entry-desc {
+  font-size: 0.95rem;
+  color: var(--fl-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.entry-club {
+  font-size: 0.85rem;
+  color: var(--fl-accent-primary);
+  font-weight: 600;
+}

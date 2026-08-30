@@ -1,0 +1,45 @@
+<div class="career-timeline animate-fade-in" *ngIf="presentation">
+  <div class="timeline-header">
+    <h1 class="page-title display-font">CAREER TIMELINE</h1>
+
+    <div class="filter-controls">
+      <button
+        class="filter-btn display-font"
+        [class.active]="selectedPriority === 'ALL'"
+        (click)="applyFilter('ALL')"
+      >
+        ALL EVENTS
+      </button>
+      <button
+        class="filter-btn display-font"
+        [class.active]="selectedPriority === 'CRITICAL'"
+        (click)="applyFilter('CRITICAL')"
+      >
+        CRITICAL
+      </button>
+      <button
+        class="filter-btn display-font"
+        [class.active]="selectedPriority === 'HIGH'"
+        (click)="applyFilter('HIGH')"
+      >
+        HIGH PRIORITY
+      </button>
+    </div>
+  </div>
+
+  <div class="timeline-stream" *ngIf="filteredEntries.length > 0; else emptyTimeline">
+    <div class="stream-line"></div>
+    <div class="stream-list">
+      <app-timeline-entry
+        *ngFor="let item of filteredEntries"
+        [entry]="item"
+      ></app-timeline-entry>
+    </div>
+  </div>
+
+  <ng-template #emptyTimeline>
+    <div class="empty-state fl-card">
+      <p>No timeline entries match the selected filter.</p>
+    </div>
+  </ng-template>
+</div>

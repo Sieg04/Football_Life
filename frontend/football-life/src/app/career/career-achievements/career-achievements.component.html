@@ -1,0 +1,32 @@
+<div class="career-achievements animate-fade-in" *ngIf="presentation">
+  <h1 class="page-title display-font">ACHIEVEMENTS & CAREER TRAJECTORY</h1>
+
+  <section class="trophies-section">
+    <h2 class="section-title display-font">TROPHY CABINET & HONOURS</h2>
+    <div class="trophies-grid" *ngIf="presentation.statistics.trophies && presentation.statistics.trophies.length > 0; else emptyTrophies">
+      <div class="trophy-card fl-card" *ngFor="let tr of presentation.statistics.trophies">
+        <span class="trophy-icon">🏆</span>
+        <h3 class="trophy-title">{{ tr }}</h3>
+      </div>
+    </div>
+    <ng-template #emptyTrophies>
+      <div class="empty-state fl-card">
+        <p>No recorded trophies yet.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="arcs-section" *ngIf="presentation.career_arcs && presentation.career_arcs.length > 0">
+    <h2 class="section-title display-font">CAREER ARCS & TRAJECTORY</h2>
+    <div class="arcs-flow">
+      <div class="arc-card fl-card" *ngFor="let arc of presentation.career_arcs">
+        <div class="arc-header">
+          <h3 class="arc-title display-font">{{ arc.title || arc.arc_type }}</h3>
+          <span class="fl-badge" [class.fl-badge-accent]="arc.status === 'ACTIVE'">{{ arc.status }}</span>
+        </div>
+        <p class="arc-desc" *ngIf="arc.description">{{ arc.description }}</p>
+        <span class="arc-years" *ngIf="arc.start_year">Started {{ arc.start_year }}</span>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,35 @@
+<div class="player-hero animate-fade-in" *ngIf="player">
+  <div class="hero-header">
+    <span class="fl-badge fl-badge-accent display-font">
+      {{ player.career_status }} CAREER
+    </span>
+    <span class="archetype-badge fl-badge display-font" *ngIf="player.primary_archetype">
+      {{ player.primary_archetype }}
+    </span>
+  </div>
+
+  <div class="hero-body">
+    <div class="player-identity">
+      <h1 class="player-name display-font">{{ player.name }}</h1>
+      <div class="player-details">
+        <span class="pos-badge display-font">{{ player.position || 'CF' }}</span>
+        <span class="meta-item">{{ player.age ? player.age + ' YEARS' : '24 YEARS' }}</span>
+        <span class="separator">•</span>
+        <span class="meta-item">{{ player.nationality || 'Spain' }}</span>
+        <span class="separator">•</span>
+        <span class="club-name">{{ player.current_club || 'FC Barcelona' }}</span>
+      </div>
+    </div>
+
+    <div class="rating-box">
+      <div class="ovr-card fl-card">
+        <span class="ovr-value display-font">{{ player.overall_rating || 87 }}</span>
+        <span class="ovr-label display-font">OVR</span>
+      </div>
+      <div class="val-card fl-card" *ngIf="player.market_value_eur !== undefined">
+        <span class="val-value display-font">€{{ (player.market_value_eur / 1000000) | number:'1.0-0' }}M</span>
+        <span class="val-label display-font">VALUATION</span>
+      </div>
+    </div>
+  </div>
+</div>

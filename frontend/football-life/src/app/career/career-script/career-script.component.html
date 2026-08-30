@@ -1,0 +1,36 @@
+<div class="career-script animate-fade-in" *ngIf="presentation">
+  <div class="script-header" *ngIf="presentation.script">
+    <div class="header-top">
+      <span class="fl-badge fl-badge-accent display-font">PRESENTATION SCRIPT</span>
+      <div class="meta-tags">
+        <span class="fl-badge display-font">{{ presentation.script.word_count }} WORDS</span>
+        <span class="fl-badge display-font">~{{ presentation.script.estimated_duration_seconds || presentation.script.estimated_duration || 165 }}s DURATION</span>
+      </div>
+    </div>
+    <h1 class="script-title display-font">{{ presentation.script.title || 'DOCUMENTARY SCRIPT' }}</h1>
+  </div>
+
+  <div class="script-body" *ngIf="presentation.script">
+    <div class="script-segment hook-segment fl-card" *ngIf="presentation.script.hook">
+      <span class="segment-label display-font">THE HOOK</span>
+      <p class="narrative-text">{{ presentation.script.hook.text || presentation.script.hook }}</p>
+    </div>
+
+    <div class="script-section fl-card" *ngFor="let sec of presentation.script.sections">
+      <h3 class="section-title display-font">{{ sec.title }}</h3>
+      <div class="segment-list">
+        <p class="narrative-text" *ngFor="let seg of sec.segments">{{ seg.text || seg }}</p>
+      </div>
+    </div>
+
+    <div class="script-segment climax-segment fl-card" *ngIf="presentation.script.climax">
+      <span class="segment-label display-font">THE CLIMAX</span>
+      <p class="narrative-text">{{ presentation.script.climax.text || presentation.script.climax }}</p>
+    </div>
+
+    <div class="script-segment closing-segment fl-card" *ngIf="presentation.script.closing">
+      <span class="segment-label display-font">CLOSING STATEMENT</span>
+      <p class="narrative-text">{{ presentation.script.closing.text || presentation.script.closing }}</p>
+    </div>
+  </div>
+</div>

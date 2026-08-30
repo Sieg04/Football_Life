@@ -1,0 +1,15 @@
+<div class="timeline-entry fl-card" [ngClass]="priorityClass" *ngIf="entry">
+  <div class="entry-header">
+    <div class="date-badge display-font">
+      <span class="icon">{{ entry.icon || '●' }}</span>
+      <span class="year">{{ entry.date_label || entry.date_or_season || entry.season }}</span>
+    </div>
+    <span class="fl-badge display-font">{{ entry.entry_type }}</span>
+  </div>
+
+  <div class="entry-body">
+    <h3 class="entry-title">{{ entry.title }}</h3>
+    <p class="entry-desc">{{ entry.description || entry.summary }}</p>
+    <span class="entry-club" *ngIf="entry.club">{{ entry.club }}</span>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="career-story animate-fade-in" *ngIf="presentation">
+  <div class="story-header" *ngIf="presentation.narrative">
+    <span class="fl-badge fl-badge-gold display-font">NARRATIVE STORY</span>
+    <h1 class="story-title display-font">{{ presentation.narrative.title || 'THE STORY OF ' + presentation.player.name }}</h1>
+    <p class="premise-quote">"{{ presentation.narrative.premise }}"</p>
+  </div>
+
+  <section class="acts-container" *ngIf="presentation.narrative?.acts && presentation.narrative!.acts.length > 0">
+    <h2 class="section-title display-font">NARRATIVE ACTS</h2>
+    <div class="acts-grid">
+      <div class="act-card fl-card" *ngFor="let act of presentation.narrative!.acts">
+        <h3 class="act-title display-font">{{ act.title || ('Act ' + act.act_id) }}</h3>
+        <p class="act-desc">{{ act.description || act.premise }}</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="climax-resolution-box fl-card" *ngIf="presentation.narrative?.climax || presentation.narrative?.resolution">
+    <div class="climax-part" *ngIf="presentation.narrative?.climax">
+      <span class="fl-badge fl-badge-accent display-font">STORY CLIMAX</span>
+      <p class="climax-text">{{ presentation.narrative?.climax }}</p>
+    </div>
+    <div class="resolution-part" *ngIf="presentation.narrative?.resolution">
+      <span class="fl-badge display-font">RESOLUTION</span>
+      <p class="resolution-text">{{ presentation.narrative?.resolution }}</p>
+    </div>
+  </div>
+</div>
