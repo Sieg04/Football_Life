@@ -860,7 +860,225 @@ def to_json_bytes(obj: Any) -> bytes:
                                         "success": obj.success,
                                     }
                                 else:
-                                    raise ValueError(f"Unserializable object type: {type(obj)}")
+                                    try:
+                                        from app.event.presentation_domain import (
+                                            CareerArcPresentation,
+                                            CareerHighlight,
+                                            CareerOverview,
+                                            CareerPresentation,
+                                            CareerStatistics,
+                                            ClubPresentation,
+                                            NarrativePresentation,
+                                            PlayerPresentation,
+                                            PresentationBuildResult,
+                                            PresentationMetadata,
+                                            PresentationSourceReference,
+                                            RelationshipPresentation,
+                                            ScriptPresentation,
+                                            SeasonPresentation,
+                                            TimelineEntry,
+                                        )
+
+                                        if isinstance(obj, PresentationSourceReference):
+                                            payload = {
+                                                "act_ids": list(obj.act_ids),
+                                                "arc_ids": list(obj.arc_ids),
+                                                "beat_ids": list(obj.beat_ids),
+                                                "career_record_id": obj.career_record_id,
+                                                "conflict_ids": list(obj.conflict_ids),
+                                                "event_ids": list(obj.event_ids),
+                                                "milestone_ids": list(obj.milestone_ids),
+                                                "script_id": obj.script_id,
+                                                "segment_ids": list(obj.segment_ids),
+                                                "seed_ids": list(obj.seed_ids),
+                                                "story_id": obj.story_id,
+                                                "thread_ids": list(obj.thread_ids),
+                                                "turning_point_ids": list(obj.turning_point_ids),
+                                            }
+                                        elif isinstance(obj, PlayerPresentation):
+                                            payload = {
+                                                "age": obj.age,
+                                                "career_status": obj.career_status.value,
+                                                "current_club": obj.current_club,
+                                                "first_name": obj.first_name,
+                                                "last_name": obj.last_name,
+                                                "name": obj.name,
+                                                "nationality": obj.nationality,
+                                                "overall_rating": obj.overall_rating,
+                                                "player_id": obj.player_id,
+                                                "position": obj.position,
+                                                "potential": obj.potential,
+                                            }
+                                        elif isinstance(obj, CareerOverview):
+                                            payload = {
+                                                "assists": obj.assists,
+                                                "career_arc": obj.career_arc,
+                                                "career_end": str(obj.career_end) if obj.career_end is not None else None,
+                                                "career_start": str(obj.career_start) if obj.career_start is not None else None,
+                                                "clubs_count": obj.clubs_count,
+                                                "goals": obj.goals,
+                                                "matches": obj.matches,
+                                                "milestones": obj.milestones,
+                                                "peak_club": obj.peak_club,
+                                                "peak_rating": obj.peak_rating,
+                                                "trophies": obj.trophies,
+                                                "turning_points": obj.turning_points,
+                                                "years_active": obj.years_active,
+                                            }
+                                        elif isinstance(obj, CareerStatistics):
+                                            payload = {
+                                                "appearances": obj.appearances,
+                                                "assists": obj.assists,
+                                                "average_rating": obj.average_rating,
+                                                "awards": list(obj.awards),
+                                                "clean_sheets": obj.clean_sheets,
+                                                "extra_stats": serialize_mapping(obj.extra_stats),
+                                                "goals": obj.goals,
+                                                "minutes": obj.minutes,
+                                                "trophies": list(obj.trophies),
+                                            }
+                                        elif isinstance(obj, ClubPresentation):
+                                            payload = {
+                                                "appearances": obj.appearances,
+                                                "assists": obj.assists,
+                                                "club_id": obj.club_id,
+                                                "club_name": obj.club_name,
+                                                "country": obj.country,
+                                                "end_date": obj.end_date,
+                                                "goals": obj.goals,
+                                                "importance": obj.importance,
+                                                "role": obj.role,
+                                                "season_count": obj.season_count,
+                                                "start_date": obj.start_date,
+                                                "trophies": list(obj.trophies),
+                                            }
+                                        elif isinstance(obj, SeasonPresentation):
+                                            payload = {
+                                                "appearances": obj.appearances,
+                                                "assists": obj.assists,
+                                                "average_rating": obj.average_rating,
+                                                "club_id": obj.club_id,
+                                                "club_name": obj.club_name,
+                                                "goals": obj.goals,
+                                                "important_events": list(obj.important_events),
+                                                "milestones": list(obj.milestones),
+                                                "season_id": obj.season_id,
+                                                "season_label": obj.season_label,
+                                                "trophies": list(obj.trophies),
+                                                "turning_points": list(obj.turning_points),
+                                            }
+                                        elif isinstance(obj, TimelineEntry):
+                                            payload = {
+                                                "date_or_season": obj.date_or_season,
+                                                "entry_type": obj.entry_type.value,
+                                                "importance": obj.importance,
+                                                "priority": obj.priority.value,
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "summary": obj.summary,
+                                                "timeline_id": obj.timeline_id,
+                                                "title": obj.title,
+                                            }
+                                        elif isinstance(obj, CareerHighlight):
+                                            payload = {
+                                                "description": obj.description,
+                                                "highlight_id": obj.highlight_id,
+                                                "highlight_type": obj.highlight_type.value,
+                                                "priority": obj.priority.value,
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "title": obj.title,
+                                            }
+                                        elif isinstance(obj, CareerArcPresentation):
+                                            payload = {
+                                                "arc_id": obj.arc_id,
+                                                "arc_type": obj.arc_type,
+                                                "current_phase": obj.current_phase,
+                                                "end_reference": obj.end_reference,
+                                                "history": list(obj.history),
+                                                "phases": list(obj.phases),
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "start_reference": obj.start_reference,
+                                                "status": obj.status,
+                                            }
+                                        elif isinstance(obj, RelationshipPresentation):
+                                            payload = {
+                                                "end_reference": obj.end_reference,
+                                                "relationship_id": obj.relationship_id,
+                                                "relationship_type": obj.relationship_type,
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "start_reference": obj.start_reference,
+                                                "status": obj.status,
+                                                "strength": obj.strength,
+                                                "target_entity_id": obj.target_entity_id,
+                                                "target_entity_name": obj.target_entity_name,
+                                            }
+                                        elif isinstance(obj, NarrativePresentation):
+                                            payload = {
+                                                "acts": [serialize_mapping(a) for a in obj.acts],
+                                                "beats": [serialize_mapping(b) for b in obj.beats],
+                                                "climax": obj.climax,
+                                                "conflicts": [serialize_mapping(c) for c in obj.conflicts],
+                                                "opening": obj.opening,
+                                                "premise": obj.premise,
+                                                "resolution": obj.resolution,
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "story_id": obj.story_id,
+                                                "theme": list(obj.theme),
+                                                "threads": [serialize_mapping(th) for th in obj.threads],
+                                            }
+                                        elif isinstance(obj, ScriptPresentation):
+                                            payload = {
+                                                "climax": obj.climax,
+                                                "closing": obj.closing,
+                                                "estimated_duration": obj.estimated_duration,
+                                                "hook": obj.hook,
+                                                "introduction": obj.introduction,
+                                                "resolution": obj.resolution,
+                                                "script_id": obj.script_id,
+                                                "sections": [serialize_mapping(sec) for sec in obj.sections],
+                                                "segments": [serialize_mapping(seg) for seg in obj.segments],
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "transitions": [serialize_mapping(tr) for tr in obj.transitions],
+                                                "word_count": obj.word_count,
+                                            }
+                                        elif isinstance(obj, PresentationMetadata):
+                                            payload = {
+                                                "created_from_script_id": obj.created_from_script_id,
+                                                "created_from_story_id": obj.created_from_story_id,
+                                                "density": obj.density.value,
+                                                "extra": serialize_mapping(obj.extra),
+                                                "player_id": obj.player_id,
+                                                "presentation_id": obj.presentation_id,
+                                                "section_order": [s.value for s in obj.section_order],
+                                                "version": obj.version,
+                                            }
+                                        elif isinstance(obj, CareerPresentation):
+                                            payload = {
+                                                "career_arcs": [json.loads(to_json_bytes(ca).decode("utf-8")) for ca in obj.career_arcs],
+                                                "clubs": [json.loads(to_json_bytes(c).decode("utf-8")) for c in obj.clubs],
+                                                "highlights": [json.loads(to_json_bytes(h).decode("utf-8")) for h in obj.highlights],
+                                                "metadata": json.loads(to_json_bytes(obj.metadata).decode("utf-8")),
+                                                "narrative": json.loads(to_json_bytes(obj.narrative).decode("utf-8")) if obj.narrative else None,
+                                                "overview": json.loads(to_json_bytes(obj.overview).decode("utf-8")),
+                                                "player": json.loads(to_json_bytes(obj.player).decode("utf-8")),
+                                                "presentation_id": obj.presentation_id,
+                                                "relationships": [json.loads(to_json_bytes(r).decode("utf-8")) for r in obj.relationships],
+                                                "script": json.loads(to_json_bytes(obj.script).decode("utf-8")) if obj.script else None,
+                                                "seasons": [json.loads(to_json_bytes(s).decode("utf-8")) for s in obj.seasons],
+                                                "source_reference": json.loads(to_json_bytes(obj.source_reference).decode("utf-8")),
+                                                "statistics": json.loads(to_json_bytes(obj.statistics).decode("utf-8")),
+                                                "timeline": [json.loads(to_json_bytes(t).decode("utf-8")) for t in obj.timeline],
+                                            }
+                                        elif isinstance(obj, PresentationBuildResult):
+                                            payload = {
+                                                "error_code": obj.error_code.value if obj.error_code else None,
+                                                "error_message": obj.error_message,
+                                                "presentation": json.loads(to_json_bytes(obj.presentation).decode("utf-8")) if obj.presentation else None,
+                                                "success": obj.success,
+                                            }
+                                        else:
+                                            raise ValueError(f"Unserializable object type: {type(obj)}")
+                                    except ImportError:
+                                        raise ValueError(f"Unserializable object type: {type(obj)}")
                             except ImportError:
                                 raise ValueError(f"Unserializable object type: {type(obj)}")
                     except ImportError:

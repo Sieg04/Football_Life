@@ -1,0 +1,37 @@
+{
+  "default_density": "STANDARD",
+  "default_section_order": [
+    "PLAYER",
+    "OVERVIEW",
+    "CAREER",
+    "STATISTICS",
+    "TIMELINE",
+    "HIGHLIGHTS",
+    "CAREER_ARC",
+    "RELATIONSHIPS",
+    "STORY",
+    "SCRIPT"
+  ],
+  "timeline_display_limits": {
+    "COMPACT": 10,
+    "STANDARD": 25,
+    "DETAILED": 50,
+    "COMPLETE": 999
+  },
+  "highlight_caps": {
+    "COMPACT": 3,
+    "STANDARD": 5,
+    "DETAILED": 10,
+    "COMPLETE": 999
+  },
+  "visual_priority_weights": {
+    "CRITICAL": 1.0,
+    "HIGH": 0.8,
+    "MEDIUM": 0.5,
+    "LOW": 0.2
+  },
+  "stat_display_rules": {
+    "include_extra_stats": true,
+    "format_float_precision": 2
+  }
+}
