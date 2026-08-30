@@ -1,0 +1,73 @@
+{
+  "default_words_per_minute": 150,
+  "duration_tolerances": {
+    "min_ratio": 0.8,
+    "max_ratio": 1.2
+  },
+  "densities": {
+    "COMPACT": {
+      "max_beats_per_act": 2,
+      "max_total_beats": 5,
+      "include_minor_events": false,
+      "include_secondary_threads": false,
+      "transition_verbosity": "MINIMAL"
+    },
+    "STANDARD": {
+      "max_beats_per_act": 4,
+      "max_total_beats": 12,
+      "include_minor_events": false,
+      "include_secondary_threads": true,
+      "transition_verbosity": "STANDARD"
+    },
+    "DETAILED": {
+      "max_beats_per_act": 8,
+      "max_total_beats": 25,
+      "include_minor_events": true,
+      "include_secondary_threads": true,
+      "transition_verbosity": "DETAILED"
+    },
+    "COMPLETE": {
+      "max_beats_per_act": 999,
+      "max_total_beats": 999,
+      "include_minor_events": true,
+      "include_secondary_threads": true,
+      "transition_verbosity": "FULL"
+    }
+  },
+  "hook_priorities": [
+    "MAJOR_ACHIEVEMENT",
+    "CRISIS",
+    "COMEBACK",
+    "RIVALRY",
+    "CAREER_CONTRAST",
+    "COLD_OPEN",
+    "ORIGIN_HOOK",
+    "MYSTERY",
+    "LEGACY"
+  ],
+  "pacing_parameters": {
+    "SLOW": { "words_per_second": 2.0 },
+    "MODERATE": { "words_per_second": 2.5 },
+    "FAST": { "words_per_second": 3.0 },
+    "VERY_FAST": { "words_per_second": 3.5 },
+    "CLIMACTIC": { "words_per_second": 2.2 },
+    "REFLECTIVE": { "words_per_second": 1.8 }
+  },
+  "tones": {
+    "NEUTRAL": { "descriptor": "objective" },
+    "DRAMATIC": { "descriptor": "intense" },
+    "INSPIRATIONAL": { "descriptor": "uplifting" },
+    "DARK": { "descriptor": "sobering" },
+    "REFLECTIVE": { "descriptor": "thoughtful" },
+    "TRIUMPHANT": { "descriptor": "celebratory" },
+    "TENSE": { "descriptor": "suspenseful" }
+  },
+  "styles": {
+    "DOCUMENTARY": { "transition_frequency": "MODERATE" },
+    "CINEMATIC": { "transition_frequency": "HIGH" },
+    "DRAMATIC": { "transition_frequency": "HIGH" },
+    "MINIMAL": { "transition_frequency": "LOW" },
+    "FAST_PACED": { "transition_frequency": "HIGH" },
+    "REFLECTIVE": { "transition_frequency": "LOW" }
+  }
+}
