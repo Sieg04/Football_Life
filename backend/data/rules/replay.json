@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "moment_priority": {
+    "CAREER_START": "MEDIUM",
+    "DEBUT": "HIGH",
+    "GOAL_MILESTONE": "HIGH",
+    "STAT_MILESTONE": "MEDIUM",
+    "TRANSFER": "CRITICAL",
+    "ACHIEVEMENT": "CRITICAL",
+    "CONFLICT": "HIGH",
+    "TURNING_POINT": "CRITICAL",
+    "BREAKTHROUGH": "HIGH",
+    "COMEBACK": "HIGH",
+    "CAREER_PEAK": "CRITICAL",
+    "CAREER_END": "HIGH",
+    "SEASON": "MEDIUM",
+    "OTHER": "LOW"
+  },
+  "duration": {
+    "default_scene_seconds": 10.0,
+    "words_per_minute": 150
+  },
+  "capture": {
+    "default_width": 1920,
+    "default_height": 1080,
+    "default_preset": "CINEMATIC"
+  },
+  "limits": {
+    "max_scenes_per_story": 50
+  },
+  "presets": {
+    "CINEMATIC": {
+      "show_navigation": false,
+      "show_controls": false,
+      "show_branding": true,
+      "show_statistics": true,
+      "show_player_identity": true,
+      "show_season": true
+    },
+    "MATCHDAY": {
+      "show_navigation": false,
+      "show_controls": false,
+      "show_branding": true,
+      "show_statistics": true,
+      "show_player_identity": true,
+      "show_season": true
+    },
+    "DOCUMENTARY": {
+      "show_navigation": false,
+      "show_controls": false,
+      "show_branding": true,
+      "show_statistics": false,
+      "show_player_identity": true,
+      "show_season": true
+    },
+    "PROFILE": {
+      "show_navigation": false,
+      "show_controls": false,
+      "show_branding": true,
+      "show_statistics": true,
+      "show_player_identity": true,
+      "show_season": true
+    }
+  }
+}

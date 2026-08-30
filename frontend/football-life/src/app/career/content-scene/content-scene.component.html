@@ -1,0 +1,29 @@
+<div
+  class="content-scene-card"
+  [class.active]="isActive"
+  [attr.data-scene-type]="scene.scene_type"
+  (click)="onSelect()">
+  <div class="scene-header">
+    <span class="scene-num">#{{ index + 1 }}</span>
+    <span class="scene-type-badge">{{ scene.scene_type }}</span>
+    <span class="scene-duration">{{ scene.duration_seconds || 5 }}s</span>
+  </div>
+
+  <div class="scene-body">
+    <h4 class="scene-title">{{ scene.title }}</h4>
+    <p class="scene-headline" *ngIf="scene.headline || scene.subtitle">{{ scene.headline || scene.subtitle }}</p>
+    <p class="scene-body-text" *ngIf="scene.body_text || scene.description">{{ scene.body_text || scene.description }}</p>
+
+    <div class="stat-highlights" *ngIf="scene.stat_highlights && scene.stat_highlights.length > 0">
+      <div *ngFor="let stat of scene.stat_highlights" class="stat-tag">
+        <span class="stat-k">{{ stat[0] }}:</span>
+        <span class="stat-v">{{ stat[1] }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene-footer">
+    <span class="layout-preset">Preset: {{ scene.layout_preset || 'MEDIUM' }}</span>
+    <span class="priority-label" [attr.data-prio]="scene.priority">{{ scene.priority }}</span>
+  </div>
+</div>

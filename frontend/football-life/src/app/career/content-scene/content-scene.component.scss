@@ -1,0 +1,101 @@
+.content-scene-card {
+  background: var(--surface-card, #161a23);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &:hover {
+    border-color: rgba(0, 229, 255, 0.4);
+  }
+
+  &.active {
+    border-color: var(--accent-color, #00e5ff);
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    background: rgba(0, 229, 255, 0.04);
+  }
+}
+
+.scene-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .scene-num {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    font-weight: bold;
+    color: var(--text-muted, #8b949e);
+  }
+
+  .scene-type-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color, #00e5ff);
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .scene-duration {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--text-muted, #8b949e);
+  }
+}
+
+.scene-title {
+  font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-heading, #ffffff);
+}
+
+.scene-headline {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-color, #00e5ff);
+  margin: 0.25rem 0;
+}
+
+.scene-body-text {
+  font-size: 0.85rem;
+  color: var(--text-muted, #8b949e);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.stat-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  .stat-tag {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+
+    .stat-k { color: var(--text-muted, #8b949e); margin-right: 0.25rem; }
+    .stat-v { color: #fff; font-weight: 600; }
+  }
+}
+
+.scene-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-muted, #8b949e);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.5rem;
+
+  .priority-label[data-prio="CRITICAL"] { color: #ff4d4d; }
+  .priority-label[data-prio="HIGH"] { color: #ff944d; }
+  .priority-label[data-prio="MEDIUM"] { color: #ffd14d; }
+}

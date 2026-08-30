@@ -1,0 +1,100 @@
+<div class="content-story-container">
+  <div class="header-section">
+    <div class="title-meta">
+      <span class="badge phase-badge">PHASE 16</span>
+      <h1 class="page-title">Content & Career Replay Mode</h1>
+      <p class="subtitle" *ngIf="contentStory">
+        Story: {{ contentStory.title }} | Duration: {{ contentStory.estimated_duration_seconds }}s | Scenes: {{ contentStory.total_scenes }}
+      </p>
+    </div>
+
+    <div class="tab-navigation">
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'MOMENTS'"
+        (click)="selectTab('MOMENTS')">
+        Moments Selection ({{ selectedMomentIds.length }})
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'STORY'"
+        (click)="selectTab('STORY')">
+        Story Deck & Scenes
+      </button>
+    </div>
+  </div>
+
+  <div class="error-banner" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- TAB 1: MOMENTS SELECTION -->
+  <div class="tab-content" *ngIf="activeTab === 'MOMENTS'">
+    <div class="moments-action-bar">
+      <span>Select moments to compile into your Career Content Story.</span>
+      <button class="btn btn-primary" (click)="buildStory(); selectTab('STORY');">
+        Generate Content Story ({{ selectedMomentIds.length }} selected)
+      </button>
+    </div>
+
+    <app-career-moments
+      *ngIf="careerReplay"
+      [moments]="careerReplay.moments"
+      [selectedMomentIds]="selectedMomentIds"
+      (toggleMoment)="toggleMomentSelection($event)"
+      (selectAllMoments)="selectAllVisibleMoments()">
+    </app-career-moments>
+  </div>
+
+  <!-- TAB 2: STORY DECK & SCENES -->
+  <div class="tab-content story-tab" *ngIf="activeTab === 'STORY'">
+    <div class="story-stage-grid">
+      <div class="left-scene-deck">
+        <h3>Story Scene Flow</h3>
+        <div class="scenes-scroll">
+          <app-content-scene
+            *ngFor="let scene of contentStory?.scenes; let i = index"
+            [scene]="scene"
+            [isActive]="i === currentSceneIndex"
+            [index]="i"
+            (sceneSelected)="selectScene($event)">
+          </app-content-scene>
+        </div>
+      </div>
+
+      <div class="right-preview-stage">
+        <h3>Recording Stage Preview</h3>
+        <div class="stage-wrapper" *ngIf="currentScene">
+          <app-content-scene
+            [scene]="currentScene"
+            [isActive]="true"
+            [index]="currentSceneIndex">
+          </app-content-scene>
+        </div>
+
+        <app-scene-controls
+          *ngIf="contentStory"
+          [currentSceneIndex]="currentSceneIndex"
+          [totalScenes]="contentStory.scenes.length"
+          [isPlaying]="isPlaying"
+          [playbackProgress]="playbackProgress"
+          [currentDurationSeconds]="currentScene?.duration_seconds || 5"
+          (play)="play()"
+          (pause)="pause()"
+          (previous)="previousScene()"
+          (next)="nextScene()"
+          (seek)="seek($event)"
+          (toggleCapture)="openCaptureView()">
+        </app-scene-controls>
+      </div>
+    </div>
+  </div>
+
+  <app-capture-view
+    *ngIf="showCaptureModal"
+    [captureFrame]="currentCaptureFrame"
+    [selectedPreset]="selectedPreset"
+    (presetChange)="onPresetChange($event)"
+    (closeView)="closeCaptureModal()">
+  </app-capture-view>
+</div>

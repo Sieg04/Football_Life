@@ -1,0 +1,52 @@
+<div class="career-moments-container">
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Priority:</span>
+      <button
+        *ngFor="let prio of priorities"
+        class="filter-btn"
+        [class.active]="activePriorityFilter === prio"
+        (click)="setPriorityFilter(prio)">
+        {{ prio }}
+      </button>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Type:</span>
+      <button
+        *ngFor="let t of types"
+        class="filter-btn"
+        [class.active]="activeTypeFilter === t"
+        (click)="setTypeFilter(t)">
+        {{ t }}
+      </button>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" (click)="onSelectAll()">Select All Visible</button>
+    </div>
+  </div>
+
+  <div class="moments-list">
+    <div
+      *ngFor="let moment of filteredMoments"
+      class="moment-card"
+      [class.selected]="isSelected(moment.moment_id)"
+      (click)="onToggle(moment.moment_id)">
+      <div class="moment-header">
+        <span class="badge priority" [attr.data-prio]="moment.priority">{{ moment.priority }}</span>
+        <span class="badge type">{{ moment.moment_type }}</span>
+        <span class="season-label">Season {{ moment.season_number }} - Day {{ moment.day_number }}</span>
+      </div>
+      <h3 class="moment-title">{{ moment.title }}</h3>
+      <p class="moment-desc">{{ moment.description }}</p>
+      <div class="moment-footer">
+        <span class="score-pill">Impact: {{ moment.impact_score }}</span>
+        <span class="checkbox-indicator">{{ isSelected(moment.moment_id) ? '✓ Selected' : '+ Add' }}</span>
+      </div>
+    </div>
+    <div *ngIf="filteredMoments.length === 0" class="empty-moments">
+      No moments match the current filters.
+    </div>
+  </div>
+</div>

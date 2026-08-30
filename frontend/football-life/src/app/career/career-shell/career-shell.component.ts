@@ -24,7 +24,8 @@ export class CareerShellComponent implements OnInit {
     { label: 'CLUBS', path: '/clubs' },
     { label: 'ACHIEVEMENTS', path: '/achievements' },
     { label: 'STORY', path: '/story' },
-    { label: 'SCRIPT', path: '/script' }
+    { label: 'SCRIPT', path: '/script' },
+    { label: 'CONTENT', path: '/content' }
   ];
 
   constructor(private sessionService: CareerSessionService) {}

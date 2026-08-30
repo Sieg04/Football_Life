@@ -1,0 +1,55 @@
+<div class="capture-view-modal">
+  <div class="capture-overlay" (click)="onClose()"></div>
+  <div class="capture-content">
+    <div class="capture-header">
+      <h2>Capture View & Preset Inspector</h2>
+      <button class="close-btn" (click)="onClose()">✕</button>
+    </div>
+
+    <div class="preset-selector-bar">
+      <span class="label">Preset:</span>
+      <button
+        *ngFor="let preset of presets"
+        class="preset-btn"
+        [class.active]="selectedPreset === preset"
+        (click)="onSelectPreset(preset)">
+        {{ preset }}
+      </button>
+    </div>
+
+    <div class="preview-stage-container" *ngIf="captureFrame">
+      <div class="stage-resolution-info">
+        Viewport Resolution: {{ captureFrame.preset.width }} × {{ captureFrame.preset.height }} | Aspect Ratio: {{ captureFrame.preset.aspect_ratio }}
+      </div>
+
+      <div
+        class="frame-stage"
+        [attr.data-preset]="captureFrame.preset.preset_id"
+        [style.aspect-ratio]="captureFrame.preset.width + '/' + captureFrame.preset.height">
+
+        <div class="frame-branding" *ngIf="captureFrame.preset.show_brand_watermark">
+          <span class="brand-text">FOOTBALL LIFE</span>
+        </div>
+
+        <div class="frame-content-box">
+          <div class="frame-tag">{{ captureFrame.scene.scene_type }}</div>
+          <h1 class="frame-title">{{ captureFrame.scene.title }}</h1>
+          <p class="frame-headline" *ngIf="captureFrame.scene.headline">{{ captureFrame.scene.headline }}</p>
+          <p class="frame-body" *ngIf="captureFrame.scene.body_text">{{ captureFrame.scene.body_text }}</p>
+
+          <div class="frame-stats" *ngIf="captureFrame.scene.stat_highlights.length > 0">
+            <div *ngFor="let stat of captureFrame.scene.stat_highlights" class="stat-pill">
+              <span class="label">{{ stat[0] }}:</span>
+              <span class="val">{{ stat[1] }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="frame-metadata">
+          <span>Scene ID: {{ captureFrame.scene.scene_id }}</span>
+          <span>Hash: {{ captureFrame.frame_hash.substring(0, 12) }}...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
