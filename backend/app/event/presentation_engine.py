@@ -88,8 +88,8 @@ def _hash_id(prefix: str, payload: str) -> str:
     return f"{prefix}_{digest}"
 
 
-def _is_career_retired(career_record: CareerRecord | None, story: NarrativeStory | None) -> bool:
-    if story and story.resolution_type == ResolutionType.RETIREMENT:
+def _is_career_retired(career_record: CareerRecord | None, story: Any | None) -> bool:
+    if story and getattr(story, "resolution_type", None) == ResolutionType.RETIREMENT:
         return True
     if career_record is not None:
         has_ret_event = any(
@@ -106,25 +106,38 @@ def _is_career_retired(career_record: CareerRecord | None, story: NarrativeStory
 
 def build_player_presentation(
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
     player_id: str | None = None,
 ) -> PlayerPresentation:
     pid = player_id
     if not pid and story:
-        pid = story.player_id
+        pid = getattr(story, "player_id", None) or getattr(getattr(story, "player", None), "id", None)
     if not pid and career_record:
         pid = career_record.player_id
     if not pid:
         pid = "player_unknown"
 
-    name = story.title_context if story and story.title_context else f"Player {pid}"
-    position = story.protagonist.position if story and story.protagonist else None
-    current_club = (
-        story.protagonist.important_clubs[0]
-        if story and story.protagonist and story.protagonist.important_clubs
-        else None
-    )
+    name = None
+    if story and hasattr(story, "player"):
+        p = story.player
+        name = f"{p.name} {p.surname}".strip()
+    elif story and hasattr(story, "title_context") and story.title_context:
+        name = story.title_context
+    if not name:
+        name = f"Player {pid}"
+
+    position = None
+    if story and hasattr(story, "player"):
+        position = str(getattr(story.player, "primary_position", ""))
+    elif story and hasattr(story, "protagonist") and story.protagonist:
+        position = story.protagonist.position
+
+    current_club = None
+    if story and hasattr(story, "current_club_id"):
+        current_club = str(story.current_club_id)
+    elif story and hasattr(story, "protagonist") and story.protagonist and story.protagonist.important_clubs:
+        current_club = story.protagonist.important_clubs[0]
 
     if not current_club and career_record and career_record.events:
         for ev in reversed(career_record.events):
@@ -145,7 +158,7 @@ def build_player_presentation(
 
 def build_career_overview(
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
 ) -> CareerOverview:
     if not career_record and not story:
@@ -172,7 +185,7 @@ def build_career_overview(
     clubs = set()
     for ev in events:
         clubs.update(ev.clubs)
-    if story and story.protagonist:
+    if story and getattr(story, "protagonist", None):
         clubs.update(story.protagonist.important_clubs)
     clubs_count = len(clubs)
 
@@ -296,7 +309,6 @@ def build_club_presentations(
                 title = str(ms.metadata.get("title", ms.milestone_type.value))
                 club_stats[ms.club_id]["trophies"].append(title)
 
-    # Sort deterministically by first sequence then club_name
     sorted_clubs = sorted(club_stats.values(), key=lambda x: (x["first_seq"], x["club_name"]))
 
     presentations = []
@@ -371,7 +383,6 @@ def build_season_presentations(
         if s_key in season_data:
             season_data[s_key]["turning_points"].append(tp.turning_point_id)
 
-    # Sort chronological ascending
     sorted_seasons = sorted(season_data.values(), key=lambda x: str(x["season_id"]))
 
     presentations = []
@@ -400,7 +411,7 @@ def build_season_presentations(
 
 def build_career_timeline(
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
     density: PresentationDensity = PresentationDensity.STANDARD,
 ) -> tuple[TimelineEntry, ...]:
@@ -428,8 +439,8 @@ def build_career_timeline(
         src_ref = PresentationSourceReference(
             career_record_id=career_record.player_id,
             event_ids=(ev.event_id,),
-            story_id=story.story_id if story else None,
-            script_id=script.script_id if script else None,
+            story_id=getattr(story, "story_id", None),
+            script_id=getattr(script, "script_id", None),
         )
 
         entry = TimelineEntry(
@@ -450,8 +461,8 @@ def build_career_timeline(
         src_ref = PresentationSourceReference(
             career_record_id=career_record.player_id,
             milestone_ids=(ms.milestone_id,),
-            story_id=story.story_id if story else None,
-            script_id=script.script_id if script else None,
+            story_id=getattr(story, "story_id", None),
+            script_id=getattr(script, "script_id", None),
         )
         entry = TimelineEntry(
             timeline_id=t_id,
@@ -471,8 +482,8 @@ def build_career_timeline(
         src_ref = PresentationSourceReference(
             career_record_id=career_record.player_id,
             turning_point_ids=(tp.turning_point_id,),
-            story_id=story.story_id if story else None,
-            script_id=script.script_id if script else None,
+            story_id=getattr(story, "story_id", None),
+            script_id=getattr(script, "script_id", None),
         )
         entry = TimelineEntry(
             timeline_id=t_id,
@@ -486,10 +497,7 @@ def build_career_timeline(
         )
         raw_entries.append((str(tp.season), tp.sequence, tp.turning_point_id, entry))
 
-    # Deterministic sorting: 1. season, 2. sequence, 3. stable ID
     raw_entries.sort(key=lambda x: (x[0], x[1], x[2]))
-
-    # Apply timeline display limit from configuration
     limit = _PRESENTATION_RULES.get("timeline_display_limits", {}).get(density.value, 25)
     selected_entries = [item[3] for item in raw_entries[:limit]]
 
@@ -498,7 +506,7 @@ def build_career_timeline(
 
 def build_career_highlights(
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
     density: PresentationDensity = PresentationDensity.STANDARD,
 ) -> tuple[CareerHighlight, ...]:
@@ -511,7 +519,7 @@ def build_career_highlights(
                 src_ref = PresentationSourceReference(
                     career_record_id=career_record.player_id,
                     milestone_ids=(ms.milestone_id,),
-                    story_id=story.story_id if story else None,
+                    story_id=getattr(story, "story_id", None),
                 )
                 highlights.append(
                     CareerHighlight(
@@ -529,7 +537,7 @@ def build_career_highlights(
             src_ref = PresentationSourceReference(
                 career_record_id=career_record.player_id,
                 turning_point_ids=(tp.turning_point_id,),
-                story_id=story.story_id if story else None,
+                story_id=getattr(story, "story_id", None),
             )
             highlights.append(
                 CareerHighlight(
@@ -542,13 +550,14 @@ def build_career_highlights(
                 )
             )
 
-    if story and story.climax_beat_id:
-        climax_beat = next((b for b in story.narrative_beats if b.beat_id == story.climax_beat_id), None)
+    climax_beat_id = getattr(story, "climax_beat_id", None)
+    if story and climax_beat_id:
+        climax_beat = next((b for b in getattr(story, "narrative_beats", ()) if b.beat_id == climax_beat_id), None)
         if climax_beat:
-            h_id = _hash_id("hl_climax", story.climax_beat_id)
+            h_id = _hash_id("hl_climax", climax_beat_id)
             src_ref = PresentationSourceReference(
-                story_id=story.story_id,
-                beat_ids=(story.climax_beat_id,),
+                story_id=climax_beat_id,
+                beat_ids=(climax_beat_id,),
                 event_ids=climax_beat.source_event_ids,
                 milestone_ids=climax_beat.source_milestone_ids,
             )
@@ -563,7 +572,6 @@ def build_career_highlights(
                 )
             )
 
-    # Sort deterministically by priority then highlight_id
     prio_map = {VisualPriority.CRITICAL: 0, VisualPriority.HIGH: 1, VisualPriority.MEDIUM: 2, VisualPriority.LOW: 3}
     highlights.sort(key=lambda x: (prio_map.get(x.priority, 9), x.highlight_id))
 
@@ -633,9 +641,9 @@ def build_relationship_presentations(
 
 
 def build_narrative_presentation(
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
 ) -> NarrativePresentation | None:
-    if not story:
+    if not story or not isinstance(story, NarrativeStory):
         return None
 
     src_ref = PresentationSourceReference(
@@ -756,11 +764,11 @@ def build_script_presentation(
 
 def build_presentation_metadata(
     player_id: str,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
     density: PresentationDensity = PresentationDensity.STANDARD,
 ) -> PresentationMetadata:
-    p_id = _hash_id("pres", f"{player_id}:{story.story_id if story else 'none'}:{script.script_id if script else 'none'}:{density.value}")
+    p_id = _hash_id("pres", f"{player_id}:{getattr(story, 'story_id', 'none')}:{getattr(script, 'script_id', 'none')}:{density.value}")
     sec_order = (
         PresentationSectionType.PLAYER,
         PresentationSectionType.OVERVIEW,
@@ -776,8 +784,8 @@ def build_presentation_metadata(
     return PresentationMetadata(
         presentation_id=p_id,
         player_id=player_id,
-        created_from_story_id=story.story_id if story else None,
-        created_from_script_id=script.script_id if script else None,
+        created_from_story_id=getattr(story, "story_id", None),
+        created_from_script_id=getattr(script, "script_id", None),
         density=density,
         section_order=sec_order,
         version="1.0",
@@ -787,7 +795,7 @@ def build_presentation_metadata(
 def validate_career_presentation(
     presentation: CareerPresentation,
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
 ) -> bool:
     if not isinstance(presentation, CareerPresentation):
@@ -795,15 +803,13 @@ def validate_career_presentation(
             PresentationErrorCode.INVALID_PRESENTATION, "Expected CareerPresentation object"
         )
 
-    # Validate active career safety
     is_retired = _is_career_retired(career_record, story)
     if not is_retired and presentation.player.career_status == CareerStatus.RETIRED:
         raise PresentationProcessingException(
             PresentationErrorCode.INCONSISTENT_DATA, "Active career presentation cannot show RETIRED player status"
         )
 
-    # Validate story climax preservation
-    if story and story.climax_beat_id:
+    if story and isinstance(story, NarrativeStory) and story.climax_beat_id:
         has_climax = any(
             h.highlight_type == HighlightType.CLIMAX and story.climax_beat_id in h.source_reference.beat_ids
             for h in presentation.highlights
@@ -814,7 +820,6 @@ def validate_career_presentation(
                 f"Story climax beat '{story.climax_beat_id}' was not preserved in presentation",
             )
 
-    # Validate source reference traceability (section 30 of spec)
     if career_record:
         rec_ev_ids = {e.event_id for e in career_record.events}
         rec_ms_ids = {m.milestone_id for m in career_record.milestones}
@@ -856,7 +861,7 @@ def validate_career_presentation(
                         PresentationErrorCode.INVALID_REFERENCE, f"Orphaned arc reference '{aid}'"
                     )
 
-    if story and presentation.narrative:
+    if story and isinstance(story, NarrativeStory) and presentation.narrative:
         if presentation.narrative.source_reference.story_id != story.story_id:
             raise PresentationProcessingException(
                 PresentationErrorCode.INVALID_REFERENCE, "Narrative presentation story_id mismatch"
@@ -873,13 +878,13 @@ def validate_career_presentation(
 
 def build_career_presentation(
     career_record: CareerRecord | None = None,
-    story: NarrativeStory | None = None,
+    story: Any | None = None,
     script: StoryScript | None = None,
     density: PresentationDensity = PresentationDensity.STANDARD,
 ) -> CareerPresentation:
     pid = "unknown"
     if story:
-        pid = story.player_id
+        pid = getattr(story, "player_id", None) or getattr(getattr(story, "player", None), "id", "unknown")
     elif career_record:
         pid = career_record.player_id
 
@@ -892,14 +897,14 @@ def build_career_presentation(
     highlights = build_career_highlights(career_record=career_record, story=story, script=script, density=density)
     career_arcs = build_career_arc_presentation(career_record=career_record, story=story)
     relationships = build_relationship_presentations(career_record=career_record)
-    narrative = build_narrative_presentation(story=story)
+    narrative = build_narrative_presentation(story=story if isinstance(story, NarrativeStory) else None)
     script_pres = build_script_presentation(script=script)
     metadata = build_presentation_metadata(player_id=pid, story=story, script=script, density=density)
 
     src_ref = PresentationSourceReference(
         career_record_id=career_record.player_id if career_record else None,
-        story_id=story.story_id if story else None,
-        script_id=script.script_id if script else None,
+        story_id=getattr(story, "story_id", None),
+        script_id=getattr(script, "script_id", None),
     )
 
     presentation = CareerPresentation(

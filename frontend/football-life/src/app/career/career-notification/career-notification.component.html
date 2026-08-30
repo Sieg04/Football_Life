@@ -1,0 +1,14 @@
+<div class="notifications-container" *ngIf="notifications && notifications.length > 0">
+  <div
+    *ngFor="let notif of notifications.slice(-3)"
+    class="notif-toast"
+    [class.success]="notif.type === 'SUCCESS'"
+    [class.warning]="notif.type === 'WARNING'"
+  >
+    <div class="notif-header">
+      <span class="notif-title">{{ notif.title }}</span>
+      <span class="notif-season">{{ notif.created_at_season }}</span>
+    </div>
+    <p class="notif-msg">{{ notif.message }}</p>
+  </div>
+</div>
