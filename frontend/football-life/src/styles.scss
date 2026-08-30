@@ -1,14 +1,112 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --fl-bg-primary: #0a0e14;
+  --fl-bg-surface: #121824;
+  --fl-bg-elevated: #1a2333;
+  --fl-bg-card: #151c2a;
+
+  --fl-text-primary: #f8fafc;
+  --fl-text-secondary: #94a3b8;
+  --fl-text-muted: #64748b;
+
+  --fl-accent-primary: #38bdf8;
+  --fl-accent-glow: rgba(56, 189, 248, 0.25);
+  --fl-accent-gold: #fbbf24;
+  --fl-accent-danger: #f87171;
+  --fl-accent-success: #34d399;
+
+  --fl-border-subtle: #1e293b;
+  --fl-border-bright: #334155;
+
+  --fl-font-display: 'Barlow Condensed', sans-serif;
+  --fl-font-body: 'DM Sans', sans-serif;
+
+  --fl-radius-sm: 4px;
+  --fl-radius-md: 8px;
+  --fl-radius-lg: 12px;
+  --fl-radius-xl: 16px;
+
+  --fl-transition-fast: 0.15s ease;
+  --fl-transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-html,
 body {
-	min-height: 100%;
-	margin: 0;
-	background: #08090b;
-	font-family: 'DM Sans', sans-serif;
+  background-color: var(--fl-bg-primary);
+  color: var(--fl-text-primary);
+  font-family: var(--fl-font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-/* You can add global styles to this file, and also import other style files */
+
+h1, h2, h3, h4, h5, h6, .display-font {
+  font-family: var(--fl-font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fl-card {
+  background-color: var(--fl-bg-card);
+  border: 1px solid var(--fl-border-subtle);
+  border-radius: var(--fl-radius-lg);
+  padding: 1.5rem;
+  transition: border-color var(--fl-transition-fast), transform var(--fl-transition-fast);
+
+  &:hover {
+    border-color: var(--fl-border-bright);
+  }
+}
+
+.fl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--fl-radius-sm);
+  font-family: var(--fl-font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: var(--fl-bg-elevated);
+  border: 1px solid var(--fl-border-subtle);
+  color: var(--fl-text-secondary);
+
+  &.fl-badge-accent {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+    color: var(--fl-accent-primary);
+  }
+
+  &.fl-badge-gold {
+    background: rgba(251, 191, 36, 0.12);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: var(--fl-accent-gold);
+  }
+}
+
+.fl-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

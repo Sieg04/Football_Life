@@ -1,0 +1,29 @@
+<div class="career-shell">
+  <header class="app-header">
+    <div class="logo-container">
+      <img src="assets/fl_logo.png" alt="Football Life" class="fl-logo" />
+      <span class="app-title display-font">FOOTBALL LIFE</span>
+    </div>
+
+    <nav class="app-nav">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        class="nav-item display-font"
+      >
+        {{ item.label }}
+      </a>
+    </nav>
+
+    <div class="header-status" *ngIf="presentation">
+      <span class="fl-badge fl-badge-accent display-font">
+        SEASON {{ presentation.seasons[0]?.season_name || '2026/2027' }}
+      </span>
+    </div>
+  </header>
+
+  <main class="shell-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

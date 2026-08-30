@@ -1,0 +1,78 @@
+.career-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--fl-border-subtle);
+  padding-bottom: 0.75rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+}
+
+.filter-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  background: var(--fl-bg-elevated);
+  border: 1px solid var(--fl-border-subtle);
+  color: var(--fl-text-secondary);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--fl-radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--fl-transition-fast);
+
+  &:hover {
+    color: var(--fl-text-primary);
+    border-color: var(--fl-border-bright);
+  }
+
+  &.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--fl-accent-primary);
+    color: var(--fl-accent-primary);
+  }
+}
+
+.timeline-stream {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.stream-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--fl-border-bright);
+}
+
+.stream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--fl-text-muted);
+}

@@ -1,0 +1,37 @@
+<div class="career-clubs animate-fade-in" *ngIf="presentation">
+  <h1 class="page-title display-font">CLUB HISTORY</h1>
+
+  <div class="clubs-timeline">
+    <div class="club-card fl-card" *ngFor="let club of presentation.clubs">
+      <div class="club-header">
+        <div class="title-box">
+          <h2 class="club-name">{{ club.name || club.club_name }}</h2>
+          <span class="period-badge fl-badge display-font">{{ club.period || (club.start_year + ' - ' + (club.end_year || 'Present')) }}</span>
+        </div>
+        <span class="fl-badge fl-badge-accent display-font" *ngIf="club.is_current">CURRENT CLUB</span>
+      </div>
+
+      <div class="club-metrics">
+        <div class="metric">
+          <span class="val display-font">{{ club.appearances }}</span>
+          <span class="lbl display-font">APPS</span>
+        </div>
+        <div class="metric">
+          <span class="val display-font">{{ club.goals }}</span>
+          <span class="lbl display-font">GOALS</span>
+        </div>
+        <div class="metric">
+          <span class="val display-font">{{ club.assists }}</span>
+          <span class="lbl display-font">ASSISTS</span>
+        </div>
+      </div>
+
+      <div class="club-trophies" *ngIf="club.trophies && club.trophies.length > 0">
+        <span class="label">Honours:</span>
+        <div class="trophy-tags">
+          <span class="fl-badge fl-badge-gold display-font" *ngFor="let tr of club.trophies">🏆 {{ tr }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

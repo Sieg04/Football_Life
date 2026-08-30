@@ -1,0 +1,50 @@
+<div class="career-stats animate-fade-in" *ngIf="presentation">
+  <h1 class="page-title display-font">CAREER STATISTICS</h1>
+
+  <div class="primary-stats-grid">
+    <app-stat-card [value]="presentation.overview.matches" label="MATCHES PLAYED" [accent]="true"></app-stat-card>
+    <app-stat-card [value]="presentation.overview.goals" label="CAREER GOALS" [accent]="true"></app-stat-card>
+    <app-stat-card [value]="presentation.overview.assists" label="CAREER ASSISTS" [accent]="true"></app-stat-card>
+    <app-stat-card [value]="presentation.statistics.average_rating || 7.8" label="AVG RATING"></app-stat-card>
+  </div>
+
+  <section class="seasons-section" *ngIf="presentation.seasons && presentation.seasons.length > 0">
+    <h2 class="section-title display-font">SEASON-BY-SEASON PROGRESSION</h2>
+    <div class="table-container fl-card">
+      <table class="progression-table">
+        <thead>
+          <tr>
+            <th class="display-font">SEASON</th>
+            <th class="display-font">CLUB</th>
+            <th class="display-font">APPS</th>
+            <th class="display-font">GOALS</th>
+            <th class="display-font">ASSISTS</th>
+            <th class="display-font">RATING</th>
+            <th class="display-font">END OVR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of presentation.seasons">
+            <td class="font-bold">{{ s.season_name || s.year || s.season_id }}</td>
+            <td class="club-cell">{{ s.club || s.club_name }}</td>
+            <td>{{ s.appearances }}</td>
+            <td class="highlight-val">{{ s.goals }}</td>
+            <td>{{ s.assists }}</td>
+            <td>{{ s.average_rating || '-' }}</td>
+            <td><span class="fl-badge fl-badge-accent display-font">{{ s.end_overall_rating || '-' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="records-section" *ngIf="presentation.statistics.records && presentation.statistics.records.length > 0">
+    <h2 class="section-title display-font">RECORDS & MILESTONES</h2>
+    <div class="records-grid">
+      <div class="record-card fl-card" *ngFor="let rec of presentation.statistics.records">
+        <span class="icon">🏆</span>
+        <p class="record-text">{{ rec }}</p>
+      </div>
+    </div>
+  </section>
+</div>

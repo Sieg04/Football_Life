@@ -1,0 +1,86 @@
+.career-clubs {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+  border-bottom: 2px solid var(--fl-border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.clubs-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.club-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .club-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .club-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--fl-text-primary);
+    }
+  }
+
+  .club-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background-color: var(--fl-bg-elevated);
+    padding: 1rem;
+    border-radius: var(--fl-radius-md);
+
+    .metric {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .val {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--fl-accent-primary);
+      }
+
+      .lbl {
+        font-size: 0.75rem;
+        color: var(--fl-text-muted);
+      }
+    }
+  }
+
+  .club-trophies {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .label {
+      font-size: 0.9rem;
+      color: var(--fl-text-secondary);
+    }
+
+    .trophy-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+  }
+}

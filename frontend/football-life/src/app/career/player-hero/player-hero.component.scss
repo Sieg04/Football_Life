@@ -1,0 +1,95 @@
+.player-hero {
+  background: linear-gradient(135deg, var(--fl-bg-elevated) 0%, var(--fl-bg-surface) 100%);
+  border: 1px solid var(--fl-border-subtle);
+  border-radius: var(--fl-radius-xl);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.hero-header {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.player-name {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--fl-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.player-details {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--fl-text-secondary);
+}
+
+.pos-badge {
+  background-color: var(--fl-accent-primary);
+  color: var(--fl-bg-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--fl-radius-sm);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.club-name {
+  color: var(--fl-accent-primary);
+  font-weight: 600;
+}
+
+.rating-box {
+  display: flex;
+  gap: 1rem;
+}
+
+.ovr-card, .val-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  padding: 1rem;
+}
+
+.ovr-value {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--fl-accent-primary);
+  line-height: 1;
+}
+
+.ovr-label {
+  font-size: 0.8rem;
+  color: var(--fl-text-muted);
+  margin-top: 0.25rem;
+}
+
+.val-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+  line-height: 1;
+}
+
+.val-label {
+  font-size: 0.75rem;
+  color: var(--fl-text-muted);
+  margin-top: 0.35rem;
+}

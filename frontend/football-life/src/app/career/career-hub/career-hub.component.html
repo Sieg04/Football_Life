@@ -1,0 +1,36 @@
+<div class="career-hub animate-fade-in" *ngIf="presentation">
+  <app-player-hero [player]="presentation.player"></app-player-hero>
+
+  <div class="stats-overview-grid">
+    <div class="stat-box fl-card">
+      <span class="stat-number display-font">{{ presentation.overview.matches || 0 }}</span>
+      <span class="stat-title display-font">MATCHES</span>
+    </div>
+    <div class="stat-box fl-card">
+      <span class="stat-number display-font">{{ presentation.overview.goals || 0 }}</span>
+      <span class="stat-title display-font">GOALS</span>
+    </div>
+    <div class="stat-box fl-card">
+      <span class="stat-number display-font">{{ presentation.overview.assists || 0 }}</span>
+      <span class="stat-title display-font">ASSISTS</span>
+    </div>
+    <div class="stat-box fl-card">
+      <span class="stat-number display-font">{{ presentation.overview.trophies || presentation.overview.trophies_count || 0 }}</span>
+      <span class="stat-title display-font">TROPHIES</span>
+    </div>
+  </div>
+
+  <section class="highlights-section" *ngIf="presentation.highlights.length > 0">
+    <h2 class="section-title display-font">CAREER HIGHLIGHTS</h2>
+    <div class="highlights-grid">
+      <div class="highlight-card fl-card" *ngFor="let item of presentation.highlights">
+        <div class="card-header">
+          <span class="fl-badge fl-badge-gold display-font">{{ item.highlight_type }}</span>
+          <span class="season-tag" *ngIf="item.season">SEASON {{ item.season }}</span>
+        </div>
+        <h3 class="highlight-title">{{ item.title }}</h3>
+        <p class="highlight-desc">{{ item.description }}</p>
+      </div>
+    </div>
+  </section>
+</div>

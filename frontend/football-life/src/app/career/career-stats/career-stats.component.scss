@@ -1,0 +1,92 @@
+.career-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--fl-text-primary);
+  border-bottom: 2px solid var(--fl-border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.primary-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.seasons-section, .records-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: var(--fl-text-primary);
+}
+
+.table-container {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.progression-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th, td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--fl-border-subtle);
+  }
+
+  th {
+    background-color: var(--fl-bg-elevated);
+    color: var(--fl-text-secondary);
+    font-size: 0.85rem;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .club-cell {
+    color: var(--fl-accent-primary);
+    font-weight: 600;
+  }
+
+  .highlight-val {
+    color: var(--fl-text-primary);
+    font-weight: 700;
+  }
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.record-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .icon {
+    font-size: 1.5rem;
+  }
+
+  .record-text {
+    color: var(--fl-text-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+}
