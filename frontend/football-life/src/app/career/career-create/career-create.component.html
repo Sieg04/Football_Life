@@ -1,0 +1,65 @@
+<div class="career-create-container">
+  <div class="create-card">
+    <div class="brand-header">
+      <span class="brand-badge">FOOTBALL LIFE</span>
+      <h2>START YOUR CAREER</h2>
+      <p>Create your protagonist and begin your simulation journey.</p>
+    </div>
+
+    <form (ngSubmit)="onStartCareer()" class="create-form">
+      <div class="form-group">
+        <label for="playerName">PLAYER NAME</label>
+        <input
+          type="text"
+          id="playerName"
+          [(ngModel)]="playerName"
+          name="playerName"
+          placeholder="e.g. Adrian Martínez"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label>PRIMARY POSITION</label>
+        <div class="position-selector">
+          <button
+            type="button"
+            *ngFor="let pos of positions"
+            [class.active]="selectedPosition === pos"
+            (click)="selectedPosition = pos"
+            class="pos-btn"
+          >
+            {{ pos }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half">
+          <label for="startingClub">STARTING CLUB</label>
+          <input
+            type="text"
+            id="startingClub"
+            [(ngModel)]="startingClub"
+            name="startingClub"
+          />
+        </div>
+
+        <div class="form-group half">
+          <label for="nationality">NATIONALITY</label>
+          <input
+            type="text"
+            id="nationality"
+            [(ngModel)]="nationality"
+            name="nationality"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loading || !playerName.trim()">
+        <span *ngIf="!loading">START CAREER</span>
+        <span *ngIf="loading">INITIALIZING WORLD...</span>
+      </button>
+    </form>
+  </div>
+</div>

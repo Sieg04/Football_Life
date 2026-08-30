@@ -1,0 +1,9 @@
+<button
+  class="recording-toggle-btn"
+  [class.active]="active"
+  (click)="onToggle()"
+  title="Toggle 1920x1080 Screen Recording Mode"
+>
+  <span class="dot"></span>
+  <span class="text">{{ active ? 'RECORDING MODE ON (1920x1080)' : 'RECORDING MODE' }}</span>
+</button>

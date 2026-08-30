@@ -1,0 +1,50 @@
+.recording-toggle-btn {
+  background: #181b21;
+  border: 1px solid #272b33;
+  color: #8e949f;
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8e949f;
+  }
+
+  &:hover {
+    border-color: #00ff88;
+    color: #f5f5f5;
+  }
+
+  &.active {
+    background: rgba(255, 0, 85, 0.15);
+    border-color: #ff0055;
+    color: #ff0055;
+
+    .dot {
+      background: #ff0055;
+      box-shadow: 0 0 8px #ff0055;
+      animation: pulse 1.5s infinite;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}

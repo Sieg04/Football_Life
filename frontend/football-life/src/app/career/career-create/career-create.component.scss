@@ -1,0 +1,146 @@
+.career-create-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+  background: #08090b;
+
+  .create-card {
+    background: #111318;
+    border: 1px solid #272b33;
+    border-radius: 12px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 2rem;
+
+      .brand-badge {
+        display: inline-block;
+        background: rgba(0, 255, 136, 0.1);
+        color: #00ff88;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        margin-bottom: 0.75rem;
+      }
+
+      h2 {
+        color: #f5f5f5;
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        margin: 0 0 0.5rem 0;
+      }
+
+      p {
+        color: #8e949f;
+        font-size: 0.9rem;
+        margin: 0;
+      }
+    }
+
+    .create-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          color: #8e949f;
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+        }
+
+        input {
+          background: #181b21;
+          border: 1px solid #272b33;
+          border-radius: 8px;
+          padding: 0.85rem 1rem;
+          color: #f5f5f5;
+          font-size: 1rem;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #00ff88;
+          }
+        }
+      }
+
+      .position-selector {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .pos-btn {
+          flex: 1;
+          min-width: 60px;
+          background: #181b21;
+          border: 1px solid #272b33;
+          color: #8e949f;
+          padding: 0.6rem 0.75rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: #00ff88;
+            color: #f5f5f5;
+          }
+
+          &.active {
+            background: #00ff88;
+            color: #08090b;
+            border-color: #00ff88;
+          }
+        }
+      }
+
+      .form-row {
+        display: flex;
+        gap: 1rem;
+
+        .half {
+          flex: 1;
+        }
+      }
+
+      .submit-btn {
+        margin-top: 1rem;
+        background: #00ff88;
+        color: #08090b;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

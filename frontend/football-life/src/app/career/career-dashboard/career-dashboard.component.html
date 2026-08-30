@@ -1,0 +1,107 @@
+<div class="dashboard-shell" [class.recording-active]="recordingMode" *ngIf="session">
+  <!-- Top Navigation Bar -->
+  <header class="dashboard-header">
+    <div class="brand">
+      <span class="logo-mark">FL</span>
+      <span class="brand-text">FOOTBALL LIFE</span>
+    </div>
+
+    <div class="season-pill">
+      {{ session.current_season }}
+    </div>
+
+    <div class="header-actions">
+      <app-career-recording-mode
+        [active]="recordingMode"
+        (toggle)="onToggleRecordingMode()"
+      ></app-career-recording-mode>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="dashboard-main">
+    <!-- Hero Player Card -->
+    <section class="player-hero-card" *ngIf="session.presentation">
+      <div class="player-avatar">
+        {{ session.presentation.player.name?.charAt(0) || 'P' }}
+      </div>
+      <div class="player-info">
+        <h1 class="player-name">{{ session.presentation.player.name || 'Player' }}</h1>
+        <div class="player-meta">
+          <span class="age">{{ session.presentation.player.age || 21 }} YEARS</span>
+          <span class="dot">•</span>
+          <span class="position">{{ session.presentation.player.position || 'ST' }}</span>
+          <span class="dot">•</span>
+          <span class="club">{{ session.presentation.player.current_club || 'Club' }}</span>
+        </div>
+      </div>
+      <div class="player-ovr-badge">
+        <span class="ovr-num">{{ session.presentation.player.overall_rating || 75 }}</span>
+        <span class="ovr-lbl">OVR</span>
+      </div>
+    </section>
+
+    <!-- Quick Stats Grid -->
+    <section class="quick-stats-grid" *ngIf="session.presentation">
+      <div class="stat-card">
+        <span class="stat-lbl">MATCHES</span>
+        <span class="stat-val">{{ session.presentation.overview.matches || 0 }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-lbl">GOALS</span>
+        <span class="stat-val accent">{{ session.presentation.overview.goals || 0 }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-lbl">ASSISTS</span>
+        <span class="stat-val">{{ session.presentation.overview.assists || 0 }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-lbl">TROPHIES</span>
+        <span class="stat-val">{{ session.presentation.overview.trophies || 0 }}</span>
+      </div>
+    </section>
+
+    <!-- Primary Action: ADVANCE CAREER -->
+    <section class="advance-action-section">
+      <button
+        class="advance-btn"
+        [disabled]="advancing || session.status === 'COMPLETED' || session.status === 'DECISION_PENDING'"
+        (click)="onAdvance()"
+      >
+        <span *ngIf="!advancing && session.status !== 'COMPLETED'">ADVANCE CAREER</span>
+        <span *ngIf="advancing">SIMULATING SEASON...</span>
+        <span *ngIf="session.status === 'COMPLETED'">CAREER COMPLETED</span>
+      </button>
+      <div class="status-hint" *ngIf="session.status === 'DECISION_PENDING'">
+        ⚡ DECISION REQUIRED BEFORE ADVANCING
+      </div>
+    </section>
+
+    <!-- Navigation Hub -->
+    <section class="view-nav-grid">
+      <button class="nav-btn" (click)="navigateTo('/profile')">PROFILE</button>
+      <button class="nav-btn" (click)="navigateTo('/timeline')">TIMELINE</button>
+      <button class="nav-btn" (click)="navigateTo('/stats')">STATS</button>
+      <button class="nav-btn" (click)="navigateTo('/clubs')">CLUBS</button>
+      <button class="nav-btn" (click)="navigateTo('/story')">STORY</button>
+      <button class="nav-btn" (click)="navigateTo('/script')">SCRIPT</button>
+    </section>
+  </main>
+
+  <!-- Overlays -->
+  <app-career-event
+    *ngIf="activeOverlayEvent"
+    [event]="activeOverlayEvent"
+    (dismiss)="onDismissEvent()"
+  ></app-career-event>
+
+  <app-career-decision
+    *ngIf="session.pending_decision"
+    [decision]="session.pending_decision"
+    (selectOption)="onResolveDecision($event)"
+  ></app-career-decision>
+
+  <app-career-notification
+    [notifications]="session.notifications || []"
+  ></app-career-notification>
+</div>

@@ -3,10 +3,17 @@ import json
 import random
 from datetime import date
 from pathlib import Path
+from types import MappingProxyType
+from typing import Any
 
 from app.career.domain import (
     Career,
+    CareerAdvanceResult,
     CareerPhase,
+    CareerSession,
+    CareerSessionNotification,
+    CareerSessionStatus,
+    CareerSetupRequest,
     MatchDrivenSeasonInput,
     Season,
     SeasonalEnvironmentInput,
@@ -14,8 +21,22 @@ from app.career.domain import (
     SeasonalPlayingTimeInput,
     SeasonSnapshot,
 )
+from app.career.exceptions import (
+    CareerCompletedException,
+    CareerSimulationException,
+    DecisionRequiredException,
+    InvalidCareerStateException,
+    InvalidDecisionOptionException,
+)
+from app.event.career_domain import CareerEvent, CareerRecord, EventCategory, EventSignificance
+from app.event.career_engine import process_career_events
+from app.event.decisions import Decision, DecisionOption, DecisionResult, DecisionResolutionType, resolve_decision
+from app.event.domain import EventContext, EventType
+from app.event.effects import apply_effects
+from app.event.presentation_domain import CareerPresentation
+from app.event.presentation_engine import build_career_presentation
 from app.match.aggregation import SeasonPerformance
-from app.player.domain import Player
+from app.player.domain import DevelopmentProfile, Player, PlayerAttributes, PlayerState
 from app.player.engine import current_ability, position_ovr
 
 
@@ -144,7 +165,7 @@ def calculate_development_budget(
 
 def get_soft_cap_multiplier(current_val: float) -> float:
     for rule in SOFT_CAPS:
-        if current_val <= rule["max_val"]:
+        if current_val <= rule.get("max_val", rule.get("max", 100.0)):
             return rule["multiplier"]
     return 0.10
 
@@ -425,3 +446,468 @@ def simulate_match_driven_season(
         performance=performance_input,
         environment=environment,
     )
+
+
+def _generate_default_player(request: CareerSetupRequest) -> Player:
+    attrs = PlayerAttributes(
+        acceleration=75.0, sprint_speed=76.0, finishing=78.0, shot_power=75.0,
+        long_shots=70.0, volleys=68.0, penalties=72.0, vision=70.0, short_passing=72.0,
+        long_passing=68.0, crossing=65.0, curve=66.0, agility=74.0, balance=72.0,
+        ball_control=76.0, dribbling=75.0, reactions=74.0, defensive_awareness=40.0,
+        standing_tackle=38.0, interceptions=35.0, heading=68.0, strength=72.0,
+        stamina=74.0, jumping=70.0, aggression=65.0, decision_making=72.0, composure=74.0,
+        creativity=70.0, positioning=75.0, concentration=70.0, work_rate=72.0, leadership=65.0,
+        diving=10.0, handling=10.0, kicking=10.0, reflexes=10.0, speed=10.0, goalkeeper_positioning=10.0,
+    )
+
+    player_id = f"p_{hashlib.sha256(request.player_name.encode('utf-8')).hexdigest()[:12]}"
+    names = request.player_name.strip().split(" ", 1)
+    first_name = names[0]
+    surname = names[1] if len(names) > 1 else ""
+    pos = request.position.upper() if request.position else "ST"
+
+    return Player(
+        id=player_id,
+        name=first_name,
+        surname=surname,
+        nationality=request.nationality,
+        birth_date=date(2005, 5, 15),
+        height=182.0,
+        weight=75.0,
+        preferred_foot="Right",
+        primary_position=pos,
+        secondary_positions=(),
+        attributes=attrs,
+        current_ability=73.0,
+        potential=88.0,
+        development_rate=75.0,
+        development_profile=DevelopmentProfile.BALANCED,
+        role_familiarity={pos: 90.0},
+        traits=("FINESSE_SHOT",),
+        personality={"ambition": 80.0, "professionalism": 85.0},
+        state=PlayerState(),
+        archetype="BALANCED",
+    )
+
+
+class CareerSessionEngine:
+    """
+    Pure orchestrator for Phase 14 career session progression.
+    Integrates Phase 8-13 engines atomically and deterministically.
+    """
+
+    @staticmethod
+    def create_session(request: CareerSetupRequest) -> CareerSession:
+        player = _generate_default_player(request)
+        career_id = f"cs_{hashlib.sha256(f'{player.id}:{request.seed}'.encode('utf-8')).hexdigest()[:16]}"
+        start_d = date(2026, 7, 1)
+
+        initial_season = Season(
+            season_number=1,
+            season_label="2026/27",
+            start_date=start_d,
+            end_date=date(2027, 6, 30),
+            player_id=player.id,
+            club_id=1,
+            starting_age=21,
+            ending_age=21,
+            starting_position=player.primary_position,
+            ending_position=player.primary_position,
+            starting_ability=player.current_ability,
+            ending_ability=player.current_ability,
+            starting_ovr=75.0,
+            ending_ovr=75.0,
+            career_phase_at_start=CareerPhase.EARLY_PRO,
+            career_phase_at_end=CareerPhase.EARLY_PRO,
+            playing_time_input=SeasonalPlayingTimeInput(minutes_played=1200),
+            performance_input=SeasonalPerformanceInput(average_rating=7.1),
+            environment_input=SeasonalEnvironmentInput(),
+            development_budget=3.5,
+            development_summary={"shooting": 1.2, "pace": 1.0, "dribbling": 0.8},
+            attribute_changes={"shooting": 1.2, "pace": 1.0},
+            season_seed=f"{request.seed}:s1",
+            is_completed=False,
+        )
+
+        career = Career(
+            id=career_id,
+            player=player,
+            start_date=start_d,
+            end_date=None,
+            current_season_number=1,
+            current_season_label="2026/27",
+            current_club_id=1,
+            career_phase=CareerPhase.EARLY_PRO,
+            peak_ability=player.current_ability,
+            peak_ovr=75.0,
+            peak_age=21,
+            peak_position=player.primary_position,
+            peak_club_id=1,
+            seasons=[initial_season],
+            snapshots=[],
+            seed=request.seed,
+        )
+
+        initial_record = CareerRecord(player_id=player.id)
+        # Create initial debut event
+        debut_raw_key = f"{player.id}:initial_debut:1"
+        debut_ev_id = f"ce_{hashlib.sha256(debut_raw_key.encode('utf-8')).hexdigest()[:16]}"
+        initial_event = CareerEvent(
+            event_id=debut_ev_id,
+            source_event_id="evt_debut_001",
+            player_id=player.id,
+            season="2026/27",
+            sequence=1,
+            event_type=EventType.PLAYER,
+            category=EventCategory.DEBUT,
+            significance=EventSignificance.MAJOR,
+            summary_data=MappingProxyType({"title": "Professional Debut", "description": f"{player.name} {player.surname} made his professional debut."}),
+            state_changes=MappingProxyType({"confidence": 10.0}),
+            participants=(player.id,),
+            clubs=("1",),
+            competitions=("comp_1",),
+            tags=("debut", "first_team"),
+        )
+
+        record_with_debut = process_career_events(initial_record, (initial_event,))
+        presentation = build_career_presentation(record_with_debut, career)
+
+        welcome_notification = CareerSessionNotification(
+            id=f"notif_{hashlib.sha256(f'{career_id}:welcome'.encode('utf-8')).hexdigest()[:12]}",
+            title="Career Started",
+            message=f"Career created for {player.name} {player.surname} at starting club.",
+            type="INFO",
+            created_at_season="2026/27",
+        )
+
+        return CareerSession(
+            career_id=career_id,
+            player_id=player.id,
+            current_season="2026/27",
+            simulation_position=1,
+            status=CareerSessionStatus.ACTIVE,
+            career=career,
+            career_record=record_with_debut,
+            presentation=presentation,
+            pending_decision=None,
+            pending_events=(initial_event,),
+            notifications=(welcome_notification,),
+            last_processed_event_id=debut_ev_id,
+            seed=request.seed,
+        )
+
+    @staticmethod
+    def advance_season(session: CareerSession) -> CareerAdvanceResult:
+        if session.status == CareerSessionStatus.COMPLETED:
+            raise CareerCompletedException(session.career_id)
+        if session.status == CareerSessionStatus.DECISION_PENDING and session.pending_decision is not None:
+            raise DecisionRequiredException(
+                session.career_id,
+                session.pending_decision.id,
+                {"details": "Must resolve decision before advancing career."},
+            )
+
+        prev_season = session.current_season
+        next_season_num = session.career.current_season_number + 1
+        if next_season_num > 15:
+            # Mark career completed
+            completed_career = Career(
+                id=session.career.id,
+                player=session.career.player,
+                start_date=session.career.start_date,
+                end_date=date(2026 + next_season_num - 1, 6, 30),
+                current_season_number=session.career.current_season_number,
+                current_season_label=session.career.current_season_label,
+                current_club_id=session.career.current_club_id,
+                career_phase=CareerPhase.VETERAN,
+                peak_ability=session.career.peak_ability,
+                peak_ovr=session.career.peak_ovr,
+                peak_age=session.career.peak_age,
+                peak_position=session.career.peak_position,
+                peak_club_id=session.career.current_club_id,
+                seasons=session.career.seasons,
+                snapshots=session.career.snapshots,
+                seed=session.seed,
+            )
+            # Create retirement event
+            ret_raw_key = f"{session.player_id}:retirement:{next_season_num}"
+            ret_ev_id = f"ce_{hashlib.sha256(ret_raw_key.encode('utf-8')).hexdigest()[:16]}"
+            ret_event = CareerEvent(
+                event_id=ret_ev_id,
+                source_event_id=f"evt_retire_{next_season_num}",
+                player_id=session.player_id,
+                season=prev_season,
+                sequence=session.career_record.last_sequence + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.RETIREMENT,
+                significance=EventSignificance.LEGENDARY,
+                summary_data=MappingProxyType({"title": "Career Retirement", "description": "Retired from professional football."}),
+                state_changes=MappingProxyType({"status": "RETIRED"}),
+                participants=(session.player_id,),
+                clubs=("1",),
+                competitions=(),
+                tags=("retirement", "legendary"),
+            )
+            new_record = process_career_events(session.career_record, (ret_event,))
+            pres = build_career_presentation(new_record, completed_career)
+            notif = CareerSessionNotification(
+                id=f"notif_{hashlib.sha256(f'{session.career_id}:retire'.encode('utf-8')).hexdigest()[:12]}",
+                title="Career Completed",
+                message="You have completed a legendary 15-year career!",
+                type="SUCCESS",
+                created_at_season=prev_season,
+            )
+            return CareerAdvanceResult(
+                career_id=session.career_id,
+                previous_season=prev_season,
+                current_season=prev_season,
+                status=CareerSessionStatus.COMPLETED,
+                processed_events=(ret_event,),
+                new_notifications=(notif,),
+                pending_decision=None,
+                presentation=pres,
+                updated_career=completed_career,
+                success=True,
+            )
+
+        start_yr = 2026 + next_season_num - 1
+        end_yr = start_yr + 1
+        next_season_label = f"{start_yr}/{str(end_yr)[2:]}"
+        age = 21 + (next_season_num - 1)
+
+        # Calculate growth / performance
+        ca_boost = 1.5 if age <= 27 else (-1.0 if age >= 31 else 0.2)
+        new_ca = max(50.0, min(99.0, session.career.player.current_ability + ca_boost))
+        new_ovr = round(new_ca + 2.0, 1)
+
+        # Check for Decision trigger on season 3 or 7
+        trigger_decision = None
+        if next_season_num in (3, 7):
+            dec_id = f"dec_contract_{session.career_id}_{next_season_num}"
+            opt1 = DecisionOption(
+                id="opt_sign_extension",
+                label="Sign Extension",
+                description="Secure long-term future at the club.",
+                effects=(),
+            )
+            opt2 = DecisionOption(
+                id="opt_explore_market",
+                label="Explore Transfer Market",
+                description="Wait for better offers from top European clubs.",
+                effects=(),
+            )
+            trigger_decision = Decision(
+                id=dec_id,
+                prompt=f"Your manager has offered a contract extension for season {next_season_label}.",
+                options=(opt1, opt2),
+                resolution_type=DecisionResolutionType.EXPLICIT,
+                default_option_id=opt1.id,
+                metadata=MappingProxyType({"season": next_season_label}),
+            )
+
+        # Generate season event
+        ev_type = EventCategory.BREAKTHROUGH if ca_boost > 1.0 else (EventCategory.FORM_CHANGE if ca_boost < 0 else EventCategory.PERFORMANCE)
+        season_ev_raw_key = f"{session.player_id}:season_{next_season_num}"
+        season_ev_id = f"ce_{hashlib.sha256(season_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+        season_event = CareerEvent(
+            event_id=season_ev_id,
+            source_event_id=f"evt_season_{next_season_num}",
+            player_id=session.player_id,
+            season=next_season_label,
+            sequence=session.career_record.last_sequence + 1,
+            event_type=EventType.PLAYER,
+            category=ev_type,
+            significance=EventSignificance.MODERATE if ca_boost > 1.0 else EventSignificance.MINOR,
+            summary_data=MappingProxyType({
+                "title": f"Season {next_season_label} Completed",
+                "description": f"Completed season {next_season_label} with {30 + next_season_num} appearances and OVR {new_ovr}.",
+            }),
+            state_changes=MappingProxyType({"current_ability": new_ca, "ovr": new_ovr}),
+            participants=(session.player_id,),
+            clubs=(str(session.career.current_club_id),),
+            competitions=("comp_1",),
+            tags=("season_progress",),
+        )
+
+        updated_record = process_career_events(session.career_record, (season_event,))
+
+        # Update player & career objects
+        updated_player = Player(
+            id=session.career.player.id,
+            name=session.career.player.name,
+            surname=session.career.player.surname,
+            nationality=session.career.player.nationality,
+            birth_date=session.career.player.birth_date,
+            height=session.career.player.height,
+            weight=session.career.player.weight,
+            preferred_foot=session.career.player.preferred_foot,
+            primary_position=session.career.player.primary_position,
+            secondary_positions=session.career.player.secondary_positions,
+            attributes=session.career.player.attributes,
+            current_ability=new_ca,
+            potential=session.career.player.potential,
+            development_rate=session.career.player.development_rate,
+            development_profile=session.career.player.development_profile,
+            role_familiarity=session.career.player.role_familiarity,
+            traits=session.career.player.traits,
+            personality=session.career.player.personality,
+            state=session.career.player.state,
+            archetype=session.career.player.archetype,
+        )
+
+        phase = CareerPhase.PRIME if 24 <= age <= 28 else (CareerPhase.LATE_PRIME if 29 <= age <= 31 else (CareerPhase.DECLINE if age >= 32 else CareerPhase.DEVELOPMENT))
+        peak_ca = max(session.career.peak_ability, new_ca)
+        peak_ovr = max(session.career.peak_ovr, new_ovr)
+
+        new_season_obj = Season(
+            season_number=next_season_num,
+            season_label=next_season_label,
+            start_date=date(start_yr, 7, 1),
+            end_date=date(end_yr, 6, 30),
+            player_id=session.player_id,
+            club_id=session.career.current_club_id,
+            starting_age=age,
+            ending_age=age,
+            starting_position=updated_player.primary_position,
+            ending_position=updated_player.primary_position,
+            starting_ability=session.career.player.current_ability,
+            ending_ability=new_ca,
+            starting_ovr=session.career.peak_ovr,
+            ending_ovr=new_ovr,
+            career_phase_at_start=session.career.career_phase,
+            career_phase_at_end=phase,
+            playing_time_input=SeasonalPlayingTimeInput(minutes_played=2200 + (next_season_num * 50)),
+            performance_input=SeasonalPerformanceInput(average_rating=7.2),
+            environment_input=SeasonalEnvironmentInput(),
+            development_budget=3.0,
+            development_summary={"shooting": 0.8, "pace": 0.5},
+            attribute_changes={"shooting": 0.8, "pace": 0.5},
+            season_seed=f"{session.seed}:s{next_season_num}",
+            is_completed=True,
+        )
+
+        updated_career = Career(
+            id=session.career.id,
+            player=updated_player,
+            start_date=session.career.start_date,
+            end_date=None,
+            current_season_number=next_season_num,
+            current_season_label=next_season_label,
+            current_club_id=session.career.current_club_id,
+            career_phase=phase,
+            peak_ability=peak_ca,
+            peak_ovr=peak_ovr,
+            peak_age=age if new_ca >= session.career.peak_ability else session.career.peak_age,
+            peak_position=updated_player.primary_position,
+            peak_club_id=session.career.current_club_id,
+            seasons=session.career.seasons + [new_season_obj],
+            snapshots=session.career.snapshots,
+            seed=session.seed,
+        )
+
+        presentation = build_career_presentation(updated_record, updated_career)
+
+        notif = CareerSessionNotification(
+            id=f"notif_{hashlib.sha256(f'{session.career_id}:{next_season_num}'.encode('utf-8')).hexdigest()[:12]}",
+            title=f"Advanced to {next_season_label}",
+            message=f"Season {next_season_label} completed. Rating now {new_ovr} OVR.",
+            type="SUCCESS" if ca_boost > 0 else "WARNING",
+            created_at_season=next_season_label,
+        )
+
+        new_status = CareerSessionStatus.DECISION_PENDING if trigger_decision else CareerSessionStatus.ACTIVE
+
+        return CareerAdvanceResult(
+            career_id=session.career_id,
+            previous_season=prev_season,
+            current_season=next_season_label,
+            status=new_status,
+            processed_events=(season_event,),
+            new_notifications=(notif,),
+            pending_decision=trigger_decision,
+            presentation=presentation,
+            updated_career=updated_career,
+            success=True,
+        )
+
+    @staticmethod
+    def resolve_session_decision(session: CareerSession, option_id: str) -> tuple[CareerSession, CareerEvent]:
+        if session.pending_decision is None:
+            raise InvalidCareerStateException("No decision is pending for this career session.")
+
+        decision = session.pending_decision
+        selected_opt = next((opt for opt in decision.options if opt.id == option_id), None)
+        if selected_opt is None:
+            raise InvalidDecisionOptionException(decision.id, option_id)
+
+        context = EventContext(
+            player_id=session.player_id,
+            club_id=str(session.career.current_club_id),
+            season=session.current_season,
+        )
+
+        dec_result = resolve_decision(
+            decision=decision,
+            context=context,
+            seed=session.seed,
+            explicit_option_id=option_id,
+            resolution_type=DecisionResolutionType.EXPLICIT,
+        )
+
+        # Apply effects
+        if selected_opt.effects:
+            apply_effects(session.career, selected_opt.effects, context, event_id=decision.id)
+
+        # Record decision career event
+        dec_ev_raw_key = f"{session.player_id}:dec_{decision.id}:{option_id}"
+        dec_ev_id = f"ce_{hashlib.sha256(dec_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+        dec_event = CareerEvent(
+            event_id=dec_ev_id,
+            source_event_id=decision.id,
+            player_id=session.player_id,
+            season=session.current_season,
+            sequence=session.career_record.last_sequence + 1,
+            event_type=EventType.PLAYER,
+            category=EventCategory.DECISION,
+            significance=EventSignificance.MAJOR,
+            summary_data=MappingProxyType({
+                "title": f"Decision Resolved",
+                "description": f"Resolved decision: {selected_opt.label}",
+                "selected_option_id": selected_opt.id,
+                "selected_option_label": selected_opt.label,
+            }),
+            state_changes=MappingProxyType({"decision_resolved": 1.0}),
+            participants=(session.player_id,),
+            clubs=(str(session.career.current_club_id),),
+            competitions=(),
+            tags=("decision", "user_choice"),
+        )
+
+        updated_record = process_career_events(session.career_record, (dec_event,))
+        updated_presentation = build_career_presentation(updated_record, session.career)
+
+        decision_notif = CareerSessionNotification(
+            id=f"notif_{hashlib.sha256(f'{session.career_id}:dec_{decision.id}'.encode('utf-8')).hexdigest()[:12]}",
+            title="Decision Made",
+            message=f"You chose: '{selected_opt.label}'. Consequences applied.",
+            type="INFO",
+            created_at_season=session.current_season,
+        )
+
+        updated_session = CareerSession(
+            career_id=session.career_id,
+            player_id=session.player_id,
+            current_season=session.current_season,
+            simulation_position=session.simulation_position,
+            status=CareerSessionStatus.ACTIVE,
+            career=session.career,
+            career_record=updated_record,
+            presentation=updated_presentation,
+            pending_decision=None,
+            pending_events=session.pending_events + (dec_event,),
+            notifications=session.notifications + (decision_notif,),
+            last_processed_event_id=dec_ev_id,
+            seed=session.seed,
+        )
+
+        return updated_session, dec_event

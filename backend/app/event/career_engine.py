@@ -198,14 +198,18 @@ def record_career_event(
         metadata = dict(source_event.metadata)
         for app in source_event.applications:
             state_changes[app.target] = app.resulting_value
-    elif hasattr(source_event, "id"):
-        source_event_id = getattr(source_event, "id")
+    elif hasattr(source_event, "source_event_id") or hasattr(source_event, "event_id") or hasattr(source_event, "id"):
+        source_event_id = getattr(source_event, "source_event_id", None) or getattr(source_event, "event_id", None) or getattr(source_event, "id", None)
         if hasattr(source_event, "event_type"):
             event_type = getattr(source_event, "event_type")
         if hasattr(source_event, "season"):
             season = str(getattr(source_event, "season"))
         if hasattr(source_event, "metadata"):
             metadata = dict(getattr(source_event, "metadata", {}))
+        elif hasattr(source_event, "summary_data"):
+            summary_data = dict(getattr(source_event, "summary_data", {}))
+        if hasattr(source_event, "state_changes"):
+            state_changes = dict(getattr(source_event, "state_changes", {}))
     elif isinstance(source_event, dict):
         source_event_id = source_event.get("id") or source_event.get("source_event_id")
         event_type = source_event.get("event_type", EventType.PLAYER)

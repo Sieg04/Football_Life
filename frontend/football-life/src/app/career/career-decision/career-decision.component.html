@@ -1,0 +1,22 @@
+<div class="decision-overlay" *ngIf="decision">
+  <div class="decision-modal">
+    <div class="decision-badge">
+      ⚡ DECISION REQUIRED ⚡
+    </div>
+
+    <h3 class="decision-title">
+      {{ decision.prompt || 'CRITICAL CAREER CHOICE' }}
+    </h3>
+
+    <div class="options-container">
+      <button
+        *ngFor="let option of decision.options"
+        class="option-card"
+        (click)="onChoice(option)"
+      >
+        <span class="option-label">{{ option.label }}</span>
+        <span class="option-desc" *ngIf="option.description">{{ option.description }}</span>
+      </button>
+    </div>
+  </div>
+</div>

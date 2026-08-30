@@ -16,6 +16,8 @@ export class CareerShellComponent implements OnInit {
   loading = true;
 
   navItems = [
+    { label: 'DASHBOARD', path: '/dashboard' },
+    { label: 'NEW CAREER', path: '/create' },
     { label: 'CAREER', path: '/career' },
     { label: 'PROFILE', path: '/profile' },
     { label: 'TIMELINE', path: '/timeline' },

@@ -1,0 +1,26 @@
+<div class="event-overlay" *ngIf="event">
+  <div class="event-modal">
+    <div class="event-badge">
+      ★ CAREER MOMENT ★
+    </div>
+
+    <h3 class="event-title">
+      {{ event.summary_data?.title || event.category || 'MOMENT OF SIGNIFICANCE' }}
+    </h3>
+
+    <p class="event-description">
+      {{ event.summary_data?.description || 'A major event occurred in your player\'s career history.' }}
+    </p>
+
+    <div class="event-details" *ngIf="event.state_changes">
+      <div class="detail-tag" *ngFor="let item of event.state_changes | keyvalue">
+        <span class="detail-key">{{ $any(item.key) | uppercase }}</span>
+        <span class="detail-val">+{{ item.value }}</span>
+      </div>
+    </div>
+
+    <button class="continue-btn" (click)="onContinue()">
+      CONTINUE CAREER
+    </button>
+  </div>
+</div>
