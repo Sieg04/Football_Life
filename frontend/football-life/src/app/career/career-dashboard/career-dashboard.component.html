@@ -3,11 +3,11 @@
   <header class="dashboard-header">
     <div class="brand">
       <span class="logo-mark">FL</span>
-      <span class="brand-text">FOOTBALL LIFE</span>
+      <span class="brand-text display-font">FOOTBALL LIFE</span>
     </div>
 
-    <div class="season-pill">
-      {{ session.current_season }}
+    <div class="season-pill display-font">
+      SEASON {{ session.current_season }}
     </div>
 
     <div class="header-actions">
@@ -19,14 +19,14 @@
   </header>
 
   <!-- Main Content Layout -->
-  <main class="dashboard-main">
+  <main class="dashboard-main animate-fade-in">
     <!-- Hero Player Card -->
     <section class="player-hero-card" *ngIf="session.presentation">
-      <div class="player-avatar">
-        {{ session.presentation.player.name?.charAt(0) || 'P' }}
+      <div class="player-avatar display-font">
+        {{ getInitial(session.presentation.player.name) }}
       </div>
       <div class="player-info">
-        <h1 class="player-name">{{ session.presentation.player.name || 'Player' }}</h1>
+        <h1 class="player-name display-font">{{ session.presentation.player.name || 'Player' }}</h1>
         <div class="player-meta">
           <span class="age">{{ session.presentation.player.age || 21 }} YEARS</span>
           <span class="dot">•</span>
@@ -36,35 +36,35 @@
         </div>
       </div>
       <div class="player-ovr-badge">
-        <span class="ovr-num">{{ session.presentation.player.overall_rating || 75 }}</span>
-        <span class="ovr-lbl">OVR</span>
+        <span class="ovr-num display-font">{{ session.presentation.player.overall_rating || 75 }}</span>
+        <span class="ovr-lbl display-font">OVR</span>
       </div>
     </section>
 
     <!-- Quick Stats Grid -->
     <section class="quick-stats-grid" *ngIf="session.presentation">
       <div class="stat-card">
-        <span class="stat-lbl">MATCHES</span>
-        <span class="stat-val">{{ session.presentation.overview.matches || 0 }}</span>
+        <span class="stat-lbl display-font">MATCHES</span>
+        <span class="stat-val display-font">{{ session.presentation.overview.matches || 0 }}</span>
       </div>
       <div class="stat-card">
-        <span class="stat-lbl">GOALS</span>
-        <span class="stat-val accent">{{ session.presentation.overview.goals || 0 }}</span>
+        <span class="stat-lbl display-font">GOALS</span>
+        <span class="stat-val accent display-font">{{ session.presentation.overview.goals || 0 }}</span>
       </div>
       <div class="stat-card">
-        <span class="stat-lbl">ASSISTS</span>
-        <span class="stat-val">{{ session.presentation.overview.assists || 0 }}</span>
+        <span class="stat-lbl display-font">ASSISTS</span>
+        <span class="stat-val display-font">{{ session.presentation.overview.assists || 0 }}</span>
       </div>
       <div class="stat-card">
-        <span class="stat-lbl">TROPHIES</span>
-        <span class="stat-val">{{ session.presentation.overview.trophies || 0 }}</span>
+        <span class="stat-lbl display-font">TROPHIES</span>
+        <span class="stat-val gold display-font">{{ session.presentation.overview.trophies || 0 }}</span>
       </div>
     </section>
 
     <!-- Primary Action: ADVANCE CAREER -->
     <section class="advance-action-section">
       <button
-        class="advance-btn"
+        class="advance-btn display-font"
         [disabled]="advancing || session.status === 'COMPLETED' || session.status === 'DECISION_PENDING'"
         (click)="onAdvance()"
       >
@@ -72,19 +72,22 @@
         <span *ngIf="advancing">SIMULATING SEASON...</span>
         <span *ngIf="session.status === 'COMPLETED'">CAREER COMPLETED</span>
       </button>
-      <div class="status-hint" *ngIf="session.status === 'DECISION_PENDING'">
+      <div class="status-hint display-font" *ngIf="session.status === 'DECISION_PENDING'">
         ⚡ DECISION REQUIRED BEFORE ADVANCING
+      </div>
+      <div class="error-hint display-font" *ngIf="errorMessage">
+        ⚠️ {{ errorMessage }}
       </div>
     </section>
 
     <!-- Navigation Hub -->
     <section class="view-nav-grid">
-      <button class="nav-btn" (click)="navigateTo('/profile')">PROFILE</button>
-      <button class="nav-btn" (click)="navigateTo('/timeline')">TIMELINE</button>
-      <button class="nav-btn" (click)="navigateTo('/stats')">STATS</button>
-      <button class="nav-btn" (click)="navigateTo('/clubs')">CLUBS</button>
-      <button class="nav-btn" (click)="navigateTo('/story')">STORY</button>
-      <button class="nav-btn" (click)="navigateTo('/script')">SCRIPT</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/profile')">PROFILE</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/timeline')">TIMELINE</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/stats')">STATS</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/clubs')">CLUBS</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/story')">STORY</button>
+      <button class="nav-btn display-font" (click)="navigateTo('/script')">SCRIPT</button>
     </section>
   </main>
 

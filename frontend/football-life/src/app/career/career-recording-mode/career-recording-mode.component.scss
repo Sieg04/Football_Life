@@ -1,7 +1,7 @@
 .recording-toggle-btn {
-  background: #181b21;
-  border: 1px solid #272b33;
-  color: #8e949f;
+  background: var(--fl-surface-elevated);
+  border: 1px solid var(--fl-border);
+  color: var(--fl-text-secondary);
   border-radius: 20px;
   padding: 0.4rem 0.9rem;
   font-size: 0.75rem;
@@ -10,28 +10,28 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--fl-transition-fast);
 
   .dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #8e949f;
+    background: var(--fl-text-secondary);
   }
 
   &:hover {
-    border-color: #00ff88;
-    color: #f5f5f5;
+    border-color: var(--fl-accent);
+    color: var(--fl-text);
   }
 
   &.active {
-    background: rgba(255, 0, 85, 0.15);
-    border-color: #ff0055;
-    color: #ff0055;
+    background: rgba(248, 113, 113, 0.15);
+    border-color: var(--fl-danger);
+    color: var(--fl-danger);
 
     .dot {
-      background: #ff0055;
-      box-shadow: 0 0 8px #ff0055;
+      background: var(--fl-danger);
+      box-shadow: 0 0 8px var(--fl-danger);
       animation: pulse 1.5s infinite;
     }
   }

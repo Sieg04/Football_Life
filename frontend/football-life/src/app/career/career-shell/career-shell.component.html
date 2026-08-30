@@ -1,5 +1,5 @@
-<div class="career-shell">
-  <header class="app-header">
+<div class="career-shell" [class.recording-active]="recordingMode">
+  <header class="app-header" *ngIf="!recordingMode">
     <div class="logo-container">
       <img src="assets/fl_logo.png" alt="Football Life" class="fl-logo" />
       <span class="app-title display-font">FOOTBALL LIFE</span>
@@ -16,9 +16,13 @@
       </a>
     </nav>
 
-    <div class="header-status" *ngIf="presentation">
+    <div class="header-status">
+      <span class="player-summary" *ngIf="session">
+        <span class="player-name-chip display-font">{{ playerName }}</span>
+        <span class="ovr-chip display-font">{{ playerOvr }} OVR</span>
+      </span>
       <span class="fl-badge fl-badge-accent display-font">
-        SEASON {{ presentation.seasons[0]?.season_name || '2026/2027' }}
+        SEASON {{ currentSeason }}
       </span>
     </div>
   </header>

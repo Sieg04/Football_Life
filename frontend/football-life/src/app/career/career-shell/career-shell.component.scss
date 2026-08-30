@@ -2,7 +2,14 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--fl-bg-primary);
+  background-color: var(--fl-bg);
+
+  &.recording-active {
+    .shell-content {
+      padding: 0;
+      max-width: 1920px;
+    }
+  }
 }
 
 .app-header {
@@ -11,8 +18,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--fl-bg-surface);
-  border-bottom: 1px solid var(--fl-border-subtle);
+  background-color: var(--fl-surface);
+  border-bottom: 1px solid var(--fl-border);
 }
 
 .logo-container {
@@ -30,31 +37,65 @@
 .app-title {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--fl-text-primary);
+  color: var(--fl-text);
 }
 
 .app-nav {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.35rem;
+
+  @media (max-width: 1200px) {
+    overflow-x: auto;
+  }
 }
 
 .nav-item {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.85rem;
   color: var(--fl-text-secondary);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   border-radius: var(--fl-radius-md);
   transition: all var(--fl-transition-fast);
+  white-space: nowrap;
 
   &:hover {
-    color: var(--fl-text-primary);
-    background-color: var(--fl-bg-elevated);
+    color: var(--fl-text);
+    background-color: var(--fl-surface-elevated);
   }
 
   &.active {
-    color: var(--fl-accent-primary);
-    background-color: rgba(56, 189, 248, 0.12);
+    color: var(--fl-accent);
+    background-color: var(--fl-accent-soft);
+    border: 1px solid rgba(56, 189, 248, 0.3);
   }
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--fl-surface-elevated);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--fl-radius-sm);
+  border: 1px solid var(--fl-border);
+}
+
+.player-name-chip {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--fl-text);
+}
+
+.ovr-chip {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--fl-accent-gold);
 }
 
 .shell-content {
