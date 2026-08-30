@@ -10,6 +10,7 @@ import { CareerClubsComponent } from './career/career-clubs/career-clubs.compone
 import { CareerAchievementsComponent } from './career/career-achievements/career-achievements.component';
 import { CareerStoryComponent } from './career/career-story/career-story.component';
 import { CareerScriptComponent } from './career/career-script/career-script.component';
+import { ContentStoryComponent } from './career/content-story/content-story.component';
 
 export const routes: Routes = [
   {
@@ -26,7 +27,9 @@ export const routes: Routes = [
       { path: 'clubs', component: CareerClubsComponent },
       { path: 'achievements', component: CareerAchievementsComponent },
       { path: 'story', component: CareerStoryComponent },
-      { path: 'script', component: CareerScriptComponent }
+      { path: 'script', component: CareerScriptComponent },
+      { path: 'content', component: ContentStoryComponent },
+      { path: 'career/content', redirectTo: 'content', pathMatch: 'full' }
     ]
   },
   { path: '**', redirectTo: '' }

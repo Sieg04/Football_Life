@@ -1,0 +1,198 @@
+.capture-view-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capture-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.capture-content {
+  position: relative;
+  z-index: 1001;
+  background: var(--surface-card, #161a23);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: 12px;
+  width: 90vw;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.capture-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h2 {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-heading, #fff);
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted, #8b949e);
+    font-size: 1.5rem;
+    cursor: pointer;
+
+    &:hover { color: #fff; }
+  }
+}
+
+.preset-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.2);
+
+  .label {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    color: var(--text-muted, #8b949e);
+  }
+
+  .preset-btn {
+    background: transparent;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    &.active, &:hover {
+      background: var(--accent-color, #00e5ff);
+      color: #000;
+      border-color: var(--accent-color, #00e5ff);
+      font-weight: 600;
+    }
+  }
+}
+
+.preview-stage-container {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  gap: 1rem;
+}
+
+.stage-resolution-info {
+  font-size: 0.85rem;
+  color: var(--text-muted, #8b949e);
+}
+
+.frame-stage {
+  width: 100%;
+  max-width: 960px;
+  background: #090b0e;
+  border: 2px solid var(--accent-color, #00e5ff);
+  border-radius: 8px;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &[data-preset="BROADCAST_OVERLAY"] {
+    background: linear-gradient(135deg, #0f141d 0%, #1a2332 100%);
+    border-color: #ff944d;
+  }
+
+  &[data-preset="SOCIAL_CARD"] {
+    background: #121824;
+    border-color: #ff4d4d;
+  }
+}
+
+.frame-branding {
+  .brand-text {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: var(--accent-color, #00e5ff);
+  }
+}
+
+.frame-content-box {
+  margin: 1.5rem 0;
+
+  .frame-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    color: #8b949e;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .frame-title {
+    font-family: var(--font-display, 'Barlow Condensed', sans-serif);
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .frame-headline {
+    font-size: 1.2rem;
+    color: var(--accent-color, #00e5ff);
+    margin: 0 0 1rem 0;
+  }
+
+  .frame-body {
+    font-size: 1rem;
+    color: #c9d1d9;
+    line-height: 1.5;
+  }
+
+  .frame-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+
+      .label { color: #8b949e; margin-right: 0.4rem; }
+      .val { color: #fff; font-weight: bold; }
+    }
+  }
+}
+
+.frame-metadata {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6e7681;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.75rem;
+}

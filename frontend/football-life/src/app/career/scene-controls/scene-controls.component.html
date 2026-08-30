@@ -1,0 +1,37 @@
+<div class="scene-controls-panel">
+  <div class="progress-bar-container">
+    <input
+      type="range"
+      min="0"
+      max="100"
+      [value]="playbackProgress"
+      (input)="onSeek($event)"
+      class="progress-slider"
+    />
+  </div>
+
+  <div class="controls-row">
+    <div class="info-group">
+      <span class="scene-counter">Scene {{ currentSceneIndex + 1 }} / {{ totalScenes }}</span>
+      <span class="scene-duration">{{ currentDurationSeconds }}s</span>
+    </div>
+
+    <div class="playback-buttons">
+      <button class="ctrl-btn" (click)="onPrev()" [disabled]="currentSceneIndex <= 0" title="Previous Scene">
+        ⏮
+      </button>
+      <button class="ctrl-btn play-btn" (click)="onTogglePlayPause()" title="Play/Pause">
+        {{ isPlaying ? '⏸' : '▶' }}
+      </button>
+      <button class="ctrl-btn" (click)="onNext()" [disabled]="currentSceneIndex >= totalScenes - 1" title="Next Scene">
+        ⏭
+      </button>
+    </div>
+
+    <div class="extra-actions">
+      <button class="btn btn-secondary capture-btn" (click)="onCapture()">
+        📷 Capture Frame
+      </button>
+    </div>
+  </div>
+</div>
