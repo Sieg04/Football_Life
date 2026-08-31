@@ -67,7 +67,7 @@ class SeasonSnapshot:
     season_label: str
     starting_age: int
     ending_age: int
-    club_id: int
+    club_id: Any
     starting_position: str
     ending_position: str
     starting_ability: float
@@ -83,6 +83,7 @@ class SeasonSnapshot:
     development_summary: dict[str, float]
     attribute_changes: dict[str, float]
     season_seed: str
+    season_summary: Any = None
 
 
 @dataclass
@@ -92,7 +93,7 @@ class Season:
     start_date: date
     end_date: date
     player_id: str
-    club_id: int
+    club_id: Any
     starting_age: int
     ending_age: int
     starting_position: str
@@ -111,6 +112,7 @@ class Season:
     attribute_changes: dict[str, float]
     season_seed: str
     is_completed: bool = False
+    season_summary: Any = None
 
 
 @dataclass
@@ -121,13 +123,13 @@ class Career:
     end_date: date | None
     current_season_number: int
     current_season_label: str
-    current_club_id: int
+    current_club_id: Any
     career_phase: CareerPhase
     peak_ability: float
     peak_ovr: float
     peak_age: int
     peak_position: str
-    peak_club_id: int
+    peak_club_id: Any
     seasons: list[Season] = field(default_factory=list)
     snapshots: list[SeasonSnapshot] = field(default_factory=list)
     seed: str = "FL-0000-0000"
@@ -179,4 +181,5 @@ class CareerAdvanceResult:
     pending_decision: Decision | None = None
     presentation: CareerPresentation | None = None
     updated_career: Career | None = None
+    updated_record: CareerRecord | None = None
     success: bool = True
