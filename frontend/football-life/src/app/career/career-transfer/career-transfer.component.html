@@ -1,0 +1,69 @@
+<div class="transfer-modal-backdrop">
+  <div class="transfer-card">
+    <div class="modal-header">
+      <span class="badge display-font">TRANSFER MARKET</span>
+      <h2 class="modal-title display-font">INCOMING OFFERS</h2>
+      <p class="sub-text">Top European clubs have submitted transfer inquiries for your signature.</p>
+    </div>
+
+    <!-- Offers Navigation Tabs -->
+    <div class="offer-tabs" *ngIf="offers.length > 0">
+      <button
+        *ngFor="let offer of offers; let i = index"
+        class="tab-btn display-font"
+        [class.active]="selectedOfferIndex === i"
+        (click)="selectedOfferIndex = i"
+      >
+        {{ offer.destination_club_name }}
+      </button>
+    </div>
+
+    <!-- Active Offer Card -->
+    <div class="offer-details-card" *ngIf="selectedOffer">
+      <div class="club-banner">
+        <div class="club-meta">
+          <h3 class="club-name display-font">{{ selectedOffer.destination_club_name }}</h3>
+          <span class="league-tag">{{ selectedOffer.league_name }} • {{ selectedOffer.country_code }}</span>
+        </div>
+        <div class="prestige-badge display-font">
+          PRESTIGE {{ selectedOffer.club_prestige }}
+        </div>
+      </div>
+
+      <div class="offer-metrics-grid">
+        <div class="metric">
+          <span class="lbl">TRANSFER FEE</span>
+          <span class="val highlight display-font">{{ formatFee(selectedOffer.transfer_fee) }}</span>
+        </div>
+        <div class="metric">
+          <span class="lbl">WEEKLY SALARY</span>
+          <span class="val display-font">{{ formatSalary(selectedOffer.weekly_salary) }}</span>
+        </div>
+        <div class="metric">
+          <span class="lbl">CONTRACT</span>
+          <span class="val display-font">{{ selectedOffer.contract_years }} YEARS</span>
+        </div>
+        <div class="metric">
+          <span class="lbl">PROPOSED ROLE</span>
+          <span class="val accent display-font">{{ selectedOffer.expected_playing_time }}</span>
+        </div>
+      </div>
+
+      <div class="reason-box">
+        <span class="reason-lbl">SCOUTING REPORT & INTEREST REASON:</span>
+        <p class="reason-txt">{{ selectedOffer.interest_reason }}</p>
+      </div>
+
+      <div class="impact-badge" [ngClass]="selectedOffer.career_impact.toLowerCase()">
+        CAREER IMPACT: {{ selectedOffer.career_impact }}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-footer">
+      <button class="btn btn-accept display-font" (click)="onAccept()">ACCEPT OFFER</button>
+      <button class="btn btn-reject display-font" (click)="onReject()">DECLINE OFFER</button>
+      <button class="btn btn-stay display-font" (click)="onStay()">STAY AT {{ currentClub }}</button>
+    </div>
+  </div>
+</div>

@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.career.domain import CareerSetupRequest
+from app.career.context import build_club_context
 from app.career.exceptions import (
     CareerCompletedException,
     CareerSessionNotFoundException,
@@ -11,7 +12,9 @@ from app.career.exceptions import (
     InvalidCareerStateException,
     InvalidDecisionOptionException,
 )
+from app.career.reputation import calculate_reputation
 from app.career.service import CareerSessionService
+from app.career.transfer import generate_transfer_offers
 
 router = APIRouter(prefix="/career", tags=["career"])
 
@@ -27,6 +30,11 @@ class CreateCareerSchema(BaseModel):
 class ResolveDecisionSchema(BaseModel):
     decision_id: str
     option_id: str
+
+
+class ResolveTransferSchema(BaseModel):
+    offer_id: str
+    action: str = Field(..., description="ACCEPT or REJECT or STAY")
 
 
 def _to_json_compatible(obj: Any) -> Any:
@@ -92,6 +100,52 @@ def advance_career(career_id: str) -> dict[str, Any]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to advance career: {str(e)}",
+        )
+
+
+@router.get("/{career_id}/offers", response_model=None)
+def get_transfer_offers(career_id: str) -> dict[str, Any]:
+    try:
+        session = CareerSessionService.get_session(career_id)
+        player = session.career.player
+        ctx = build_club_context(session.career.current_club_id)
+        rep = calculate_reputation(
+            player_ovr=player.current_ability,
+            age=21 + session.career.current_season_number - 1,
+            club_prestige=ctx.club_prestige,
+            league_prestige=ctx.league_prestige,
+        )
+        offers_res = generate_transfer_offers(
+            player_id=player.id,
+            player_ovr=player.current_ability,
+            age=21 + session.career.current_season_number - 1,
+            position=player.primary_position,
+            current_club_id=str(session.career.current_club_id),
+            reputation=rep,
+            season_number=session.career.current_season_number,
+            seed=session.seed,
+        )
+        return _to_json_compatible(offers_res)
+    except CareerSessionNotFoundException as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate transfer offers: {str(e)}",
+        )
+
+
+@router.post("/{career_id}/transfer", response_model=None)
+def resolve_transfer(career_id: str, payload: ResolveTransferSchema) -> dict[str, Any]:
+    try:
+        session = CareerSessionService.resolve_transfer(career_id, payload.offer_id, payload.action)
+        return _to_json_compatible(session)
+    except CareerSessionNotFoundException as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.message)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to resolve transfer decision: {str(e)}",
         )
 
 

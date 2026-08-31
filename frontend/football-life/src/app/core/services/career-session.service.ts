@@ -63,6 +63,7 @@ export interface CareerAdvanceResult {
   new_notifications: CareerSessionNotification[];
   pending_decision?: Decision | null;
   presentation?: CareerPresentation | null;
+  season_summary?: any;
   success: boolean;
 }
 
@@ -218,6 +219,17 @@ export class CareerSessionService {
       .post<CareerSession>(`${this.apiUrl}/${careerId}/decision`, {
         decision_id: decisionId,
         option_id: optionId
+      })
+      .pipe(
+        tap((session) => this.activeSessionSubject.next(session))
+      );
+  }
+
+  resolveTransfer(careerId: string, offerId: string, action: string): Observable<CareerSession> {
+    return this.http
+      .post<CareerSession>(`${this.apiUrl}/${careerId}/transfer`, {
+        offer_id: offerId,
+        action: action
       })
       .pipe(
         tap((session) => this.activeSessionSubject.next(session))

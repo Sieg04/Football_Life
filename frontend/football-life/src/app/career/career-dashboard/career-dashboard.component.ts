@@ -10,6 +10,8 @@ import { CareerEventComponent } from '../career-event/career-event.component';
 import { CareerDecisionComponent } from '../career-decision/career-decision.component';
 import { CareerNotificationComponent } from '../career-notification/career-notification.component';
 import { CareerRecordingModeComponent } from '../career-recording-mode/career-recording-mode.component';
+import { CareerTransferComponent } from '../career-transfer/career-transfer.component';
+import { CareerSeasonSummaryComponent } from '../career-season-summary/career-season-summary.component';
 
 @Component({
   selector: 'app-career-dashboard',
@@ -19,7 +21,9 @@ import { CareerRecordingModeComponent } from '../career-recording-mode/career-re
     CareerEventComponent,
     CareerDecisionComponent,
     CareerNotificationComponent,
-    CareerRecordingModeComponent
+    CareerRecordingModeComponent,
+    CareerTransferComponent,
+    CareerSeasonSummaryComponent
   ],
   templateUrl: './career-dashboard.component.html',
   styleUrls: ['./career-dashboard.component.scss']
@@ -30,6 +34,8 @@ export class CareerDashboardComponent implements OnInit {
   advancing = false;
   errorMessage = '';
   activeOverlayEvent: any | null = null;
+  currentSummary: any | null = null;
+  transferOffers: any[] = [];
 
   constructor(
     public sessionService: CareerSessionService,
@@ -67,6 +73,9 @@ export class CareerDashboardComponent implements OnInit {
     this.sessionService.advanceCareer(this.session.career_id).subscribe({
       next: (result) => {
         this.advancing = false;
+        if (result.season_summary) {
+          this.currentSummary = result.season_summary;
+        }
         if (result.processed_events && result.processed_events.length > 0) {
           this.activeOverlayEvent = result.processed_events[result.processed_events.length - 1];
         }
@@ -91,6 +100,19 @@ export class CareerDashboardComponent implements OnInit {
 
   onDismissEvent(): void {
     this.activeOverlayEvent = null;
+  }
+
+  onDismissSummary(): void {
+    this.currentSummary = null;
+  }
+
+  onResolveTransfer(event: { offerId: string; action: string }): void {
+    if (!this.session) return;
+    this.sessionService
+      .resolveTransfer(this.session.career_id, event.offerId, event.action)
+      .subscribe(() => {
+        this.transferOffers = [];
+      });
   }
 
   onToggleRecordingMode(): void {

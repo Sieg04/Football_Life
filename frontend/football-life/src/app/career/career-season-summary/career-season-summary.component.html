@@ -1,0 +1,67 @@
+<div class="summary-backdrop" *ngIf="summary">
+  <div class="summary-card">
+    <header class="summary-header">
+      <span class="badge display-font">SEASON COMPLETE</span>
+      <h2 class="season-title display-font">{{ summary.season_label || '2026/27' }} RECAP</h2>
+      <span class="club-subtitle">{{ summary.club_name }} • {{ summary.league_name }}</span>
+    </header>
+
+    <div class="summary-body">
+      <!-- Primary Match Stats -->
+      <div class="stats-banner" *ngIf="summary.statistics">
+        <div class="stat-item">
+          <span class="val display-font">{{ summary.statistics.appearances }}</span>
+          <span class="lbl">APPEARANCES</span>
+        </div>
+        <div class="stat-item">
+          <span class="val accent display-font">{{ summary.statistics.goals }}</span>
+          <span class="lbl">GOALS</span>
+        </div>
+        <div class="stat-item">
+          <span class="val display-font">{{ summary.statistics.assists }}</span>
+          <span class="lbl">ASSISTS</span>
+        </div>
+        <div class="stat-item">
+          <span class="val gold display-font">{{ summary.statistics.average_rating }}</span>
+          <span class="lbl">AVG RATING</span>
+        </div>
+      </div>
+
+      <!-- Competition Results -->
+      <div class="results-grid">
+        <div class="result-box">
+          <span class="res-title">LEAGUE FINISH</span>
+          <span class="res-val display-font">{{ summary.league_position }}th Place</span>
+        </div>
+        <div class="result-box">
+          <span class="res-title">DOMESTIC CUP</span>
+          <span class="res-val display-font">{{ summary.cup_progress }}</span>
+        </div>
+        <div class="result-box">
+          <span class="res-title">CONTINENTAL</span>
+          <span class="res-val display-font">{{ summary.continental_progress }}</span>
+        </div>
+      </div>
+
+      <!-- International Activity -->
+      <div class="intl-section" *ngIf="summary.international_call_up">
+        <span class="sec-lbl">INTERNATIONAL FOOTBALL</span>
+        <p class="intl-txt">
+          Earned {{ summary.international_call_up.caps }} Caps & {{ summary.international_call_up.goals }} Goals for {{ summary.international_call_up.country_code }}.
+        </p>
+      </div>
+
+      <!-- Trophies & Honors -->
+      <div class="honors-section" *ngIf="summary.trophies && summary.trophies.length > 0">
+        <span class="sec-lbl">TROPHIES WON</span>
+        <div class="trophy-tags">
+          <span *ngFor="let t of summary.trophies" class="trophy-tag display-font">
+            🏆 {{ t.competition_name }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <button class="continue-btn display-font" (click)="onClose()">CONTINUE CAREER</button>
+  </div>
+</div>

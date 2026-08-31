@@ -1,0 +1,152 @@
+.summary-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(8, 12, 18, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summary-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  width: 680px;
+  max-width: 90vw;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  color: #f8fafc;
+}
+
+.summary-header {
+  text-align: center;
+  margin-bottom: 24px;
+
+  .badge {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+
+  .season-title {
+    font-size: 2rem;
+    margin: 8px 0 4px;
+  }
+
+  .club-subtitle {
+    color: #94a3b8;
+    font-size: 0.95rem;
+  }
+}
+
+.stats-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+
+    .val {
+      font-size: 1.6rem;
+
+      &.accent { color: #38bdf8; }
+      &.gold { color: #fbbf24; }
+    }
+
+    .lbl {
+      color: #64748b;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .result-box {
+    background: #1e293b;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+
+    .res-title {
+      color: #64748b;
+      font-size: 0.75rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .res-val {
+      color: #f8fafc;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.intl-section, .honors-section {
+  background: #1e293b;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+
+  .sec-lbl {
+    color: #64748b;
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .intl-txt {
+    color: #cbd5e1;
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .trophy-tags {
+    display: flex;
+    gap: 8px;
+
+    .trophy-tag {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.continue-btn {
+  width: 100%;
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #0369a1;
+  }
+}

@@ -1032,3 +1032,197 @@ class CareerSessionEngine:
         )
 
         return updated_session, dec_event
+
+    @staticmethod
+    def resolve_transfer_choice(session: CareerSession, offer_id: str, action: str) -> CareerSession:
+        if action.upper() == "STAY":
+            stay_ev_raw_key = f"{session.player_id}:transfer_stay:{session.current_season}"
+            stay_ev_id = f"ce_{hashlib.sha256(stay_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+            stay_event = CareerEvent(
+                event_id=stay_ev_id,
+                source_event_id=f"tr_stay_{session.current_season}",
+                player_id=session.player_id,
+                season=session.current_season,
+                sequence=session.career_record.last_sequence + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.TRANSFER,
+                significance=EventSignificance.MINOR,
+                summary_data=MappingProxyType({
+                    "title": "Decided to Stay",
+                    "description": f"Rejected incoming transfer offers to remain focused at {session.career.current_club_id}.",
+                }),
+                state_changes=MappingProxyType({"transfer_stay": 1.0}),
+                participants=(session.player_id,),
+                clubs=(str(session.career.current_club_id),),
+                competitions=(),
+                tags=("transfer", "stay"),
+            )
+            updated_record = process_career_events(session.career_record, (stay_event,))
+            pres = build_career_presentation(updated_record, session.career)
+            notif = CareerSessionNotification(
+                id=f"notif_{hashlib.sha256(f'{session.career_id}:stay'.encode('utf-8')).hexdigest()[:12]}",
+                title="Transfer Decision",
+                message="You decided to remain at your current club.",
+                type="INFO",
+                created_at_season=session.current_season,
+            )
+            return CareerSession(
+                career_id=session.career_id,
+                player_id=session.player_id,
+                current_season=session.current_season,
+                simulation_position=session.simulation_position,
+                status=CareerSessionStatus.ACTIVE,
+                career=session.career,
+                career_record=updated_record,
+                presentation=pres,
+                pending_decision=None,
+                pending_events=session.pending_events + (stay_event,),
+                notifications=session.notifications + (notif,),
+                last_processed_event_id=stay_ev_id,
+                seed=session.seed,
+            )
+
+        # Generating offers to match offer_id
+        world_rules = _load_rules("world.json")
+        world_clubs = world_rules.get("clubs", [])
+        world_leagues = world_rules.get("leagues", [])
+        rep = calculate_reputation(
+            player_ovr=session.career.player.current_ability,
+            age=21 + session.career.current_season_number - 1,
+            club_prestige=80.0,
+        )
+        offers_res = generate_transfer_offers(
+            player_id=session.player_id,
+            player_ovr=session.career.player.current_ability,
+            age=21 + session.career.current_season_number - 1,
+            position=session.career.player.primary_position,
+            current_club_id=str(session.career.current_club_id),
+            reputation=rep,
+            season_number=session.career.current_season_number,
+            seed=session.seed,
+            world_clubs=world_clubs,
+            world_leagues=world_leagues,
+        )
+
+        matched_offer = next((o for o in offers_res.available_offers if o.offer_id == offer_id), None)
+        if not matched_offer and offers_res.available_offers:
+            matched_offer = offers_res.available_offers[0]
+
+        if not matched_offer:
+            raise InvalidCareerStateException("Transfer offer not found.")
+
+        if action.upper() == "REJECT":
+            rej_ev_raw_key = f"{session.player_id}:rej_{matched_offer.offer_id}"
+            rej_ev_id = f"ce_{hashlib.sha256(rej_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+            rej_event = CareerEvent(
+                event_id=rej_ev_id,
+                source_event_id=matched_offer.offer_id,
+                player_id=session.player_id,
+                season=session.current_season,
+                sequence=session.career_record.last_sequence + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.TRANSFER,
+                significance=EventSignificance.MINOR,
+                summary_data=MappingProxyType({
+                    "title": f"Offer Rejected: {matched_offer.destination_club_name}",
+                    "description": f"Turned down offer from {matched_offer.destination_club_name}.",
+                }),
+                state_changes=MappingProxyType({"transfer_reject": 1.0}),
+                participants=(session.player_id,),
+                clubs=(matched_offer.destination_club_name,),
+                competitions=(),
+                tags=("transfer", "rejected"),
+            )
+            updated_record = process_career_events(session.career_record, (rej_event,))
+            pres = build_career_presentation(updated_record, session.career)
+            notif = CareerSessionNotification(
+                id=f"notif_{hashlib.sha256(f'{session.career_id}:rej_{matched_offer.offer_id}'.encode('utf-8')).hexdigest()[:12]}",
+                title="Transfer Rejected",
+                message=f"Rejected transfer offer from {matched_offer.destination_club_name}.",
+                type="INFO",
+                created_at_season=session.current_season,
+            )
+            return CareerSession(
+                career_id=session.career_id,
+                player_id=session.player_id,
+                current_season=session.current_season,
+                simulation_position=session.simulation_position,
+                status=CareerSessionStatus.ACTIVE,
+                career=session.career,
+                career_record=updated_record,
+                presentation=pres,
+                pending_decision=None,
+                pending_events=session.pending_events + (rej_event,),
+                notifications=session.notifications + (notif,),
+                last_processed_event_id=rej_ev_id,
+                seed=session.seed,
+            )
+
+        # ACCEPT ACTION
+        new_club_name = matched_offer.destination_club_name
+        updated_career = Career(
+            id=session.career.id,
+            player=session.career.player,
+            start_date=session.career.start_date,
+            end_date=session.career.end_date,
+            current_season_number=session.career.current_season_number,
+            current_season_label=session.career.current_season_label,
+            current_club_id=new_club_name,
+            career_phase=session.career.career_phase,
+            peak_ability=session.career.peak_ability,
+            peak_ovr=session.career.peak_ovr,
+            peak_age=session.career.peak_age,
+            peak_position=session.career.peak_position,
+            peak_club_id=new_club_name if session.career.player.current_ability >= session.career.peak_ability else session.career.peak_club_id,
+            seasons=session.career.seasons,
+            snapshots=session.career.snapshots,
+            seed=session.seed,
+        )
+
+        acc_ev_raw_key = f"{session.player_id}:acc_{matched_offer.offer_id}"
+        acc_ev_id = f"ce_{hashlib.sha256(acc_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+        acc_event = CareerEvent(
+            event_id=acc_ev_id,
+            source_event_id=matched_offer.offer_id,
+            player_id=session.player_id,
+            season=session.current_season,
+            sequence=session.career_record.last_sequence + 1,
+            event_type=EventType.PLAYER,
+            category=EventCategory.TRANSFER,
+            significance=EventSignificance.MAJOR,
+            summary_data=MappingProxyType({
+                "title": f"Transfer Complete: {new_club_name}",
+                "description": f"Transferred to {new_club_name} ({matched_offer.league_name}) for €{matched_offer.transfer_fee:,}.",
+            }),
+            state_changes=MappingProxyType({"transfer_accepted": 1.0}),
+            participants=(session.player_id,),
+            clubs=(new_club_name,),
+            competitions=(matched_offer.league_code,),
+            tags=("transfer", "accepted", "new_club"),
+        )
+
+        updated_record = process_career_events(session.career_record, (acc_event,))
+        pres = build_career_presentation(updated_record, updated_career)
+        notif = CareerSessionNotification(
+            id=f"notif_{hashlib.sha256(f'{session.career_id}:acc_{matched_offer.offer_id}'.encode('utf-8')).hexdigest()[:12]}",
+            title="Transfer Complete",
+            message=f"Joined {new_club_name}! Contract signed.",
+            type="SUCCESS",
+            created_at_season=session.current_season,
+        )
+
+        return CareerSession(
+            career_id=session.career_id,
+            player_id=session.player_id,
+            current_season=session.current_season,
+            simulation_position=session.simulation_position,
+            status=CareerSessionStatus.ACTIVE,
+            career=updated_career,
+            career_record=updated_record,
+            presentation=pres,
+            pending_decision=None,
+            pending_events=session.pending_events + (acc_event,),
+            notifications=session.notifications + (notif,),
+            last_processed_event_id=acc_ev_id,
+            seed=session.seed,
+        )
