@@ -64,6 +64,13 @@ class CareerSessionService:
         return updated_session
 
     @classmethod
+    def resolve_transfer(cls, career_id: str, offer_id: str, action: str) -> CareerSession:
+        session = cls.get_session(career_id)
+        updated_session = CareerSessionEngine.resolve_transfer_choice(session, offer_id, action)
+        cls._sessions[career_id] = updated_session
+        return updated_session
+
+    @classmethod
     def pause_session(cls, career_id: str) -> CareerSession:
         session = cls.get_session(career_id)
         paused_session = CareerSession(

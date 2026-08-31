@@ -107,4 +107,17 @@
   <app-career-notification
     [notifications]="session.notifications || []"
   ></app-career-notification>
+
+  <app-career-season-summary
+    *ngIf="currentSummary"
+    [summary]="currentSummary"
+    (close)="onDismissSummary()"
+  ></app-career-season-summary>
+
+  <app-career-transfer
+    *ngIf="transferOffers && transferOffers.length > 0"
+    [offers]="transferOffers"
+    [currentClub]="session.presentation.player.current_club || 'Current Club'"
+    (selectAction)="onResolveTransfer($event)"
+  ></app-career-transfer>
 </div>
