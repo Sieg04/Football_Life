@@ -35,6 +35,7 @@ from app.event.domain import EventContext, EventType
 from app.event.effects import apply_effects
 from app.event.presentation_domain import CareerPresentation
 from app.event.presentation_engine import build_career_presentation
+from app.football.competition_engine import simulate_full_season
 from app.match.aggregation import SeasonPerformance
 from app.player.domain import DevelopmentProfile, Player, PlayerAttributes, PlayerState
 from app.player.engine import current_ability, position_ovr
@@ -677,7 +678,7 @@ class CareerSessionEngine:
 
         # Calculate growth / performance
         ca_boost = 1.5 if age <= 27 else (-1.0 if age >= 31 else 0.2)
-        new_ca = max(50.0, min(99.0, session.career.player.current_ability + ca_boost))
+        new_ca = round(max(50.0, min(99.0, session.career.player.current_ability + ca_boost)), 1)
         new_ovr = round(new_ca + 2.0, 1)
 
         # Check for Decision trigger on season 3 or 7
@@ -705,33 +706,7 @@ class CareerSessionEngine:
                 metadata=MappingProxyType({"season": next_season_label}),
             )
 
-        # Generate season event
-        ev_type = EventCategory.BREAKTHROUGH if ca_boost > 1.0 else (EventCategory.FORM_CHANGE if ca_boost < 0 else EventCategory.PERFORMANCE)
-        season_ev_raw_key = f"{session.player_id}:season_{next_season_num}"
-        season_ev_id = f"ce_{hashlib.sha256(season_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
-        season_event = CareerEvent(
-            event_id=season_ev_id,
-            source_event_id=f"evt_season_{next_season_num}",
-            player_id=session.player_id,
-            season=next_season_label,
-            sequence=session.career_record.last_sequence + 1,
-            event_type=EventType.PLAYER,
-            category=ev_type,
-            significance=EventSignificance.MODERATE if ca_boost > 1.0 else EventSignificance.MINOR,
-            summary_data=MappingProxyType({
-                "title": f"Season {next_season_label} Completed",
-                "description": f"Completed season {next_season_label} with {30 + next_season_num} appearances and OVR {new_ovr}.",
-            }),
-            state_changes=MappingProxyType({"current_ability": new_ca, "ovr": new_ovr}),
-            participants=(session.player_id,),
-            clubs=(str(session.career.current_club_id),),
-            competitions=("comp_1",),
-            tags=("season_progress",),
-        )
-
-        updated_record = process_career_events(session.career_record, (season_event,))
-
-        # Update player & career objects
+        # Update player object
         updated_player = Player(
             id=session.career.player.id,
             name=session.career.player.name,
@@ -755,6 +730,150 @@ class CareerSessionEngine:
             archetype=session.career.player.archetype,
         )
 
+        club_name_str = str(session.career.current_club_id)
+        world_rules = _load_rules("world.json")
+        detected_league_code = "ESP1"
+        for c_item in world_rules.get("clubs", []):
+            if c_item.get("name") == club_name_str or str(c_item.get("id")) == club_name_str:
+                detected_league_code = c_item.get("league_code", "ESP1")
+                club_name_str = c_item.get("name", club_name_str)
+                break
+        if club_name_str.startswith("club_") or club_name_str.isdigit():
+            club_name_str = "Real Madrid"
+
+        season_summary = simulate_full_season(
+            season_number=next_season_num,
+            season_label=next_season_label,
+            player_id=session.player_id,
+            player_name=f"{updated_player.name} {updated_player.surname}".strip(),
+            player_age=age,
+            player_nationality=updated_player.nationality,
+            player_position=updated_player.primary_position,
+            player_ovr=new_ovr,
+            club_name=club_name_str,
+            league_code=detected_league_code,
+            seed=f"{session.seed}:football:{next_season_num}",
+        )
+
+        st = season_summary.statistics
+        ev_type = EventCategory.BREAKTHROUGH if ca_boost > 1.0 else (EventCategory.FORM_CHANGE if ca_boost < 0 else EventCategory.PERFORMANCE)
+        season_ev_raw_key = f"{session.player_id}:season_{next_season_num}"
+        season_ev_id = f"ce_{hashlib.sha256(season_ev_raw_key.encode('utf-8')).hexdigest()[:16]}"
+        season_event = CareerEvent(
+            event_id=season_ev_id,
+            source_event_id=f"evt_season_{next_season_num}",
+            player_id=session.player_id,
+            season=next_season_label,
+            sequence=session.career_record.last_sequence + 1,
+            event_type=EventType.PLAYER,
+            category=ev_type,
+            significance=EventSignificance.MODERATE if ca_boost > 1.0 else EventSignificance.MINOR,
+            summary_data=MappingProxyType({
+                "title": f"Season {next_season_label} Summary",
+                "description": f"Scored {st.goals} goals & {st.assists} assists in {st.appearances} matches with {club_name_str}. Finished {season_summary.league_position}th in league.",
+            }),
+            state_changes=MappingProxyType({
+                "current_ability": new_ca,
+                "ovr": new_ovr,
+                "goals": float(st.goals),
+                "assists": float(st.assists),
+                "appearances": float(st.appearances),
+            }),
+            participants=(session.player_id,),
+            clubs=(club_name_str,),
+            competitions=(season_summary.league_code,),
+            tags=("season_progress", "football_stats"),
+        )
+
+        new_events = [season_event]
+
+        # Add Trophy Events
+        for tr in season_summary.trophies:
+            tr_ev_id = f"ce_{hashlib.sha256(f'{session.player_id}:tr:{tr.id}'.encode('utf-8')).hexdigest()[:16]}"
+            tr_ev = CareerEvent(
+                event_id=tr_ev_id,
+                source_event_id=tr.id,
+                player_id=session.player_id,
+                season=next_season_label,
+                sequence=session.career_record.last_sequence + len(new_events) + 1,
+                event_type=EventType.COMPETITION,
+                category=EventCategory.TROPHY,
+                significance=EventSignificance.MAJOR,
+                summary_data=MappingProxyType({"title": f"Trophy: {tr.competition_name}", "description": f"Won the {tr.competition_name} with {club_name_str}!"}),
+                state_changes=MappingProxyType({"trophy": 1.0}),
+                participants=(session.player_id,),
+                clubs=(club_name_str,),
+                competitions=(tr.competition_id,),
+                tags=("trophy", "champion"),
+            )
+            new_events.append(tr_ev)
+
+        # Add Award Events
+        for aw in season_summary.awards:
+            aw_ev_id = f"ce_{hashlib.sha256(f'{session.player_id}:aw:{aw.id}'.encode('utf-8')).hexdigest()[:16]}"
+            aw_ev = CareerEvent(
+                event_id=aw_ev_id,
+                source_event_id=aw.id,
+                player_id=session.player_id,
+                season=next_season_label,
+                sequence=session.career_record.last_sequence + len(new_events) + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.AWARD,
+                significance=EventSignificance.MAJOR,
+                summary_data=MappingProxyType({"title": f"Award: {aw.name}", "description": aw.description}),
+                state_changes=MappingProxyType({"award": 1.0}),
+                participants=(session.player_id,),
+                clubs=(club_name_str,),
+                competitions=(),
+                tags=("award", "individual_honor"),
+            )
+            new_events.append(aw_ev)
+
+        # Add International Call-up Event
+        if season_summary.international_call_up and season_summary.international_call_up.caps > 0:
+            icu = season_summary.international_call_up
+            int_ev_id = f"ce_{hashlib.sha256(f'{session.player_id}:int:{icu.id}'.encode('utf-8')).hexdigest()[:16]}"
+            int_ev = CareerEvent(
+                event_id=int_ev_id,
+                source_event_id=icu.id,
+                player_id=session.player_id,
+                season=next_season_label,
+                sequence=session.career_record.last_sequence + len(new_events) + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.INTERNATIONAL,
+                significance=EventSignificance.MAJOR,
+                summary_data=MappingProxyType({"title": f"International Debut & Caps", "description": f"Earned {icu.caps} caps and {icu.goals} goals for {icu.country_code}."}),
+                state_changes=MappingProxyType({"caps": float(icu.caps), "intl_goals": float(icu.goals)}),
+                participants=(session.player_id,),
+                clubs=(),
+                competitions=("INTERNATIONAL",),
+                tags=("international", "national_team"),
+            )
+            new_events.append(int_ev)
+
+        # Add Injury Event
+        for inj in season_summary.injuries:
+            inj_ev_id = f"ce_{hashlib.sha256(f'{session.player_id}:inj:{inj.id}'.encode('utf-8')).hexdigest()[:16]}"
+            inj_ev = CareerEvent(
+                event_id=inj_ev_id,
+                source_event_id=inj.id,
+                player_id=session.player_id,
+                season=next_season_label,
+                sequence=session.career_record.last_sequence + len(new_events) + 1,
+                event_type=EventType.PLAYER,
+                category=EventCategory.INJURY,
+                significance=EventSignificance.MAJOR if inj.category in ("MAJOR", "SEASON_ENDING") else EventSignificance.MINOR,
+                summary_data=MappingProxyType({"title": f"Injury: {inj.name}", "description": f"Suffered {inj.name} ({inj.category.value}). Missed {inj.matches_missed} matches."}),
+                state_changes=MappingProxyType({"matches_missed": float(inj.matches_missed)}),
+                participants=(session.player_id,),
+                clubs=(club_name_str,),
+                competitions=(),
+                tags=("injury", "setback"),
+            )
+            new_events.append(inj_ev)
+
+        updated_record = process_career_events(session.career_record, tuple(new_events))
+
         phase = CareerPhase.PRIME if 24 <= age <= 28 else (CareerPhase.LATE_PRIME if 29 <= age <= 31 else (CareerPhase.DECLINE if age >= 32 else CareerPhase.DEVELOPMENT))
         peak_ca = max(session.career.peak_ability, new_ca)
         peak_ovr = max(session.career.peak_ovr, new_ovr)
@@ -765,7 +884,7 @@ class CareerSessionEngine:
             start_date=date(start_yr, 7, 1),
             end_date=date(end_yr, 6, 30),
             player_id=session.player_id,
-            club_id=session.career.current_club_id,
+            club_id=club_name_str,
             starting_age=age,
             ending_age=age,
             starting_position=updated_player.primary_position,
@@ -776,14 +895,15 @@ class CareerSessionEngine:
             ending_ovr=new_ovr,
             career_phase_at_start=session.career.career_phase,
             career_phase_at_end=phase,
-            playing_time_input=SeasonalPlayingTimeInput(minutes_played=2200 + (next_season_num * 50)),
-            performance_input=SeasonalPerformanceInput(average_rating=7.2),
+            playing_time_input=SeasonalPlayingTimeInput(minutes_played=st.minutes),
+            performance_input=SeasonalPerformanceInput(average_rating=st.average_rating),
             environment_input=SeasonalEnvironmentInput(),
             development_budget=3.0,
             development_summary={"shooting": 0.8, "pace": 0.5},
             attribute_changes={"shooting": 0.8, "pace": 0.5},
             season_seed=f"{session.seed}:s{next_season_num}",
             is_completed=True,
+            season_summary=season_summary,
         )
 
         updated_career = Career(
@@ -793,13 +913,13 @@ class CareerSessionEngine:
             end_date=None,
             current_season_number=next_season_num,
             current_season_label=next_season_label,
-            current_club_id=session.career.current_club_id,
+            current_club_id=club_name_str,
             career_phase=phase,
             peak_ability=peak_ca,
             peak_ovr=peak_ovr,
             peak_age=age if new_ca >= session.career.peak_ability else session.career.peak_age,
             peak_position=updated_player.primary_position,
-            peak_club_id=session.career.current_club_id,
+            peak_club_id=club_name_str,
             seasons=session.career.seasons + [new_season_obj],
             snapshots=session.career.snapshots,
             seed=session.seed,
@@ -822,11 +942,12 @@ class CareerSessionEngine:
             previous_season=prev_season,
             current_season=next_season_label,
             status=new_status,
-            processed_events=(season_event,),
+            processed_events=tuple(new_events),
             new_notifications=(notif,),
             pending_decision=trigger_decision,
             presentation=presentation,
             updated_career=updated_career,
+            updated_record=updated_record,
             success=True,
         )
 

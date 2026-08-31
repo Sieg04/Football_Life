@@ -44,7 +44,7 @@ class CareerSessionService:
             simulation_position=session.simulation_position + 1,
             status=advance_res.status,
             career=advance_res.updated_career or session.career,
-            career_record=session.career_record,
+            career_record=advance_res.updated_record or session.career_record,
             presentation=advance_res.presentation or session.presentation,
             pending_decision=advance_res.pending_decision,
             pending_events=session.pending_events + advance_res.processed_events,

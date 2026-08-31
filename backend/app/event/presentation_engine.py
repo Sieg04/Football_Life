@@ -195,7 +195,7 @@ def build_career_overview(
     for ev in events:
         sc = ev.state_changes
         sd = ev.summary_data
-        matches += int(sc.get("matches", sd.get("matches", 0)))
+        matches += int(sc.get("matches", sc.get("appearances", sd.get("matches", sd.get("appearances", 0)))))
         goals += int(sc.get("goals", sd.get("goals", 0)))
         assists += int(sc.get("assists", sd.get("assists", 0)))
 
