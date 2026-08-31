@@ -3,7 +3,7 @@
     <div class="brand-header">
       <span class="brand-badge">FOOTBALL LIFE</span>
       <h2>START YOUR CAREER</h2>
-      <p>Create your protagonist and begin your simulation journey.</p>
+      <p>Configure your protagonist's origins and starting football environment.</p>
     </div>
 
     <form (ngSubmit)="onStartCareer()" class="create-form">
@@ -19,46 +19,99 @@
         />
       </div>
 
-      <div class="form-group">
-        <label>PRIMARY POSITION</label>
-        <div class="position-selector">
-          <button
-            type="button"
-            *ngFor="let pos of positions"
-            [class.active]="selectedPosition === pos"
-            (click)="selectedPosition = pos"
-            class="pos-btn"
-          >
-            {{ pos }}
-          </button>
-        </div>
-      </div>
-
       <div class="form-row">
         <div class="form-group half">
-          <label for="startingClub">STARTING CLUB</label>
-          <input
-            type="text"
-            id="startingClub"
-            [(ngModel)]="startingClub"
-            name="startingClub"
-          />
+          <label for="nationality">NATIONALITY</label>
+          <select id="nationality" [(ngModel)]="nationality" name="nationality" class="select-input">
+            <option *ngFor="let nat of nationalities" [value]="nat">{{ nat }}</option>
+          </select>
         </div>
 
         <div class="form-group half">
-          <label for="nationality">NATIONALITY</label>
-          <input
-            type="text"
-            id="nationality"
-            [(ngModel)]="nationality"
-            name="nationality"
-          />
+          <label>PRIMARY POSITION</label>
+          <div class="position-selector">
+            <button
+              type="button"
+              *ngFor="let pos of positions"
+              [class.active]="selectedPosition === pos"
+              (click)="selectedPosition = pos"
+              class="pos-btn"
+            >
+              {{ pos }}
+            </button>
+          </div>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn" [disabled]="loading || !playerName.trim()">
+      <!-- CASCADING WORLD SELECTORS -->
+      <div class="world-section">
+        <span class="section-title">STARTING FOOTBALL CONTEXT</span>
+        <div class="form-row">
+          <div class="form-group third">
+            <label for="startingCountry">COUNTRY</label>
+            <select
+              id="startingCountry"
+              [(ngModel)]="selectedCountry"
+              (change)="onCountryChange()"
+              name="startingCountry"
+              class="select-input"
+            >
+              <option *ngFor="let c of countries" [value]="c.code">{{ c.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group third">
+            <label for="startingLeague">LEAGUE</label>
+            <select
+              id="startingLeague"
+              [(ngModel)]="selectedLeague"
+              (change)="onLeagueChange()"
+              name="startingLeague"
+              class="select-input"
+              [disabled]="filteredLeagues.length === 0"
+            >
+              <option *ngFor="let l of filteredLeagues" [value]="l.code">{{ l.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group third">
+            <label for="startingClub">STARTING CLUB</label>
+            <select
+              id="startingClub"
+              [(ngModel)]="startingClub"
+              (change)="onClubChange()"
+              name="startingClub"
+              class="select-input"
+              [disabled]="filteredClubs.length === 0"
+            >
+              <option *ngFor="let club of filteredClubs" [value]="club.id">{{ club.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- CLUB CONTEXT PREVIEW CARD -->
+        <div class="club-preview-card" *ngIf="selectedClubInfo">
+          <div class="preview-header">
+            <div class="club-title display-font">{{ selectedClubInfo.name }}</div>
+            <div class="prestige-badge display-font">CLUB PRESTIGE: {{ selectedClubInfo.prestige }} / 100</div>
+          </div>
+          <div class="preview-details">
+            <div *ngIf="selectedClubInfo.prestige >= 88" class="diff-tag high">
+              SQUAD DIFFICULTY: EXTREME — High OVR competition for starting minutes
+            </div>
+            <div *ngIf="selectedClubInfo.prestige < 88 && selectedClubInfo.prestige >= 75" class="diff-tag med">
+              SQUAD DIFFICULTY: MODERATE — Regular rotation and development potential
+            </div>
+            <div *ngIf="selectedClubInfo.prestige < 75" class="diff-tag low">
+              SQUAD DIFFICULTY: REGULAR — Fast access to starting minutes & visibility
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn display-font" [disabled]="loading || !playerName.trim() || !startingClub">
         <span *ngIf="!loading">START CAREER</span>
-        <span *ngIf="loading">INITIALIZING WORLD...</span>
+        <span *ngIf="loading">CALIBRATING WORLD...</span>
       </button>
     </form>
   </div>

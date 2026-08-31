@@ -1,146 +1,187 @@
 .career-create-container {
+  min-height: calc(100vh - 80px);
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 120px);
-  padding: 2rem;
-  background: #08090b;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #090d16;
+}
 
-  .create-card {
-    background: #111318;
-    border: 1px solid #272b33;
-    border-radius: 12px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 540px;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+.create-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  width: 680px;
+  max-width: 100%;
+  padding: 36px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  color: #f8fafc;
+}
 
-    .brand-header {
-      text-align: center;
-      margin-bottom: 2rem;
+.brand-header {
+  text-align: center;
+  margin-bottom: 28px;
 
-      .brand-badge {
-        display: inline-block;
-        background: rgba(0, 255, 136, 0.1);
-        color: #00ff88;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.15em;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        margin-bottom: 0.75rem;
-      }
+  .brand-badge {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    font-weight: bold;
+  }
 
-      h2 {
-        color: #f5f5f5;
-        font-size: 1.75rem;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        margin: 0 0 0.5rem 0;
-      }
+  h2 {
+    font-size: 2rem;
+    margin: 10px 0 6px;
+    letter-spacing: 0.5px;
+  }
 
-      p {
-        color: #8e949f;
-        font-size: 0.9rem;
-        margin: 0;
-      }
+  p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  input, select {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #38bdf8;
+    }
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+
+  .half { flex: 1; }
+  .third { flex: 1; }
+}
+
+.position-selector {
+  display: flex;
+  gap: 6px;
+
+  .pos-btn {
+    flex: 1;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: #00e676;
+      color: #090d16;
+      border-color: #00e676;
+    }
+  }
+}
+
+.world-section {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 16px;
+
+  .section-title {
+    color: #38bdf8;
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 12px;
+  }
+}
+
+.club-preview-card {
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-top: 14px;
+
+  .preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .club-title {
+      font-size: 1.1rem;
+      color: #f8fafc;
     }
 
-    .create-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-
-        label {
-          color: #8e949f;
-          font-size: 0.75rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-        }
-
-        input {
-          background: #181b21;
-          border: 1px solid #272b33;
-          border-radius: 8px;
-          padding: 0.85rem 1rem;
-          color: #f5f5f5;
-          font-size: 1rem;
-          transition: border-color 0.2s ease;
-
-          &:focus {
-            outline: none;
-            border-color: #00ff88;
-          }
-        }
-      }
-
-      .position-selector {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-
-        .pos-btn {
-          flex: 1;
-          min-width: 60px;
-          background: #181b21;
-          border: 1px solid #272b33;
-          color: #8e949f;
-          padding: 0.6rem 0.75rem;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            border-color: #00ff88;
-            color: #f5f5f5;
-          }
-
-          &.active {
-            background: #00ff88;
-            color: #08090b;
-            border-color: #00ff88;
-          }
-        }
-      }
-
-      .form-row {
-        display: flex;
-        gap: 1rem;
-
-        .half {
-          flex: 1;
-        }
-      }
-
-      .submit-btn {
-        margin-top: 1rem;
-        background: #00ff88;
-        color: #08090b;
-        border: none;
-        border-radius: 8px;
-        padding: 1rem;
-        font-size: 1rem;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        cursor: pointer;
-        transition: transform 0.2s ease, opacity 0.2s ease;
-
-        &:hover:not(:disabled) {
-          transform: translateY(-2px);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      }
+    .prestige-badge {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
     }
+  }
+
+  .preview-details {
+    .diff-tag {
+      font-size: 0.8rem;
+      line-height: 1.4;
+
+      &.high { color: #f87171; }
+      &.med { color: #fbbf24; }
+      &.low { color: #4ade80; }
+    }
+  }
+}
+
+.submit-btn {
+  background: #00e676;
+  color: #090d16;
+  border: none;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
