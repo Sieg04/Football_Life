@@ -141,6 +141,8 @@ class CareerSetupRequest:
     position: str = "ST"
     starting_club_id: str = "club_1"
     nationality: str = "Spain"
+    country: str | None = None
+    league: str | None = None
     seed: str = "FL-CAREER-0001"
 
 
@@ -168,6 +170,7 @@ class CareerSession:
     notifications: tuple[CareerSessionNotification, ...] = field(default_factory=tuple)
     last_processed_event_id: str | None = None
     seed: str = "FL-CAREER-0001"
+    season_summary: Any = None
 
 
 @dataclass(frozen=True)
@@ -182,4 +185,5 @@ class CareerAdvanceResult:
     presentation: CareerPresentation | None = None
     updated_career: Career | None = None
     updated_record: CareerRecord | None = None
+    season_summary: Any = None
     success: bool = True

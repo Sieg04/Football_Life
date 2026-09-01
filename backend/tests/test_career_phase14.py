@@ -1,11 +1,39 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.career.context import build_club_context
 from app.career.domain import CareerSessionStatus
+from app.career.engine import CareerSessionEngine
 from app.career.service import CareerSessionService
 from app.main import app
 
 client = TestClient(app)
+
+
+def test_phase18_club_context_fields_are_available():
+    ctx = build_club_context("Real Madrid")
+    assert ctx.country_id == "ES"
+    assert ctx.league_id == "ESP1"
+    assert ctx.club_prestige >= 90
+    assert ctx.domestic_competition_level > 0
+    assert ctx.expected_player_quality > 0
+    assert ctx.international_competition_level > 0
+    assert ctx.country_code == ctx.country_id
+    assert ctx.league_code == ctx.league_id
+
+
+def test_phase18_career_uses_context_calibrated_starting_ovr():
+    req = __import__("app.career.domain", fromlist=["CareerSetupRequest"]).CareerSetupRequest(
+        player_name="Context Player",
+        position="ST",
+        starting_club_id="Real Madrid",
+        nationality="Spain",
+        seed="PHASE18-OVR",
+    )
+    session = CareerSessionEngine.create_session(req)
+    assert session.career.current_club_id == "Real Madrid"
+    assert session.career.snapshots[0].starting_ovr > 75
+    assert session.career.peak_ovr >= session.career.snapshots[0].starting_ovr
 
 
 @pytest.fixture(autouse=True)
@@ -131,3 +159,70 @@ def test_get_events_and_presentation():
     pres_res = client.get(f"/career/{career_id}/presentation")
     assert pres_res.status_code == 200
     assert "player" in pres_res.json()
+
+
+def test_deterministic_careers_follow_elite_mid_lower_club_context():
+    elite = CareerSessionEngine.create_session(
+        __import__("app.career.domain", fromlist=["CareerSetupRequest"]).CareerSetupRequest(
+            player_name="Elite Player",
+            position="ST",
+            starting_club_id="Real Madrid",
+            nationality="Spain",
+            seed="ELITE-CAREER",
+        )
+    )
+    mid = CareerSessionEngine.create_session(
+        __import__("app.career.domain", fromlist=["CareerSetupRequest"]).CareerSetupRequest(
+            player_name="Mid Player",
+            position="ST",
+            starting_club_id="Arsenal",
+            nationality="England",
+            seed="MID-CAREER",
+        )
+    )
+    lower = CareerSessionEngine.create_session(
+        __import__("app.career.domain", fromlist=["CareerSetupRequest"]).CareerSetupRequest(
+            player_name="Lower Player",
+            position="ST",
+            starting_club_id="Lyon",
+            nationality="France",
+            seed="LOWER-CAREER",
+        )
+    )
+
+    assert elite.career.peak_ovr >= mid.career.peak_ovr >= lower.career.peak_ovr
+    assert elite.career.snapshots[0].starting_ovr >= mid.career.snapshots[0].starting_ovr >= lower.career.snapshots[0].starting_ovr
+
+
+def test_advance_career_result_exposes_season_summary():
+    create_res = client.post(
+        "/career",
+        json={"player_name": "Season Summary Test", "position": "RW", "starting_club_id": "Real Madrid", "nationality": "Spain"},
+    )
+    career_id = create_res.json()["career_id"]
+
+    advance_res = CareerSessionService.advance_career(career_id)
+    assert advance_res.season_summary is not None
+    assert advance_res.season_summary.season_label == "2027/28"
+    assert advance_res.season_summary.statistics.appearances >= 0
+    assert advance_res.season_summary.statistics.average_rating >= 0
+
+
+def test_advance_career_persists_season_summary_on_session():
+    session = CareerSessionService.create_career(
+        __import__("app.career.domain", fromlist=["CareerSetupRequest"]).CareerSetupRequest(
+            player_name="Persisted Summary",
+            position="RW",
+            starting_club_id="Real Madrid",
+            nationality="Spain",
+            seed="SUMMARY-PERSIST-01",
+        )
+    )
+
+    advance_res = CareerSessionService.advance_career(session.career_id)
+    stored_session = CareerSessionService.get_session(session.career_id)
+
+    assert advance_res.season_summary is not None
+    assert stored_session.season_summary is not None
+    assert stored_session.season_summary.season_label == "2027/28"
+    assert stored_session.current_season == "2027/28"

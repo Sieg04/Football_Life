@@ -252,8 +252,10 @@ class TestSeasonTransitionEngine:
             assert res_first.next_season_id == res_nth.next_season_id
 
     def test_cross_process_determinism(self):
+        import sys
+
         cmd = [
-            "python3",
+            sys.executable,
             "-c",
             (
                 "from app.world.season import transition_to_next_season, advance_season; "

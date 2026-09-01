@@ -51,6 +51,7 @@ class CareerSessionService:
             notifications=session.notifications + advance_res.new_notifications,
             last_processed_event_id=advance_res.processed_events[-1].event_id if advance_res.processed_events else session.last_processed_event_id,
             seed=session.seed,
+            season_summary=advance_res.season_summary,
         )
 
         cls._sessions[career_id] = updated_session
@@ -87,6 +88,7 @@ class CareerSessionService:
             notifications=session.notifications,
             last_processed_event_id=session.last_processed_event_id,
             seed=session.seed,
+            season_summary=session.season_summary,
         )
         cls._sessions[career_id] = paused_session
         return paused_session

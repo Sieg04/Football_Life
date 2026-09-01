@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from app.career.context import build_club_context, calculate_playing_time
 from app.match.domain import PlayerMatchPerformance
 
 
@@ -87,13 +88,28 @@ def simulate_single_match(
 
     if protagonist_id and protagonist_club_id in (home_club_id, away_club_id):
         if not is_injured:
+            club_context = build_club_context(str(protagonist_club_id))
+            form_value = max(65.0, min(92.0, protagonist_form * 100.0 if protagonist_form <= 1.0 else protagonist_form))
+            playing_time = calculate_playing_time(
+                player_ovr=protagonist_ovr,
+                player_position=protagonist_pos,
+                club_context=club_context,
+                form=form_value,
+            )
+
             part_hash = (s_hash // 1000) % 100
-            start_prob = min(95, max(60, int(protagonist_ovr)))
-            appeared = part_hash < start_prob
+            appearance_rate = min(0.96, max(0.20, playing_time.expected_minutes / 3400.0))
+            selection_cutoff = int(round(appearance_rate * 100))
+            appeared = part_hash < selection_cutoff
 
             if appeared:
-                starter = part_hash < (start_prob - 10)
-                minutes = 90 if starter else (15 + (part_hash % 30))
+                start_rate = min(0.90, max(0.10, playing_time.expected_starts / 38.0))
+                start_threshold = int(round(start_rate * 100))
+                starter = part_hash < start_threshold
+                if starter:
+                    minutes = 90
+                else:
+                    minutes = max(20, min(78, 20 + (part_hash % 58)))
 
                 profile = DEFAULT_PROFILES.get(protagonist_pos, DEFAULT_PROFILES["CM"])
 

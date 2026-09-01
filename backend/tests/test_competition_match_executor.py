@@ -528,8 +528,9 @@ print(json.dumps(summary, sort_keys=True))
 """
     ]
 
-    out1 = subprocess.check_output(cmd, text=True).strip()
-    out2 = subprocess.check_output(cmd, text=True).strip()
+    env = {"PYTHONPATH": "backend"}
+    out1 = subprocess.check_output(cmd, text=True, env=env).strip()
+    out2 = subprocess.check_output(cmd, text=True, env=env).strip()
 
     assert out1 == out2
 

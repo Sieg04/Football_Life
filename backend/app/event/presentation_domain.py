@@ -244,6 +244,9 @@ class CareerStatistics:
     average_rating: float | None = None
     trophies: tuple[str, ...] = ()
     awards: tuple[str, ...] = ()
+    international_caps: int = 0
+    international_goals: int = 0
+    international_assists: int = 0
     extra_stats: MappingProxyType = field(default_factory=lambda: MappingProxyType({}))
 
     def __post_init__(self) -> None:
@@ -318,6 +321,12 @@ class SeasonPresentation:
     goals: int = 0
     assists: int = 0
     average_rating: float | None = None
+    league_position: int | None = None
+    league_name: str | None = None
+    domestic_cup_result: str | None = None
+    continental_result: str | None = None
+    international_caps: int = 0
+    international_goals: int = 0
     trophies: tuple[str, ...] = ()
     important_events: tuple[str, ...] = ()
     milestones: tuple[str, ...] = ()

@@ -253,6 +253,9 @@ def build_career_statistics(
 
     trophies = []
     awards = []
+    international_caps = 0
+    international_goals = 0
+    international_assists = 0
     for ms in career_record.milestones:
         if ms.milestone_type in (MilestoneType.FIRST_TROPHY,) or "TROPHY" in ms.milestone_type.value:
             title = str(ms.metadata.get("title", ms.milestone_type.value))
@@ -260,6 +263,12 @@ def build_career_statistics(
         elif ms.milestone_type in (MilestoneType.FIRST_MAJOR_AWARD,) or "AWARD" in ms.milestone_type.value:
             title = str(ms.metadata.get("title", ms.milestone_type.value))
             awards.append(title)
+    for ev in career_record.events:
+        sc = ev.state_changes
+        sd = ev.summary_data
+        international_caps += int(sc.get("caps", sd.get("caps", 0)))
+        international_goals += int(sc.get("intl_goals", sd.get("intl_goals", 0)))
+        international_assists += int(sc.get("intl_assists", sd.get("intl_assists", 0)))
 
     return CareerStatistics(
         appearances=appearances,
@@ -270,6 +279,9 @@ def build_career_statistics(
         average_rating=avg_rating,
         trophies=tuple(trophies),
         awards=tuple(awards),
+        international_caps=international_caps,
+        international_goals=international_goals,
+        international_assists=international_assists,
     )
 
 
@@ -353,6 +365,8 @@ def build_season_presentations(
                 "appearances": 0,
                 "goals": 0,
                 "assists": 0,
+                "international_caps": 0,
+                "international_goals": 0,
                 "ratings": [],
                 "trophies": [],
                 "important_events": [],
@@ -365,6 +379,8 @@ def build_season_presentations(
         sd_dict["appearances"] += int(sc.get("appearances", sc.get("matches", sd.get("appearances", 0))))
         sd_dict["goals"] += int(sc.get("goals", sd.get("goals", 0)))
         sd_dict["assists"] += int(sc.get("assists", sd.get("assists", 0)))
+        sd_dict["international_caps"] += int(sc.get("caps", sd.get("caps", 0)))
+        sd_dict["international_goals"] += int(sc.get("intl_goals", sd.get("intl_goals", 0)))
         if "rating" in sc and isinstance(sc["rating"], (int, float)):
             sd_dict["ratings"].append(float(sc["rating"]))
         if ev.significance in (EventSignificance.CRITICAL, EventSignificance.MAJOR):
@@ -399,6 +415,8 @@ def build_season_presentations(
                 goals=s["goals"],
                 assists=s["assists"],
                 average_rating=avg_rating,
+                international_caps=s["international_caps"],
+                international_goals=s["international_goals"],
                 trophies=tuple(s["trophies"]),
                 important_events=tuple(s["important_events"]),
                 milestones=tuple(s["milestones"]),

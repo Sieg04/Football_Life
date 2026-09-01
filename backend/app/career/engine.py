@@ -6,6 +6,7 @@ from pathlib import Path
 from types import MappingProxyType
 from typing import Any
 
+from app.career.context import build_club_context
 from app.career.domain import (
     Career,
     CareerAdvanceResult,
@@ -28,6 +29,8 @@ from app.career.exceptions import (
     InvalidCareerStateException,
     InvalidDecisionOptionException,
 )
+from app.career.reputation import calculate_reputation
+from app.career.transfer import generate_transfer_offers
 from app.event.career_domain import CareerEvent, CareerRecord, EventCategory, EventSignificance
 from app.event.career_engine import process_career_events
 from app.event.decisions import Decision, DecisionOption, DecisionResult, DecisionResolutionType, resolve_decision
@@ -467,6 +470,12 @@ def _generate_default_player(request: CareerSetupRequest) -> Player:
     surname = names[1] if len(names) > 1 else ""
     pos = request.position.upper() if request.position else "ST"
 
+    starting_context = build_club_context(request.starting_club_id, _load_rules("world.json").get("clubs", []), _load_rules("world.json").get("leagues", []))
+    variance = (int(hashlib.sha256(f"{request.seed}:{request.player_name}".encode("utf-8")).hexdigest()[:4], 16) % 7) - 3
+    calibrated_ovr = max(55.0, min(90.0, starting_context.expected_starting_ovr + variance))
+    calibrated_potential = max(calibrated_ovr + 8.0, min(99.0, calibrated_ovr + 13.0 + (starting_context.club_prestige / 35.0)))
+    calibrated_development = max(45.0, min(95.0, 75.0 + (starting_context.youth_development - 70.0) * 0.4))
+
     return Player(
         id=player_id,
         name=first_name,
@@ -479,9 +488,9 @@ def _generate_default_player(request: CareerSetupRequest) -> Player:
         primary_position=pos,
         secondary_positions=(),
         attributes=attrs,
-        current_ability=73.0,
-        potential=88.0,
-        development_rate=75.0,
+        current_ability=round(calibrated_ovr, 1),
+        potential=round(calibrated_potential, 1),
+        development_rate=round(calibrated_development, 1),
         development_profile=DevelopmentProfile.BALANCED,
         role_familiarity={pos: 90.0},
         traits=("FINESSE_SHOT",),
@@ -499,7 +508,15 @@ class CareerSessionEngine:
 
     @staticmethod
     def create_session(request: CareerSetupRequest) -> CareerSession:
+        world_rules = _load_rules("world.json")
+        starting_context = build_club_context(
+            request.starting_club_id,
+            world_rules.get("clubs", []),
+            world_rules.get("leagues", []),
+        )
         player = _generate_default_player(request)
+        player.current_ability = round(starting_context.expected_starting_ovr, 1)
+        player.potential = max(player.potential, min(99.0, player.current_ability + 12.0))
         career_id = f"cs_{hashlib.sha256(f'{player.id}:{request.seed}'.encode('utf-8')).hexdigest()[:16]}"
         start_d = date(2026, 7, 1)
 
@@ -509,15 +526,15 @@ class CareerSessionEngine:
             start_date=start_d,
             end_date=date(2027, 6, 30),
             player_id=player.id,
-            club_id=1,
+            club_id=request.starting_club_id,
             starting_age=21,
             ending_age=21,
             starting_position=player.primary_position,
             ending_position=player.primary_position,
             starting_ability=player.current_ability,
             ending_ability=player.current_ability,
-            starting_ovr=75.0,
-            ending_ovr=75.0,
+            starting_ovr=starting_context.expected_starting_ovr,
+            ending_ovr=starting_context.expected_starting_ovr,
             career_phase_at_start=CareerPhase.EARLY_PRO,
             career_phase_at_end=CareerPhase.EARLY_PRO,
             playing_time_input=SeasonalPlayingTimeInput(minutes_played=1200),
@@ -530,6 +547,29 @@ class CareerSessionEngine:
             is_completed=False,
         )
 
+        initial_snapshot = SeasonSnapshot(
+            season_number=0,
+            season_label="INITIAL",
+            starting_age=21,
+            ending_age=21,
+            club_id=request.starting_club_id,
+            starting_position=player.primary_position,
+            ending_position=player.primary_position,
+            starting_ability=player.current_ability,
+            ending_ability=player.current_ability,
+            starting_ovr=starting_context.expected_starting_ovr,
+            ending_ovr=starting_context.expected_starting_ovr,
+            career_phase_at_start=CareerPhase.EARLY_PRO,
+            career_phase_at_end=CareerPhase.EARLY_PRO,
+            playing_time_input=SeasonalPlayingTimeInput(minutes_played=1200),
+            performance_input=SeasonalPerformanceInput(average_rating=7.1),
+            environment_input=SeasonalEnvironmentInput(),
+            development_budget=0.0,
+            development_summary={},
+            attribute_changes={},
+            season_seed=f"{request.seed}:initial",
+        )
+
         career = Career(
             id=career_id,
             player=player,
@@ -537,15 +577,15 @@ class CareerSessionEngine:
             end_date=None,
             current_season_number=1,
             current_season_label="2026/27",
-            current_club_id=1,
+            current_club_id=request.starting_club_id,
             career_phase=CareerPhase.EARLY_PRO,
             peak_ability=player.current_ability,
-            peak_ovr=75.0,
+            peak_ovr=starting_context.expected_starting_ovr,
             peak_age=21,
             peak_position=player.primary_position,
-            peak_club_id=1,
+            peak_club_id=request.starting_club_id,
             seasons=[initial_season],
-            snapshots=[],
+            snapshots=[initial_snapshot],
             seed=request.seed,
         )
 
@@ -610,6 +650,10 @@ class CareerSessionEngine:
 
         prev_season = session.current_season
         next_season_num = session.career.current_season_number + 1
+        next_season_year = 2025 + next_season_num
+        next_season_label = f"{next_season_year}/{str(next_season_year + 1)[2:]}"
+        player_age = 21 + next_season_num - 1
+
         if next_season_num > 15:
             # Mark career completed
             completed_career = Career(
@@ -668,16 +712,12 @@ class CareerSessionEngine:
                 pending_decision=None,
                 presentation=pres,
                 updated_career=completed_career,
+                updated_record=new_record,
+                season_summary=None,
                 success=True,
             )
 
-        start_yr = 2026 + next_season_num - 1
-        end_yr = start_yr + 1
-        next_season_label = f"{start_yr}/{str(end_yr)[2:]}"
-        age = 21 + (next_season_num - 1)
-
-        # Calculate growth / performance
-        ca_boost = 1.5 if age <= 27 else (-1.0 if age >= 31 else 0.2)
+        ca_boost = 1.5 if player_age <= 27 else (-1.0 if player_age >= 31 else 0.2)
         new_ca = round(max(50.0, min(99.0, session.career.player.current_ability + ca_boost)), 1)
         new_ovr = round(new_ca + 2.0, 1)
 
@@ -746,7 +786,7 @@ class CareerSessionEngine:
             season_label=next_season_label,
             player_id=session.player_id,
             player_name=f"{updated_player.name} {updated_player.surname}".strip(),
-            player_age=age,
+            player_age=player_age,
             player_nationality=updated_player.nationality,
             player_position=updated_player.primary_position,
             player_ovr=new_ovr,
@@ -874,19 +914,19 @@ class CareerSessionEngine:
 
         updated_record = process_career_events(session.career_record, tuple(new_events))
 
-        phase = CareerPhase.PRIME if 24 <= age <= 28 else (CareerPhase.LATE_PRIME if 29 <= age <= 31 else (CareerPhase.DECLINE if age >= 32 else CareerPhase.DEVELOPMENT))
+        phase = CareerPhase.PRIME if 24 <= player_age <= 28 else (CareerPhase.LATE_PRIME if 29 <= player_age <= 31 else (CareerPhase.DECLINE if player_age >= 32 else CareerPhase.DEVELOPMENT))
         peak_ca = max(session.career.peak_ability, new_ca)
         peak_ovr = max(session.career.peak_ovr, new_ovr)
 
         new_season_obj = Season(
             season_number=next_season_num,
             season_label=next_season_label,
-            start_date=date(start_yr, 7, 1),
-            end_date=date(end_yr, 6, 30),
+            start_date=date(2025 + next_season_num - 1, 7, 1),
+            end_date=date(2025 + next_season_num, 6, 30),
             player_id=session.player_id,
             club_id=club_name_str,
-            starting_age=age,
-            ending_age=age,
+            starting_age=player_age,
+            ending_age=player_age,
             starting_position=updated_player.primary_position,
             ending_position=updated_player.primary_position,
             starting_ability=session.career.player.current_ability,
@@ -917,7 +957,7 @@ class CareerSessionEngine:
             career_phase=phase,
             peak_ability=peak_ca,
             peak_ovr=peak_ovr,
-            peak_age=age if new_ca >= session.career.peak_ability else session.career.peak_age,
+            peak_age=player_age if new_ca >= session.career.peak_ability else session.career.peak_age,
             peak_position=updated_player.primary_position,
             peak_club_id=club_name_str,
             seasons=session.career.seasons + [new_season_obj],
@@ -948,6 +988,7 @@ class CareerSessionEngine:
             presentation=presentation,
             updated_career=updated_career,
             updated_record=updated_record,
+            season_summary=season_summary,
             success=True,
         )
 
@@ -1080,6 +1121,7 @@ class CareerSessionEngine:
                 notifications=session.notifications + (notif,),
                 last_processed_event_id=stay_ev_id,
                 seed=session.seed,
+                season_summary=session.season_summary,
             )
 
         # Generating offers to match offer_id
@@ -1156,6 +1198,7 @@ class CareerSessionEngine:
                 notifications=session.notifications + (notif,),
                 last_processed_event_id=rej_ev_id,
                 seed=session.seed,
+                season_summary=session.season_summary,
             )
 
         # ACCEPT ACTION
@@ -1225,4 +1268,5 @@ class CareerSessionEngine:
             notifications=session.notifications + (notif,),
             last_processed_event_id=acc_ev_id,
             seed=session.seed,
+            season_summary=session.season_summary,
         )

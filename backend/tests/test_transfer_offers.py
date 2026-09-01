@@ -240,8 +240,10 @@ def test_generate_transfer_offers_determinism_100x():
 
 
 def test_generate_transfer_offers_cross_process():
+    import sys
+
     cmd = [
-        "python3",
+        sys.executable,
         "-c",
         (
             "from app.transfer.offers import generate_transfer_offers; "

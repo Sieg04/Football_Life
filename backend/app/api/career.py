@@ -1,4 +1,6 @@
+import json
 from dataclasses import is_dataclass
+from pathlib import Path
 from typing import Any
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -17,6 +19,13 @@ from app.career.service import CareerSessionService
 from app.career.transfer import generate_transfer_offers
 
 router = APIRouter(prefix="/career", tags=["career"])
+
+
+def _load_world_data() -> dict[str, Any]:
+    world_path = Path(__file__).resolve().parents[1] / "data" / "world.json"
+    if not world_path.exists():
+        return {"clubs": [], "leagues": []}
+    return json.loads(world_path.read_text(encoding="utf-8"))
 
 
 class CreateCareerSchema(BaseModel):
@@ -115,6 +124,7 @@ def get_transfer_offers(career_id: str) -> dict[str, Any]:
             club_prestige=ctx.club_prestige,
             league_prestige=ctx.league_prestige,
         )
+        world_rules = _load_world_data()
         offers_res = generate_transfer_offers(
             player_id=player.id,
             player_ovr=player.current_ability,
@@ -124,6 +134,8 @@ def get_transfer_offers(career_id: str) -> dict[str, Any]:
             reputation=rep,
             season_number=session.career.current_season_number,
             seed=session.seed,
+            world_clubs=world_rules.get("clubs", []),
+            world_leagues=world_rules.get("leagues", []),
         )
         return _to_json_compatible(offers_res)
     except CareerSessionNotFoundException as e:

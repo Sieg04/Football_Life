@@ -52,9 +52,8 @@ def simulate_full_season(
     if not any(c["name"] == club_name for c in league_clubs):
         league_clubs.append({"name": club_name, "target_strength": int(player_ovr)})
 
-    if len(league_clubs) < 4:
-        for i in range(len(league_clubs), 4):
-            league_clubs.append({"name": f"Club_{i+1}", "target_strength": 75})
+    while len(league_clubs) < 18:
+        league_clubs.append({"name": f"Club_{len(league_clubs) + 1}", "target_strength": 72 + (len(league_clubs) % 12)})
 
     club_names = [c["name"] for c in league_clubs]
     club_strengths = {c["name"]: float(c.get("target_strength", 75)) for c in league_clubs}
